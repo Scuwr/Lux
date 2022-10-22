@@ -9,7 +9,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {InputTextModule} from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
 import {ToastModule} from 'primeng/toast';
-import {MessageService} from 'primeng/api';
+import {ConfirmationService, MessageService} from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 import { AppComponent } from './app.component';
 
@@ -27,9 +28,11 @@ import { AppComponent } from './app.component';
     InputTextModule,
     FormsModule,
     ToastModule,
+    ConfirmDialogModule,
   ],
   providers: [
-    MessageService
+    MessageService,
+    ConfirmationService,
   ],
   bootstrap: [AppComponent]
 })

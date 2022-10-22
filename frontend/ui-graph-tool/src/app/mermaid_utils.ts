@@ -26,6 +26,20 @@ export class mermaid_utils {
     graph.edges.push([i, j])
   }
 
+  static deleteNodeEdges(graph, i) {
+    graph.edges = graph.edges.filter(edge => edge[0]!=i && edge[1]!=i);
+  }
+
+  static deleteNode(graph, i) {
+    this.deleteNodeEdges(graph, i)
+    graph.node_names.splice(i, 1) // remove i-th node
+    // fix edge numbers after removing edge i
+    graph.edges.forEach(edge => {
+      if(edge[0] >= i) edge[0] -= 1
+      if(edge[1] >= i) edge[1] -= 1
+    });
+  }
+
 
   static obj_to_graph_str(graph, graphStyle?) {
     let result = 'graph LR \n'
