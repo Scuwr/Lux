@@ -6,12 +6,14 @@ import { ButtonModule } from 'primeng/button';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { DialogModule } from 'primeng/dialog';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {InputTextModule} from 'primeng/inputtext';
+import { InputTextModule } from 'primeng/inputtext';
 import { FormsModule } from '@angular/forms';
-import {ToastModule} from 'primeng/toast';
-import {ConfirmationService, MessageService} from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+import { ConfirmationService , MessageService} from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import {TableModule} from 'primeng/table';
+import { TableModule } from 'primeng/table';
+import { ContextMenuModule } from 'primeng/contextmenu';
+import { MenuItem } from 'primeng/api';
 
 import { AppComponent } from './app.component';
 
@@ -30,7 +32,8 @@ import { AppComponent } from './app.component';
     FormsModule,
     ToastModule,
     ConfirmDialogModule,
-    TableModule
+    TableModule,
+    ContextMenuModule,
   ],
   providers: [
     MessageService,

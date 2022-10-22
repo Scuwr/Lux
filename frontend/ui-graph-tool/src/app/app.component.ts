@@ -15,6 +15,12 @@ export class AppComponent implements AfterViewInit  {
   // @ViewChild('mermaid') mermaidDiv: ElementRef;
   @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
 
+  contextMenu = [
+    { label: "New", command: () => this.toolbar_new_node() },
+    { label: "Rename", command: () => this.toolbar_rename() },
+    { label: "Delete Node", command: () => this.toolbar_delete_node() },
+    { label: "Clear Node Edges", command: () => this.toolbar_clear_node_edges() },
+  ];
 
   stories: any = [
     {
@@ -91,6 +97,7 @@ export class AppComponent implements AfterViewInit  {
   toolbar_clear_node_edges() {
     if(!!this.graphStyle.clicked) {
       mermaid_utils.deleteNodeEdges(this.graph, this.graphStyle.clicked)
+      this.graphStyle.clicked = null;
       this.update()
     }
   }
@@ -105,14 +112,19 @@ export class AppComponent implements AfterViewInit  {
     });
   }
   toolbar_delete_story() {
-    console.log(this.selectedTreeRowIndex);
-    
-    this.stories.splice(this.selectedTreeRowIndex, 1)
-    this.selectedTreeRowIndex -= 1;
-    if (this.selectedTreeRowIndex == -1 && this.stories.length >= 0) {
-      this.selectedTreeRowIndex = 0;
-    }
-    this.sidebar_click_story(this.selectedTreeRowIndex)
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to delete this story?',
+      header: 'Delete Story',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.stories.splice(this.selectedTreeRowIndex, 1)
+        this.selectedTreeRowIndex -= 1;
+        if (this.selectedTreeRowIndex == -1 && this.stories.length >= 0) {
+          this.selectedTreeRowIndex = 0;
+        }
+        this.sidebar_click_story(this.selectedTreeRowIndex)
+      },
+    });
   }
 
   @HostListener('document:keydown.escape', ['$event']) onEscapeKey(event: KeyboardEvent) {
