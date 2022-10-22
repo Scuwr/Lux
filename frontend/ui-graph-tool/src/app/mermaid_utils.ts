@@ -40,11 +40,30 @@ export class mermaid_utils {
     });
   }
 
+  private static addNewLineToName(name) {
+    const newLine = '<br/>';
+    let lastNewLine = -1;
+    for (let i = 0; i < name.length; i++) {
+      lastNewLine++;
+      if (lastNewLine < 50) {
+        continue
+      }
+      //need new line at first space
+      const cur = name.charAt(i)
+      if(cur == ' ') {
+        name = name.substring(0, i) + newLine + name.substring(i+1)
+        i += (newLine.length - 1)
+        lastNewLine = 0
+      }
+    }
+    return name;
+  }
 
   static obj_to_graph_str(graph, graphStyle?) {
     let result = 'graph LR \n'
     graph.node_names.forEach((name, i) => {
       const nodename = i;
+      name = this.addNewLineToName(name)
       const line = nodename + '([' + name + '])';
       const callbackLine = 'click ' + nodename + ' callBackFn';
       result += line + '\n'
@@ -79,5 +98,47 @@ export class mermaid_utils {
       }
     }
     ;(window as any).callBackFn = callback;
+  }
+
+  static decode_google_sheet_copy(text) {
+    let res = []
+    let inseideQuote = false
+    let currentCellIndex = 0
+
+    for(let i=0; i<text.length; i++){
+        let cur = text.charAt(i)
+        if(currentCellIndex >= res.length){
+            res.push("")
+            if(cur == '"') { // check if quoted cell
+                inseideQuote = true
+                continue
+            }
+        }
+        if (cur != '\n' && cur != '"') {
+            res[currentCellIndex] += cur
+        } else if(cur == '\n') {
+            if (inseideQuote) { // in quoted cell, new lines appear as is
+                res[currentCellIndex] += cur
+            } else { // new line in unquoted cell, ends cell
+                inseideQuote = false;
+                currentCellIndex += 1;
+            }
+        } else if (cur == '"') {
+            if (inseideQuote) {
+                let nextChar = (i+1)>=text.length ? '\n' : text.charAt(i+1)
+                if (nextChar == '"') { // double quote inside quoted cell, puts single quote in result
+                    res[currentCellIndex] += '"'
+                    i++; // skip the double quote
+                } else if (nextChar == '\n') { // single quote in quoted cell, end quoted cell
+                    inseideQuote = false;
+                    currentCellIndex += 1;
+                    i++; // skip newline afterwards
+                }
+            } else { // in unquoted cell, quotations appear as is
+                res[currentCellIndex] += cur
+            }
+        }
+    }
+    return res;
   }
 }

@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import {ToastModule} from 'primeng/toast';
 import {ConfirmationService, MessageService} from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import {TableModule} from 'primeng/table';
 
 import { AppComponent } from './app.component';
 
@@ -29,6 +30,7 @@ import { AppComponent } from './app.component';
     FormsModule,
     ToastModule,
     ConfirmDialogModule,
+    TableModule
   ],
   providers: [
     MessageService,

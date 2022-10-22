@@ -15,6 +15,106 @@ export class AppComponent implements AfterViewInit  {
   // @ViewChild('mermaid') mermaidDiv: ElementRef;
   @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
 
+  customers = [
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+    {
+      id: 5135,
+      name: "Geraldine Bisset",
+      status: "proposal",
+      date: "2019-05-05",
+    },
+
+  ]
+
   renameDialogDisplay = false;
   renameDialogInput = null;
   renameDialogInNewNodeMode = false;
@@ -56,7 +156,7 @@ export class AppComponent implements AfterViewInit  {
   }
   toolbar_raneme_confirm() {
     this.renameDialogDisplay = false
-    if (!this.renameDialogInput.match(/^[0-9 a-z A-Z \- \/ \&]+$/)) {
+    if (!this.renameDialogInput.match(/^[0-9 a-z A-Z \- \/ \& .]+$/)) {
       this.messageService.add({severity:'error', summary:'Name Error', detail:'Name contains invalid characters'})
       return
     }
