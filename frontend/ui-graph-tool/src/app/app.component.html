@@ -31,8 +31,8 @@
     </span>
     
   <ng-template pTemplate="footer">
-    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_raneme_confirm()"></p-button>
-    <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="renameDialogDisplay=false" styleClass="p-button-text ui-button"></p-button>
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_raneme_confirm()" label="Confirm"></p-button>
+    <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="renameDialogDisplay=false" label="Cancel" styleClass="p-button-text ui-button"></p-button>
   </ng-template>
 </p-dialog>
 
