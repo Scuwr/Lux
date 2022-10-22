@@ -15,109 +15,20 @@ export class AppComponent implements AfterViewInit  {
   // @ViewChild('mermaid') mermaidDiv: ElementRef;
   @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
 
-  customers = [
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
-    {
-      id: 5135,
-      name: "Geraldine Bisset",
-      status: "proposal",
-      date: "2019-05-05",
-    },
 
-  ]
+  stories: any = [
+    {
+      short: 'hello',
+    },
+    {
+      short: 'hello2hello2hello2hello2hello2hello2hello2hello2',
+    },
+  ];
 
   renameDialogDisplay = false;
   renameDialogInput = null;
   renameDialogInNewNodeMode = false;
+  selectedTreeRowIndex = -1;
 
   graph = {
     node_names: ['Start', 'Is it', 'End'],
@@ -197,6 +108,57 @@ export class AppComponent implements AfterViewInit  {
     this.graphStyle.clicked = null
     this.update()
   }
+
+  sidebar_click_story(index) {
+    this.selectedTreeRowIndex = index;
+    if(!this.stories[index].graph) {
+      this.stories[index].graph = {}
+    }
+    this.graph = this.stories[index].graph;
+    this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
+    this.graph.edges = !!this.graph.edges ? this.graph.edges : []
+    this.update()
+  }
+
+  sidebar_load_data_from_clipboard() {
+    navigator.clipboard.readText()
+    .then(text => {
+      const sheet = mermaid_utils.decode_google_sheet_copy(text)
+      this.confirmationService.confirm({
+        message: 'Are you sure you want to load the following stories? <br/> Story Count: <b>' + sheet.length + '</b>',
+        header: 'Delete All Data',
+        accept: () => {
+          sheet.forEach((cell) => this.stories.push({short: cell}))
+        },
+      });
+    })
+    .catch(err => {
+      console.error('Failed to read clipboard contents: ', err);
+    });
+  }
+
+  sidebar_clear_all_stories() {
+    this.confirmationService.confirm({
+      message: 'Are you sure you want to DELETE ALL DATA?',
+      header: 'Delete All Data',
+      accept: () => {
+        setTimeout(() => {
+          this.confirmationService.confirm({
+            message: 'Are you really sure you want to DELETE ALL DATA?',
+            header: 'Delete All Data',
+            accept: () => {
+              this.stories = [];
+            },
+          });
+        }, 500);
+      },
+    });
+  }
+
+
+
+
+
 
 
 
