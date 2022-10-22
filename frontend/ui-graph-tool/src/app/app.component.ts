@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 
 import {MessageService} from 'primeng/api';
 
@@ -15,11 +15,12 @@ export class AppComponent implements AfterViewInit  {
   // @ViewChild('mermaid') mermaidDiv: ElementRef;
   @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
 
-  displayRenameDialog = false;
+  renameDialogDisplay = false;
   renameDialogInput = null;
+  renameDialogInNewNodeMode = false;
 
   graph = {
-    node_names: ['Start', 'Is it?', 'End'],
+    node_names: ['Start', 'Is it', 'End'],
     edges: [[0, 1], [1, 2]],
   }
 
@@ -37,27 +38,55 @@ export class AppComponent implements AfterViewInit  {
     this.update()
   }
 
-  toolbar_rename(event) {
+  toolbar_new_node() {
+    this.renameDialogInput = '';
+    this.renameDialogDisplay = true;
+    this.renameDialogInNewNodeMode = true;
+  }
+
+  toolbar_rename() {
     if(!!this.graphStyle.clicked) {
       const current_node_name = this.graph.node_names[this.graphStyle.clicked]
       this.renameDialogInput = current_node_name;
-      this.displayRenameDialog = true;
+      this.renameDialogDisplay = true;
+      this.renameDialogInNewNodeMode = false;
     }
   }
   toolbar_raneme_confirm() {
-    this.displayRenameDialog = false;
-    if (!this.renameDialogInput.match(/^[0-9a-z ]+$/)) {
+    this.renameDialogDisplay = false;
+    if (!this.renameDialogInput.match(/^[0-9 a-z A-Z]+$/)) {
       this.messageService.add({severity:'error', summary:'Name Error', detail:'Name contains invalid characters'});
       return
     }
-    this.graph.node_names[this.graphStyle.clicked] = this.renameDialogInput;
+    if(this.renameDialogInNewNodeMode) {
+      mermaid_utils.addNode(this.graph, this.renameDialogInput)
+    } else {
+      this.graph.node_names[this.graphStyle.clicked] = this.renameDialogInput;
+    }
     this.update();
   }
 
+  @HostListener('document:keydown.escape', ['$event']) onKeydownHandler(event: KeyboardEvent) {
+    this.graphStyle.clicked = null;
+    this.update();
+  }
+
+
+
+
   callback(nodeClicked) {
-    const i = mermaid_utils.addNode(this.graph, 'NEW')
-    mermaid_utils.addEdge(this.graph, 0, i)
-    this.graphStyle.clicked = nodeClicked
+    // const i = mermaid_utils.addNode(this.graph, 'NEW')
+    // mermaid_utils.addEdge(this.graph, 0, i)
+    if (this.graphStyle.clicked == nodeClicked) {
+      return
+    }
+
+    if (!this.graphStyle.clicked) {
+      this.graphStyle.clicked = nodeClicked
+    } else {
+      mermaid_utils.addEdge(this.graph, this.graphStyle.clicked, nodeClicked)
+      this.graphStyle.clicked = null;
+    }
     this.update()
   }
 

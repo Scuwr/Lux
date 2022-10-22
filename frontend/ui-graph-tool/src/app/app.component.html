@@ -308,15 +308,15 @@
   <p-toast></p-toast>
 
 
-  <p-dialog header="Rename Node" [(visible)]="displayRenameDialog" [style]="{width: '25vw'}" [baseZIndex]="10000">
+  <p-dialog header="Node Name" [(visible)]="renameDialogDisplay" [style]="{width: '25vw'}" [baseZIndex]="10000">
       <span class="p-float-label">
         <input id="float-input" type="text" pInputText [(ngModel)]="renameDialogInput" (keydown.enter)="toolbar_raneme_confirm()" autofocus> 
         <label for="float-input">New Name</label>
       </span>
       
     <ng-template pTemplate="footer">
-      <p-button icon="pi pi-check" (click)="toolbar_raneme_confirm()" label="Rename"></p-button>
-      <p-button icon="pi pi-times" (click)="displayRenameDialog=false" label="Cancel" styleClass="p-button-text"></p-button>
+      <p-button icon="pi pi-check" (click)="toolbar_raneme_confirm()" label="Confirm"></p-button>
+      <p-button icon="pi pi-times" (click)="renameDialogDisplay=false" label="Cancel" styleClass="p-button-text"></p-button>
     </ng-template>
 </p-dialog>
 
@@ -324,8 +324,8 @@
 
   <p-toolbar>
     <div class="p-toolbar-group-left">
-        <p-button label="New" icon="pi pi-plus" class="mr-2"></p-button>
-        <p-button label="Rename" icon="pi pi-upload" styleClass="p-button-warning" (onClick)="toolbar_rename($event)"></p-button>
+        <p-button label="New" icon="pi pi-plus" class="mr-2" (onClick)="toolbar_new_node()"></p-button>
+        <p-button label="Rename" icon="pi pi-upload" styleClass="p-button-warning" (onClick)="toolbar_rename()"></p-button>
     </div>
 
     <div class="p-toolbar-group-right">
