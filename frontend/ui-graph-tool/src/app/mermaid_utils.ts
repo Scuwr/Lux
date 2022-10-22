@@ -16,19 +16,35 @@ export class mermaid_utils {
     mermaid.initialize(config);
   }
 
-  static obj_to_graph_str(params) {
+    
+  static addNode(graph, name) {
+    graph.node_names.push(name)
+    return graph.node_names.length - 1
+  }
+
+  static addEdge(graph, i, j) {
+    graph.edges.push([i, j])
+  }
+
+
+  static obj_to_graph_str(graph, graphStyle?) {
     let result = 'graph LR \n'
-    params.node_names.forEach((name, i) => {
-      const nodename = 'A' + i;
+    graph.node_names.forEach((name, i) => {
+      const nodename = i;
       const line = nodename + '([' + name + '])';
       const callbackLine = 'click ' + nodename + ' callBackFn';
       result += line + '\n'
       result += callbackLine + '\n'
     })
-    params.edges.forEach((edge) => {
-      const line = 'A' + edge[0] + ' --> ' + 'A' + edge[1]
+    graph.edges.forEach((edge) => {
+      const line = edge[0] + ' --> ' + edge[1]
       result += line + '\n'
     })
+    if(!!graphStyle) {
+      if (!!graphStyle.clicked) {
+        result += 'style ' + graphStyle.clicked + ' fill:#f9f,stroke:#333,stroke-width:2px' + '\n'
+      }
+    }
     return result
   }
 
