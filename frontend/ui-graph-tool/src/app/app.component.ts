@@ -18,16 +18,17 @@ export class AppComponent implements AfterViewInit  {
 
   stories: any = [
     {
-      short: 'hello',
+      text: 'hello',
     },
     {
-      short: 'hello2hello2hello2hello2hello2hello2hello2hello2',
+      text: 'hello2hello2hello2hello2hello2hello2hello2hello2',
     },
   ];
 
   renameDialogDisplay = false;
   renameDialogInput = null;
   renameDialogInNewNodeMode = false;
+
   selectedTreeRowIndex = -1;
 
   graph = {
@@ -101,7 +102,17 @@ export class AppComponent implements AfterViewInit  {
       icon: 'pi pi-exclamation-triangle',
       accept: () => {this.clearGraph()},
       reject: () => {}
-  });
+    });
+  }
+  toolbar_delete_story() {
+    console.log(this.selectedTreeRowIndex);
+    
+    this.stories.splice(this.selectedTreeRowIndex, 1)
+    this.selectedTreeRowIndex -= 1;
+    if (this.selectedTreeRowIndex == -1 && this.stories.length >= 0) {
+      this.selectedTreeRowIndex = 0;
+    }
+    this.sidebar_click_story(this.selectedTreeRowIndex)
   }
 
   @HostListener('document:keydown.escape', ['$event']) onEscapeKey(event: KeyboardEvent) {
@@ -128,7 +139,7 @@ export class AppComponent implements AfterViewInit  {
         message: 'Are you sure you want to load the following stories? <br/> Story Count: <b>' + sheet.length + '</b>',
         header: 'Delete All Data',
         accept: () => {
-          sheet.forEach((cell) => this.stories.push({short: cell}))
+          sheet.forEach((cell) => this.stories.push({text: cell}))
         },
       });
     })
@@ -148,6 +159,8 @@ export class AppComponent implements AfterViewInit  {
             header: 'Delete All Data',
             accept: () => {
               this.stories = [];
+              this.clearGraph();
+              this.selectedTreeRowIndex = -1;
             },
           });
         }, 500);
@@ -171,7 +184,9 @@ export class AppComponent implements AfterViewInit  {
 
   callback(nodeClicked) {
     if (this.graphStyle.clicked == nodeClicked) {  // same node clicked twice
-      this.toolbar_rename()
+      // this.toolbar_rename()
+      this.graphStyle.clicked = null
+      this.update()
       return
     }
 
