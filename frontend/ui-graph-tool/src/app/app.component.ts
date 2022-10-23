@@ -118,7 +118,7 @@ export class AppComponent implements AfterViewInit  {
       accept: () => {
         this.stories.splice(this.selectedTreeRowIndex, 1)
         this.selectedTreeRowIndex -= 1;
-        if (this.selectedTreeRowIndex == -1 && this.stories.length >= 0) {
+        if (this.selectedTreeRowIndex < 0 && this.stories.length >= 0) {
           this.selectedTreeRowIndex = 0;
         }
         this.sidebar_click_story(this.selectedTreeRowIndex)

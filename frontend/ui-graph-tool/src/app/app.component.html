@@ -55,7 +55,8 @@
   <!-- GRAPH TOOLBAR -->
   <p-toolbar>
     <div class="p-toolbar-group-left">
-        <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'8px'}" label="New" (onClick)="toolbar_new_node()"></p-button>
+        <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'8px'}" 
+            label="New" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_new_node()"></p-button>
         <p-button icon="pi pi-pencil" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-warning ui-button" 
             label="Rename" [disabled]="!graphStyle.clicked" (onClick)="toolbar_rename()"></p-button>
         <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" 
@@ -65,8 +66,10 @@
     </div>
 
     <div class="p-toolbar-group-right">
-      <p-button label="Clear Graph" icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" (onClick)="toolbar_clear_graph()"></p-button>
-      <p-button label="Delete Story" icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" (onClick)="toolbar_delete_story()"></p-button>
+      <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" 
+          label="Clear Graph" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_clear_graph()"></p-button>
+      <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" 
+          label="Delete Story" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_delete_story()"></p-button>
       <!-- <p-button icon="pi pi-search" [ngStyle]="{'margin-right':'8px'}"></p-button>
         <p-button icon="pi pi-calendar" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-success ui-button"></p-button>
         <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button"></p-button> -->
