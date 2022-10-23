@@ -33,6 +33,8 @@ export class AppComponent implements AfterViewInit  {
   renameDialogDisplay = false;
   renameDialogInput = null;
   renameDialogInNewNodeMode = false;
+  newStoryDialogDisplay = false;
+  newStoryDialogInput = null;
 
   selectedTreeRowIndex = -1;
 
@@ -150,6 +152,16 @@ export class AppComponent implements AfterViewInit  {
     this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
     this.graph.edges = !!this.graph.edges ? this.graph.edges : []
     this.update()
+  }
+
+  sidebar_add_new_stories() {
+    this.newStoryDialogInput = ''
+    this.newStoryDialogDisplay = true
+  }
+  sidebar_add_new_stories_confirm() {
+    this.newStoryDialogDisplay = false
+    const addIndex = this.selectedTreeRowIndex >= 0 ? this.selectedTreeRowIndex+1 : this.stories.length;
+    this.stories.splice(addIndex, 0, {text: this.newStoryDialogInput})
   }
 
   sidebar_load_data_from_clipboard() {
