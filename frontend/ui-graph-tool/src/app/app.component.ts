@@ -62,6 +62,7 @@ export class AppComponent implements AfterViewInit  {
 
   ngAfterViewInit(){
     window['app'] = this
+    window['mermaid_utils'] = mermaid_utils
     mermaid_utils.init()
     this.update()
   }
