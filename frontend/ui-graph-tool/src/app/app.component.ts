@@ -84,7 +84,7 @@ export class AppComponent implements AfterViewInit  {
   toolbar_raneme_confirm() {
     this.renameDialogDisplay = false
     
-    const reg = '0-9 a-z A-Z \- \/ \& \' .'
+    const reg = '0-9 a-z A-Z \- \/ \& \' . ,'
     const matchReg = new RegExp('^[' + reg + ']+$')
     const replaceReg = new RegExp('[^' + reg + ']', 'g')
     if (!this.renameDialogInput.match(matchReg)) {
