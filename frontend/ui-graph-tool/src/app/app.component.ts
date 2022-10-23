@@ -27,6 +27,7 @@ export class AppComponent implements AfterViewInit  {
     // },
     // {
     //   text: 'hello2hello2hello2hello2hello2hello2hello2hello2',
+    //   completed: true,
     // },
   ];
 
@@ -110,6 +111,9 @@ export class AppComponent implements AfterViewInit  {
     }
   }
 
+  toolbar_mark_story() {
+    this.stories[this.selectedTreeRowIndex].completed = !this.stories[this.selectedTreeRowIndex].completed
+  }
   toolbar_clear_graph() {
     this.confirmationService.confirm({
       message: 'Are you sure you want to clear the current graph?',
@@ -280,7 +284,7 @@ export class AppComponent implements AfterViewInit  {
   update() {
     const element: any = this.mermaidDiv.nativeElement
     const graph_str = mermaid_utils.obj_to_graph_str(this.graph, this.graphStyle)
-    console.log(graph_str)
+    // console.log(graph_str)
     mermaid_utils.render(element, graph_str, this.callback.bind(this))
   }
 

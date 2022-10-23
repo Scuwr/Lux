@@ -16,15 +16,21 @@
         padding: 0rem;
         justify-content: flex-start;
     }
+}
 
-    .storyrow {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+.storyrow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 
-        &.selected {
-            background-color: #1976d2;
-        }
+    &.selected {
+        background-color: #1976d2;
+    }
+    &.completed {
+        background-color: #0c4e3d;
+    }
+    &.selected.completed {
+        background-color: #12916f;
     }
 }
 
