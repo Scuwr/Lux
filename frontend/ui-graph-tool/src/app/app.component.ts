@@ -180,6 +180,14 @@ export class AppComponent implements AfterViewInit  {
     });
   }
 
+  sidebar_export() {
+    var a = document.createElement("a");
+    var file = new Blob([JSON.stringify(this.stories)], {type: 'text'});
+    a.href = URL.createObjectURL(file);
+    a.download = 'export.txt';
+    a.click();
+  }
+
 
 
 

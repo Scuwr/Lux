@@ -133,7 +133,11 @@ export class mermaid_utils {
                     inseideQuote = false;
                     currentCellIndex += 1;
                     i++; // skip newline afterwards
-                }
+                } else if (nextChar == '\r') { // single quote in quoted cell, end quoted cell
+                  inseideQuote = false;
+                  currentCellIndex += 1;
+                  i += 2; // skip \r and newline afterwards
+              }
             } else { // in unquoted cell, quotations appear as is
                 res[currentCellIndex] += cur
             }

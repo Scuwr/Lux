@@ -31,7 +31,8 @@
   <p-toolbar>
           <p-button icon="pi pi-plus" (onClick)="null"></p-button>
           <p-button icon="pi pi-file-o" styleClass="p-button-warning ui-button" (onClick)="sidebar_load_data_from_clipboard()"></p-button>
-          <p-button icon="pi pi-times" styleClass="p-button-danger ui-button" (onClick)="sidebar_clear_all_stories()"></p-button>
+          <p-button icon="pi pi-times" styleClass="p-button-danger ui-button" [ngStyle]="{'margin-right':'8px'}" (onClick)="sidebar_clear_all_stories()"></p-button>
+          <p-button icon="pi pi-save" styleClass="ui-button" (onClick)="sidebar_export()"></p-button>
   </p-toolbar>
     <p-table [value]="stories" [scrollable]="true" scrollHeight="80vh">
       <ng-template pTemplate="header">
