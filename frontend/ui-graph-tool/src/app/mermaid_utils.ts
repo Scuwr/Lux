@@ -40,6 +40,17 @@ export class mermaid_utils {
     });
   }
 
+  private static sanatizeName(name) {
+    const brokenWords = ['interpolate', 'call', 'click']
+    const regexstr = brokenWords.map(w => '(' + w + ')').join('|')
+    const regex = new RegExp(regexstr, 'g')
+    if(name.match(regex)) {
+      name = name.replaceAll(regex, (w) => {return w + '_'})
+      console.warn('Name sanatized', name);
+    }
+    return name
+  }
+
   private static addNewLineToName(name) {
     const newLine = '<br/>';
     let lastNewLine = -1;
@@ -63,6 +74,7 @@ export class mermaid_utils {
     let result = 'graph LR \n'
     graph.node_names.forEach((name, i) => {
       const nodename = i;
+      name = this.sanatizeName(name)
       name = this.addNewLineToName(name)
       const line = nodename + '([' + name + '])';
       const callbackLine = 'click ' + nodename + ' callBackFn';
