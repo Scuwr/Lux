@@ -55,10 +55,13 @@
   <!-- GRAPH TOOLBAR -->
   <p-toolbar>
     <div class="p-toolbar-group-left">
-        <p-button label="New" icon="pi pi-plus" [ngStyle]="{'margin-right':'8px'}" (onClick)="toolbar_new_node()"></p-button>
-        <p-button label="Rename" icon="pi pi-pencil" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-warning ui-button" (onClick)="toolbar_rename()"></p-button>
-        <p-button label="Delete Node" icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" (onClick)="toolbar_delete_node()"></p-button>
-        <p-button label="Clear Node Edges" icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" (onClick)="toolbar_clear_node_edges()"></p-button>
+        <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'8px'}" label="New" (onClick)="toolbar_new_node()"></p-button>
+        <p-button icon="pi pi-pencil" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-warning ui-button" 
+            label="Rename" [disabled]="!graphStyle.clicked" (onClick)="toolbar_rename()"></p-button>
+        <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" 
+            label="Delete Node" [disabled]="!graphStyle.clicked" (onClick)="toolbar_delete_node()"></p-button>
+        <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" 
+            label="Clear Node Edges" [disabled]="!graphStyle.clicked" (onClick)="toolbar_clear_node_edges()"></p-button>
     </div>
 
     <div class="p-toolbar-group-right">

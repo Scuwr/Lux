@@ -11,16 +11,15 @@ import { mermaid_utils } from './mermaid_utils'
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements AfterViewInit  {
-  title = 'ui-graph-tool';
-  // @ViewChild('mermaid') mermaidDiv: ElementRef;
   @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
 
-  contextMenu = [
+  BaseContextMenu = [
     { label: "New", command: () => this.toolbar_new_node() },
-    { label: "Rename", command: () => this.toolbar_rename() },
-    { label: "Delete Node", command: () => this.toolbar_delete_node() },
-    { label: "Clear Node Edges", command: () => this.toolbar_clear_node_edges() },
+    { label: "Rename", disabled: () => !this.graphStyle.clicked, command: () => this.toolbar_rename() },
+    { label: "Delete Node", disabled: () => !this.graphStyle.clicked, command: () => this.toolbar_delete_node() },
+    { label: "Clear Node Edges", disabled: () => !this.graphStyle.clicked, command: () => this.toolbar_clear_node_edges() },
   ];
+  contextMenu = [...this.BaseContextMenu]
 
   stories: any = [
     {
@@ -89,7 +88,7 @@ export class AppComponent implements AfterViewInit  {
   toolbar_delete_node() {
     if(!!this.graphStyle.clicked) {
       mermaid_utils.deleteNode(this.graph, this.graphStyle.clicked)
-      this.graphStyle.clicked = null
+      this.setClickedNode(null)
       this.update()
     }
   }
@@ -97,7 +96,7 @@ export class AppComponent implements AfterViewInit  {
   toolbar_clear_node_edges() {
     if(!!this.graphStyle.clicked) {
       mermaid_utils.deleteNodeEdges(this.graph, this.graphStyle.clicked)
-      this.graphStyle.clicked = null;
+      this.setClickedNode(null);
       this.update()
     }
   }
@@ -128,7 +127,7 @@ export class AppComponent implements AfterViewInit  {
   }
 
   @HostListener('document:keydown.escape', ['$event']) onEscapeKey(event: KeyboardEvent) {
-    this.graphStyle.clicked = null
+    this.setClickedNode(null)
     this.update()
   }
 
@@ -193,28 +192,36 @@ export class AppComponent implements AfterViewInit  {
 
 
 
-
+  setClickedNode(nodeClicked) {
+    this.graphStyle.clicked = nodeClicked
+    this.contextMenu = this.BaseContextMenu.map(m => Object.assign({}, m))
+    this.contextMenu.forEach(m => {
+      if ('disabled' in m) {
+        m['disabled'] = m['disabled']() as any
+      }
+    })
+  }
 
   clearGraph() {
     this.graph.node_names = []
     this.graph.edges = []
-    this.graphStyle.clicked = null
+    this.setClickedNode(null)
     this.update()
   }
 
   callback(nodeClicked) {
     if (this.graphStyle.clicked == nodeClicked) {  // same node clicked twice
       // this.toolbar_rename()
-      this.graphStyle.clicked = null
+      this.setClickedNode(null)
       this.update()
       return
     }
 
     if (!this.graphStyle.clicked) {  // set node as clicked
-      this.graphStyle.clicked = nodeClicked
+      this.setClickedNode(nodeClicked)
     } else { // two nodes clicked, add edge
       mermaid_utils.addEdge(this.graph, this.graphStyle.clicked, nodeClicked)
-      this.graphStyle.clicked = null
+      this.setClickedNode(null)
     }
     this.update()
   }
