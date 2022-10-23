@@ -172,6 +172,7 @@ export class AppComponent implements AfterViewInit  {
     this.newStoryDialogDisplay = false
     const addIndex = this.selectedTreeRowIndex >= 0 ? this.selectedTreeRowIndex+1 : this.stories.length;
     this.stories.splice(addIndex, 0, {text: this.newStoryDialogInput})
+    this.sidebar_click_story(addIndex)
   }
 
   sidebar_load_data_from_clipboard() {
