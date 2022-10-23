@@ -114,10 +114,10 @@ export class mermaid_utils {
                 continue
             }
         }
-        if (cur != '\n' && cur != '"') {
+        if (cur != '\n' && cur != '\t' && cur != '"') {
             res[currentCellIndex] += cur
-        } else if(cur == '\n') {
-            if (inseideQuote) { // in quoted cell, new lines appear as is
+        } else if(cur == '\n' || cur == '\t') {
+            if (inseideQuote) { // in quoted cell, new lines and tabs appear as is
                 res[currentCellIndex] += cur
             } else { // new line in unquoted cell, ends cell
                 inseideQuote = false;
@@ -129,7 +129,7 @@ export class mermaid_utils {
                 if (nextChar == '"') { // double quote inside quoted cell, puts single quote in result
                     res[currentCellIndex] += '"'
                     i++; // skip the double quote
-                } else if (nextChar == '\n') { // single quote in quoted cell, end quoted cell
+                } else if (nextChar == '\n' || nextChar == '\t') { // single quote in quoted cell, end quoted cell
                     inseideQuote = false;
                     currentCellIndex += 1;
                     i++; // skip newline afterwards
@@ -137,7 +137,9 @@ export class mermaid_utils {
                   inseideQuote = false;
                   currentCellIndex += 1;
                   i += 2; // skip \r and newline afterwards
-              }
+                } else {
+                  console.error('UNEXPECTED STATE PARSING FROM GOOGLE SHEETS AT INDEX', i, currentCellIndex, inseideQuote, cur, nextChar);
+                }
             } else { // in unquoted cell, quotations appear as is
                 res[currentCellIndex] += cur
             }
