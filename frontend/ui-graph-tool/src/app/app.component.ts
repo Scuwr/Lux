@@ -83,9 +83,18 @@ export class AppComponent implements AfterViewInit  {
   }
   toolbar_raneme_confirm() {
     this.renameDialogDisplay = false
-    if (!this.renameDialogInput.match(/^[0-9 a-z A-Z \- \/ \& .]+$/)) {
-      this.messageService.add({severity:'error', summary:'Name Error', detail:'Name contains invalid characters'})
-      return
+    
+    const reg = '0-9 a-z A-Z \- \/ \& \' .'
+    const matchReg = new RegExp('^[' + reg + ']+$')
+    const replaceReg = new RegExp('[^' + reg + ']', 'g')
+    if (!this.renameDialogInput.match(matchReg)) {
+      // this.messageService.add({severity:'error', summary:'Name Error', detail:'Name contains invalid characters'})
+      // return
+      this.messageService.add({severity:'warn', summary:'Name Sanitized', detail:'Name contains invalid characters that were removed'})
+      console.log(this.renameDialogInput);
+      this.renameDialogInput = this.renameDialogInput.replaceAll(replaceReg, '')
+      console.log(this.renameDialogInput);
+      
     }
     if(this.renameDialogInNewNodeMode) {
       mermaid_utils.addNode(this.graph, this.renameDialogInput)
