@@ -52,7 +52,12 @@ export class AppComponent implements AfterViewInit  {
   constructor(
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-  ) {}
+  ) {
+    const storage = JSON.parse(localStorage.getItem('stories'))
+    if(!!storage && !!storage.length) {
+      this.stories = storage
+    }
+  }
 
   ngAfterViewInit(){
     window['app'] = this
@@ -151,6 +156,7 @@ export class AppComponent implements AfterViewInit  {
     this.graph = this.stories[index].graph;
     this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
     this.graph.edges = !!this.graph.edges ? this.graph.edges : []
+    localStorage.setItem('stories', JSON.stringify(this.stories))
     this.update()
   }
 
