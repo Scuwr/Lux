@@ -41,12 +41,21 @@
     }
 }
 
-#contentpush {
+.content {
+    display: flex;
+    margin: 60px auto 32px;
+    // padding: 0 16px;
+    flex-direction: column;
+    align-items: stretch;
+
     transition: margin-left .5s;
-    padding: 20px;
-    margin-left: 250px;
+    // padding: 20px;
+    margin-left: 240px;
 }
 
+.graph {
+    min-height: 220px;
+}
 
 :host {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -95,14 +104,6 @@ margin: 0 16px;
 .toolbar #twitter-logo:hover,
 .toolbar #youtube-logo:hover {
 opacity: 0.8;
-}
-
-.content {
-display: flex;
-margin: 82px auto 32px;
-padding: 0 16px;
-flex-direction: column;
-align-items: stretch;
 }
 
 svg.material-icons {
