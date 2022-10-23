@@ -13,7 +13,8 @@ import { ConfirmationService , MessageService} from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { TableModule } from 'primeng/table';
 import { ContextMenuModule } from 'primeng/contextmenu';
-import { MenuItem } from 'primeng/api';
+import {InputTextareaModule} from 'primeng/inputtextarea';
+import {TooltipModule} from 'primeng/tooltip';
 
 import { AppComponent } from './app.component';
 
@@ -34,6 +35,8 @@ import { AppComponent } from './app.component';
     ConfirmDialogModule,
     TableModule,
     ContextMenuModule,
+    InputTextareaModule,
+    TooltipModule,
   ],
   providers: [
     MessageService,

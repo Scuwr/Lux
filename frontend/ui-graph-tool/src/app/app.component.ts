@@ -149,7 +149,7 @@ export class AppComponent implements AfterViewInit  {
       const sheet = mermaid_utils.decode_google_sheet_copy(text)
       this.confirmationService.confirm({
         message: 'Are you sure you want to load the following stories? <br/> Story Count: <b>' + sheet.length + '</b>',
-        header: 'Delete All Data',
+        header: 'Load from clipboard',
         accept: () => {
           sheet.forEach((cell) => this.stories.push({text: cell}))
         },

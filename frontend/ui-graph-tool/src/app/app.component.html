@@ -29,10 +29,10 @@
 <div id="mySidenav" class="sidenav">
   <!-- STORIES TOOLBAR -->
   <p-toolbar>
-          <p-button icon="pi pi-plus" (onClick)="null"></p-button>
-          <p-button icon="pi pi-file-o" styleClass="p-button-warning ui-button" (onClick)="sidebar_load_data_from_clipboard()"></p-button>
-          <p-button icon="pi pi-times" styleClass="p-button-danger ui-button" [ngStyle]="{'margin-right':'8px'}" (onClick)="sidebar_clear_all_stories()"></p-button>
-          <p-button icon="pi pi-save" styleClass="ui-button" (onClick)="sidebar_export()"></p-button>
+          <p-button icon="pi pi-plus" (onClick)="null" alt="TEST"></p-button>
+          <p-button icon="pi pi-file-o" styleClass="p-button-warning ui-button" pTooltip="Load From Clipboard" (onClick)="sidebar_load_data_from_clipboard()"></p-button>
+          <p-button icon="pi pi-times" styleClass="p-button-danger ui-button" pTooltip="Clear Everything" [ngStyle]="{'margin-right':'8px'}" (onClick)="sidebar_clear_all_stories()"></p-button>
+          <p-button icon="pi pi-save" styleClass="ui-button" pTooltip="Save to File" (onClick)="sidebar_export()"></p-button>
   </p-toolbar>
     <p-table [value]="stories" [scrollable]="true" scrollHeight="80vh">
       <ng-template pTemplate="header">
@@ -73,6 +73,15 @@
   <p-contextMenu [target]="mermaid" [model]="contextMenu" ></p-contextMenu>
   <!-- GRAPH -->
   <div #mermaid></div>
+
+
+  <div class="storyarea">
+    <textarea [rows]="5" pInputTextarea [ngModel]="selectedTreeRowIndex >= 0 ? stories[selectedTreeRowIndex].text : 'No story selected.'" autoResize="autoResize" disabled="true"></textarea>
+  </div>
+
+
+
+
 
   <svg id="clouds" xmlns="http://www.w3.org/2000/svg" width="2611.084" height="485.677" viewBox="0 0 2611.084 485.677">
     <title>Gray Clouds Background</title>
