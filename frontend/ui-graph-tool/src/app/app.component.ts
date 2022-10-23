@@ -22,12 +22,12 @@ export class AppComponent implements AfterViewInit  {
   contextMenu = [...this.BaseContextMenu]
 
   stories: any = [
-    {
-      text: 'hello',
-    },
-    {
-      text: 'hello2hello2hello2hello2hello2hello2hello2hello2',
-    },
+    // {
+    //   text: 'hello',
+    // },
+    // {
+    //   text: 'hello2hello2hello2hello2hello2hello2hello2hello2',
+    // },
   ];
 
   renameDialogDisplay = false;
@@ -37,8 +37,10 @@ export class AppComponent implements AfterViewInit  {
   selectedTreeRowIndex = -1;
 
   graph = {
-    node_names: ['Start', 'Is it', 'End'],
-    edges: [[0, 1], [1, 2]],
+    // node_names: ['Start', 'Is it', 'End'],
+    // edges: [[0, 1], [1, 2]],
+    node_names: [],
+    edges: [],
   }
 
   graphStyle = {
@@ -133,6 +135,14 @@ export class AppComponent implements AfterViewInit  {
 
   sidebar_click_story(index) {
     this.selectedTreeRowIndex = index;
+    if(this.selectedTreeRowIndex < 0) {
+      this.graph = {
+        node_names: [],
+        edges: [],
+      }
+      this.update()
+      return
+    }
     if(!this.stories[index].graph) {
       this.stories[index].graph = {}
     }
@@ -157,6 +167,29 @@ export class AppComponent implements AfterViewInit  {
     .catch(err => {
       console.error('Failed to read clipboard contents: ', err);
     });
+  }
+
+  sidebar_load_data_from_file() {
+    let input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = e => { 
+      let file = (e.target as any).files[0]; 
+      // 
+
+      let reader = new FileReader();
+      reader.readAsText(file,'UTF-8');
+      reader.onload = readerEvent => {
+          let content = readerEvent.target.result;
+          let loadedStories = JSON.parse(content as any)
+          loadedStories.forEach((cell) => {
+            if (!('text' in cell)) {
+              return
+            }
+            this.stories.push(cell)
+          })
+      }
+    }
+    input.click();
   }
 
   sidebar_clear_all_stories() {

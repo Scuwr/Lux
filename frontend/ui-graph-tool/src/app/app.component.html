@@ -30,8 +30,9 @@
   <!-- STORIES TOOLBAR -->
   <p-toolbar>
           <p-button icon="pi pi-plus" (onClick)="null" alt="TEST"></p-button>
-          <p-button icon="pi pi-file-o" styleClass="p-button-warning ui-button" pTooltip="Load From Clipboard" (onClick)="sidebar_load_data_from_clipboard()"></p-button>
-          <p-button icon="pi pi-times" styleClass="p-button-danger ui-button" pTooltip="Clear Everything" [ngStyle]="{'margin-right':'8px'}" (onClick)="sidebar_clear_all_stories()"></p-button>
+          <p-button icon="pi pi-trash" styleClass="p-button-danger ui-button" pTooltip="Clear Everything" [ngStyle]="{'margin-right':'8px'}" (onClick)="sidebar_clear_all_stories()"></p-button>
+          <p-button icon="pi pi-google" styleClass="p-button-warning ui-button" pTooltip="Load From Clipboard" (onClick)="sidebar_load_data_from_clipboard()"></p-button>
+          <p-button icon="pi pi-file-o" styleClass="p-button-warning ui-button" pTooltip="Load From File" [ngStyle]="{'margin-right':'8px'}" (onClick)="sidebar_load_data_from_file()"></p-button>
           <p-button icon="pi pi-save" styleClass="ui-button" pTooltip="Save to File" (onClick)="sidebar_export()"></p-button>
   </p-toolbar>
     <p-table [value]="stories" [scrollable]="true" scrollHeight="80vh">
