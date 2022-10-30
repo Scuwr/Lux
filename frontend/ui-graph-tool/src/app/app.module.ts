@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
 import { ToolbarModule } from 'primeng/toolbar';
 import { ButtonModule } from 'primeng/button';
@@ -17,6 +18,7 @@ import {InputTextareaModule} from 'primeng/inputtextarea';
 import {TooltipModule} from 'primeng/tooltip';
 
 import { AppComponent } from './app.component';
+import { AppService } from './app.services';
 
 @NgModule({
   declarations: [
@@ -24,6 +26,8 @@ import { AppComponent } from './app.component';
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
+
     ToolbarModule,
     ButtonModule,
     SplitButtonModule,
@@ -41,6 +45,7 @@ import { AppComponent } from './app.component';
   providers: [
     MessageService,
     ConfirmationService,
+    AppService,
   ],
   bootstrap: [AppComponent]
 })

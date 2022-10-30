@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 
 import {ConfirmationService, MessageService} from 'primeng/api';
+import { AppService } from './app.services';
 
 
 import { mermaid_utils } from './mermaid_utils'
@@ -53,6 +54,7 @@ export class AppComponent implements AfterViewInit  {
   constructor(
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
+    private appService: AppService,
   ) {
     const storage = JSON.parse(localStorage.getItem('stories'))
     if(!!storage && !!storage.length) {
