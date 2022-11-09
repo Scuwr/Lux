@@ -30,19 +30,60 @@ app.get('*', function (req, res) {
 
 
 
-
-// users (set): 
-// 
+const DB_VERSION = 'v0';
+const TABLES = {
+    users: 'users', // set (usernames)
+    story: 'story', // hash (storyNum -> storyText)
+    storyCounter: 'storyCounter', // int (storyNum counter)
+    userAnnotations: 'userAnnotations', // hash (user:story -> jsongraph)
+}
+Object.entries(TABLES).forEach(([k, v]) => {TABLES[k] = DB_VERSION + ':' + v})
 
 const API = {
-    'usersGet': '/api/users/',
+    usersAdd: '/api/usersAdd/',
+    usersGet: '/api/usersGet/',
+
+    storyAdd: '/api/storyAdd',
+    storyGet: '/api/storyGet',
+    storyGetAll: '/api/storyGetAll',
+
+    userAnnotationAdd: '/api/userAnnotationAdd',
+    userAnnotationGet: '/api/userAnnotationGet',
 }
 
-app.post(API['usersGet'], (req, res) => {
-    console.log('Got body:', req.body, client.get('hello'));
+console.log('TABLES:', TABLES);
 
-    client.sadd('v1:users', req.body.user)
-    client.smembers('v1:users', (err, users) => {
+// USER ANNOTATIONS
+app.post(API.userAnnotationAdd, (req, res) => {
+    const key = req.body.user + ':' + req.body.storyNum;
+    const val = req.body.data
+    console.log(key, val);
+    client.hset(TABLES.userAnnotations, key, val)
+    res.send({ 
+        resp: true 
+    })
+})
+app.post(API.userAnnotationGet, (req, res) => {
+    const key = req.body.user + ':' + req.body.storyNum;
+    client.hget(TABLES.userAnnotations, key, (err, data) => {
+        res.send({ 
+            resp: data 
+        })
+    })
+})
+
+
+// USERS
+app.post(API.usersAdd, (req, res) => {
+    client.sadd(TABLES.users, req.body.data)
+    client.smembers(TABLES.users, (err, users) => {
+        res.send({ 
+            resp: users 
+        })
+    })
+})
+app.post(API.usersGet, (req, res) => {
+    client.smembers(TABLES.users, (err, users) => {
         res.send({ 
             resp: users 
         })
@@ -50,9 +91,30 @@ app.post(API['usersGet'], (req, res) => {
 })
 
 
-
-
-
+// STORIES
+// RESET STORY COUNTER: redis-cli -p 6397 set v1:storyCounter 10000
+app.post(API.storyAdd, (req, res) => {
+    client.incr(TABLES.storyCounter, (err, storyNum) => {
+        client.hset(TABLES.story, storyNum, req.body.data)
+        res.send({ 
+            resp: storyNum 
+        })
+    })
+})
+app.post(API.storyGet, (req, res) => {
+    client.hget(TABLES.story, req.body.data, (err, story) => {
+        res.send({ 
+            resp: story 
+        })
+    })
+})
+app.post(API.storyGetAll, (req, res) => {
+    client.hgetall(TABLES.story, (err, story) => {
+        res.send({ 
+            resp: story 
+        })
+    })
+})
 
 
 // ---- START UP THE NODE SERVER  ----

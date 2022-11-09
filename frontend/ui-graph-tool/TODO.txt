@@ -1,0 +1,7 @@
+TODO:
+save template
+
+redis-cli -p 8888 FLUSHALL
+make start-redis
+node server.js
+npm start
