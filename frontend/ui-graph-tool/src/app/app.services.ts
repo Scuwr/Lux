@@ -14,6 +14,8 @@ const API = {
 
     userAnnotationAdd: '/api/userAnnotationAdd',
     userAnnotationGet: '/api/userAnnotationGet',
+
+    telemetryAdd: '/api/telemetryAdd'
 }
 
 @Injectable()
@@ -41,12 +43,14 @@ export class AppService {
     }
 
     userAnnotationAdd(user, storyNum, jsonGraph) {
-        return this.http.post(API.userAnnotationAdd, {'user': user, 'storyNum': storyNum, 'data': JSON.stringify(jsonGraph)});
+        return this.http.post(API.userAnnotationAdd, {'user': user, 'storyNum': storyNum, 'data': jsonGraph});
     }
 
     userAnnotationGet(user, storyNum) {
         return this.http.post(API.userAnnotationGet, {'user': user, 'storyNum': storyNum});
     }
 
-
+    telemetryAdd(user, data) {
+        return this.http.post(API.telemetryAdd, {'user': user, 'data': data});
+    }
 }

@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 
+
 import {ConfirmationService, MessageService} from 'primeng/api';
 import { AppService } from './app.services';
 
@@ -32,6 +33,9 @@ export class AppComponent implements AfterViewInit  {
     // },
   ];
 
+  usernameDialogDisplay = true;
+  usernameDialogInput = null;
+
   renameDialogDisplay = false;
   renameDialogInput = null;
   renameDialogInNewNodeMode = false;
@@ -51,22 +55,57 @@ export class AppComponent implements AfterViewInit  {
     clicked: null
   }
 
+  userName = null;
+  allUserNames: string[] = null;
+  
   constructor(
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private appService: AppService,
   ) {
-    const storage = JSON.parse(localStorage.getItem('stories'))
-    if(!!storage && !!storage.length) {
-      this.stories = storage
-    }
+    // this.appService.storyGetAll().subscribe((res) => {
+    //   console.log('getall', res);
+      
+    // })
+    // this.userName = 'TEMPUSER';
   }
 
-  ngAfterViewInit(){
+  async ngAfterViewInit(){
     window['app'] = this
     window['mermaid_utils'] = mermaid_utils
     mermaid_utils.init()
     this.update()
+
+    this.allUserNames = (await this.appService.usersGet().toPromise())['resp']
+  }
+
+  async username_confirm() {
+    let loggedIn = false;
+    this.allUserNames.forEach(v => {
+      if (!loggedIn && this.usernameDialogInput.toLowerCase() == v.toLowerCase()) {
+        this.userName = v;
+        this.usernameDialogDisplay = false;
+        loggedIn = true;
+        this.appService.telemetryAdd(this.userName, 'login').subscribe((resp) => {})
+      }
+    });
+    if (loggedIn) {
+      // LOADING STORIES
+      let res = await this.appService.storyGetAll().toPromise();
+      let arr = res['resp'];
+      // console.log(arr);
+      let keys = Object.keys(arr)
+      Object.entries(arr).forEach(entry => {
+        let key = entry[0]
+        let story = entry[1]
+        this.stories.push({
+          text: story,
+          key: key
+        })
+      })
+    } else {
+      this.messageService.add({severity:'error', summary:'User not found', detail:'user does not exist in the database'})
+    }
   }
 
 
@@ -84,7 +123,7 @@ export class AppComponent implements AfterViewInit  {
       this.renameDialogInNewNodeMode = false
     }
   }
-  toolbar_raneme_confirm() {
+  async toolbar_raneme_confirm() {
     this.renameDialogDisplay = false
     
     const reg = '0-9 a-z A-Z \- \/ \& \' . ,'
@@ -104,14 +143,14 @@ export class AppComponent implements AfterViewInit  {
     } else {
       this.graph.node_names[this.graphStyle.clicked] = this.renameDialogInput
     }
-    this.update()
+    this.save_and_update()
   }
 
   toolbar_delete_node() {
     if(!!this.graphStyle.clicked) {
       mermaid_utils.deleteNode(this.graph, this.graphStyle.clicked)
       this.setClickedNode(null)
-      this.update()
+      this.save_and_update()
     }
   }
 
@@ -119,13 +158,13 @@ export class AppComponent implements AfterViewInit  {
     if(!!this.graphStyle.clicked) {
       mermaid_utils.deleteNodeEdges(this.graph, this.graphStyle.clicked)
       this.setClickedNode(null);
-      this.update()
+      this.save_and_update()
     }
   }
 
-  toolbar_mark_story() {
-    this.stories[this.selectedTreeRowIndex].completed = !this.stories[this.selectedTreeRowIndex].completed
-  }
+  // toolbar_mark_story() {
+  //   this.stories[this.selectedTreeRowIndex].completed = !this.stories[this.selectedTreeRowIndex].completed
+  // }
   toolbar_clear_graph() {
     this.confirmationService.confirm({
       message: 'Are you sure you want to clear the current graph?',
@@ -135,28 +174,31 @@ export class AppComponent implements AfterViewInit  {
       reject: () => {}
     });
   }
-  toolbar_delete_story() {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to delete this story?',
-      header: 'Delete Story',
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-        this.stories.splice(this.selectedTreeRowIndex, 1)
-        this.selectedTreeRowIndex -= 1;
-        if (this.selectedTreeRowIndex < 0 && this.stories.length > 0) {
-          this.selectedTreeRowIndex = 0;
-        }
-        this.sidebar_click_story(this.selectedTreeRowIndex)
-      },
-    });
-  }
+  // toolbar_delete_story() {
+  //   this.confirmationService.confirm({
+  //     message: 'Are you sure you want to delete this story?',
+  //     header: 'Delete Story',
+  //     icon: 'pi pi-exclamation-triangle',
+  //     accept: () => {
+  //       this.stories.splice(this.selectedTreeRowIndex, 1)
+  //       this.selectedTreeRowIndex -= 1;
+  //       if (this.selectedTreeRowIndex < 0 && this.stories.length > 0) {
+  //         this.selectedTreeRowIndex = 0;
+  //       }
+  //       this.sidebar_click_story(this.selectedTreeRowIndex)
+  //     },
+  //   });
+  // }
 
   @HostListener('document:keydown.escape', ['$event']) onEscapeKey(event: KeyboardEvent) {
     this.setClickedNode(null)
     this.update()
   }
 
-  sidebar_click_story(index) {
+  async sidebar_click_story(index) {
+    if (this.selectedTreeRowIndex >= 0) {
+      await this.save_current_story_backend()
+    }
     this.selectedTreeRowIndex = index;
     if(this.selectedTreeRowIndex < 0) {
       this.graph = {
@@ -166,13 +208,14 @@ export class AppComponent implements AfterViewInit  {
       this.update()
       return
     }
-    if(!this.stories[index].graph) {
-      this.stories[index].graph = {}
-    }
-    this.graph = this.stories[index].graph;
+    // if(!this.stories[index].graph) {
+    //   this.stories[index].graph = {}
+    // }
+    let storyKey = this.stories[index].key
+    let res = await this.appService.userAnnotationGet(this.userName, storyKey).toPromise();
+    this.graph = !!res['resp'] ? JSON.parse(res['resp']) : {};
     this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
     this.graph.edges = !!this.graph.edges ? this.graph.edges : []
-    localStorage.setItem('stories', JSON.stringify(this.stories))
     this.update()
   }
 
@@ -287,13 +330,27 @@ export class AppComponent implements AfterViewInit  {
 
     if (!this.graphStyle.clicked) {  // set node as clicked
       this.setClickedNode(nodeClicked)
+      this.update()
     } else { // two nodes clicked, add edge
       mermaid_utils.addEdge(this.graph, this.graphStyle.clicked, nodeClicked)
       this.setClickedNode(null)
+      this.save_and_update()
     }
-    this.update()
   }
 
+  async save_current_story_backend() {
+    let storyKey = this.stories[this.selectedTreeRowIndex].key
+    let graph = JSON.stringify(this.graph)
+    let res = await this.appService.userAnnotationAdd(this.userName, storyKey, graph).toPromise();
+    this.appService.telemetryAdd(this.userName, 'edit ' + storyKey).subscribe((resp) => {})
+    return res
+  }
+
+  save_and_update() {
+    this.save_current_story_backend().then((resp) => {
+      this.update();
+    })
+  }
   update() {
     const element: any = this.mermaidDiv.nativeElement
     const graph_str = mermaid_utils.obj_to_graph_str(this.graph, this.graphStyle)

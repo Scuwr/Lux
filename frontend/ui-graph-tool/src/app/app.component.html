@@ -4,6 +4,9 @@
   <img width="110" alt="Logo" src="assets/dag.png"/>
   <span>Graph Tool</span>
     <div class="spacer"></div>
+  <div [ngStyle]="{'padding-right':'30px'}">
+    Username: {{userName}}
+  </div>
 </div>
 
 
@@ -11,6 +14,16 @@
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
 
+<p-dialog header="Username" [(visible)]="usernameDialogDisplay" [modal]="true" [closeOnEscape]="false" [closable]="false" [style]="{width: '25vw'}" [baseZIndex]="10000">
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="usernameDialogInput" (keydown.enter)="username_confirm()" autofocus> 
+    <label for="float-input">Username</label>
+  </span>
+  
+<ng-template pTemplate="footer">
+  <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="username_confirm()" label="Login"></p-button>
+</ng-template>
+</p-dialog>
 
 <p-dialog header="Node Name" [(visible)]="renameDialogDisplay" [style]="{width: '25vw'}" [baseZIndex]="10000">
     <span class="p-float-label">
@@ -80,22 +93,22 @@
 
     <div class="p-toolbar-group-right">
 
-      <div *ngIf="selectedTreeRowIndex >= 0 && !!this.stories[this.selectedTreeRowIndex].completed; then thenBlock else elseBlock"></div>
+      <!-- <div *ngIf="selectedTreeRowIndex >= 0 && !!this.stories[this.selectedTreeRowIndex].completed; then thenBlock else elseBlock"></div>
       <ng-template #thenBlock>  
-        <!-- MARKED -->
+        MARKED
         <p-button icon="pi pi-flag" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" 
           label="Unmark" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_mark_story()"></p-button>
       </ng-template>
       <ng-template #elseBlock>
-        <!-- NOT MARKED OR NO SELECTED -->
+        NOT MARKED OR NO SELECTED
         <p-button icon="pi pi-flag" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-success ui-button" 
           label="Mark" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_mark_story()"></p-button>
-      </ng-template>
+      </ng-template> -->
 
       <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" 
           label="Clear Graph" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_clear_graph()"></p-button>
-      <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" 
-          label="Delete Story" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_delete_story()"></p-button>
+      <!-- <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" 
+          label="Delete Story" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_delete_story()"></p-button> -->
     </div>
 </p-toolbar>
 

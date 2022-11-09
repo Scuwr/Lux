@@ -36,6 +36,7 @@ const TABLES = {
     story: 'story', // hash (storyNum -> storyText)
     storyCounter: 'storyCounter', // int (storyNum counter)
     userAnnotations: 'userAnnotations', // hash (user:story -> jsongraph)
+    telemetry: 'telemetry', // list (log user data)
 }
 Object.entries(TABLES).forEach(([k, v]) => {TABLES[k] = DB_VERSION + ':' + v})
 
@@ -49,6 +50,8 @@ const API = {
 
     userAnnotationAdd: '/api/userAnnotationAdd',
     userAnnotationGet: '/api/userAnnotationGet',
+
+    telemetryAdd: '/api/telemetryAdd'
 }
 
 console.log('TABLES:', TABLES);
@@ -57,7 +60,6 @@ console.log('TABLES:', TABLES);
 app.post(API.userAnnotationAdd, (req, res) => {
     const key = req.body.user + ':' + req.body.storyNum;
     const val = req.body.data
-    console.log(key, val);
     client.hset(TABLES.userAnnotations, key, val)
     res.send({ 
         resp: true 
@@ -113,6 +115,20 @@ app.post(API.storyGetAll, (req, res) => {
         res.send({ 
             resp: story 
         })
+    })
+})
+
+//TELEMETRY
+app.post(API.telemetryAdd, (req, res) => {
+    const val = {
+        timestamp: Date.now(),
+        user: req.body.user,
+        data: req.body.data
+    }
+    console.log(val);
+    client.rpush(TABLES.telemetry, JSON.stringify(val))
+    res.send({ 
+        resp: true 
     })
 })
 
