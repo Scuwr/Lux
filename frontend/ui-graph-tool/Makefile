@@ -3,8 +3,14 @@ start-server:
 
 
 start-redis:
+# CLI: redis-cli -p 6397
 # 6397
+	# --daemonize yes
+	# ps aux | grep redis-server
 	redis-6.2.7/src/redis-server redis.conf
+
+start-redis-daemon:
+	redis-6.2.7/src/redis-server redis.conf --daemonize yes
 
 
 install:

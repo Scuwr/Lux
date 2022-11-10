@@ -1,7 +1,13 @@
 TODO:
 save template
 
-redis-cli -p 8888 FLUSHALL
+
+# LINUX:
+redis-cli -p 6397
+# redis-cli -p 6397 FLUSHALL
 make start-redis
+
+# WINDOWS:
 node server.js
 npm start
+ng build
