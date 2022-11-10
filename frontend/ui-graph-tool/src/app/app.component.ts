@@ -90,6 +90,8 @@ export class AppComponent implements AfterViewInit  {
     //   }
     // });
     this.userName = this.usernameDialogInput.toLowerCase();
+    this.usernameDialogDisplay = false;
+    this.appService.telemetryAdd(this.userName, 'login').subscribe((resp) => {})
     // if (loggedIn) {
       // LOADING STORIES
       let res = await this.appService.storyGetAll().toPromise();
