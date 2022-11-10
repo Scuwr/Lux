@@ -11,4 +11,4 @@ To install:
 
 To run:
 
-   nohup make start-daemons > server.log 2> server_error.log &
+    nohup make start-daemons > server.log 2> server_error.log &
