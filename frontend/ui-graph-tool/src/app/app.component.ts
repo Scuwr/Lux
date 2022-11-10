@@ -56,7 +56,7 @@ export class AppComponent implements AfterViewInit  {
   }
 
   userName = null;
-  allUserNames: string[] = null;
+  // allUserNames: string[] = null;
   
   constructor(
     private messageService: MessageService,
@@ -76,20 +76,21 @@ export class AppComponent implements AfterViewInit  {
     mermaid_utils.init()
     this.update()
 
-    this.allUserNames = (await this.appService.usersGet().toPromise())['resp']
+    // this.allUserNames = (await this.appService.usersGet().toPromise())['resp']
   }
 
   async username_confirm() {
-    let loggedIn = false;
-    this.allUserNames.forEach(v => {
-      if (!loggedIn && this.usernameDialogInput.toLowerCase() == v.toLowerCase()) {
-        this.userName = v;
-        this.usernameDialogDisplay = false;
-        loggedIn = true;
-        this.appService.telemetryAdd(this.userName, 'login').subscribe((resp) => {})
-      }
-    });
-    if (loggedIn) {
+    // let loggedIn = false;
+    // this.allUserNames.forEach(v => {
+    //   if (!loggedIn && this.usernameDialogInput.toLowerCase() == v.toLowerCase()) {
+    //     this.userName = v;
+    //     this.usernameDialogDisplay = false;
+    //     loggedIn = true;
+    //     this.appService.telemetryAdd(this.userName, 'login').subscribe((resp) => {})
+    //   }
+    // });
+    this.userName = this.usernameDialogInput.toLowerCase();
+    // if (loggedIn) {
       // LOADING STORIES
       let res = await this.appService.storyGetAll().toPromise();
       let arr = res['resp'];
@@ -103,9 +104,9 @@ export class AppComponent implements AfterViewInit  {
           key: key
         })
       })
-    } else {
-      this.messageService.add({severity:'error', summary:'User not found', detail:'user does not exist in the database'})
-    }
+    // } else {
+    //   this.messageService.add({severity:'error', summary:'User not found', detail:'user does not exist in the database'})
+    // }
   }
 
 
