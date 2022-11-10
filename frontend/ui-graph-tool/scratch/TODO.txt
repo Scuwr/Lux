@@ -1,5 +1,24 @@
 TODO:
-save template
+    Search that is really a “goto”
+    Keyboard shortcuts (general and for the graph)
+✔️ REDIS backend
+    Buttons to create graphs should be buttons to retrieve stories
+✔️ Add annotator field
+    Add story id in the URL
+    Goto last
+✔️ Make autosave (e.g. per story change, previous-next, …)
+ ~ Record basic telemetry (when the story is requested, etc) [on user login and on story update]
+
+
+    show "story nr out of total stories"
+    Only DAGs, reject changes that cause loops
+    Put the story above the graph (so the story doesn't move while the graph changes)
+    1 connected component
+    When adding a new node, default the connection to the last added node
+
+
+    number the nodes -> when adding new node pick number to attach to, no number then last
+    add edge popup can choose two node numbers
 
 
 # LINUX:
@@ -10,4 +29,4 @@ make start-redis
 # WINDOWS:
 node server.js
 npm start
-ng build
+ng build --prod
