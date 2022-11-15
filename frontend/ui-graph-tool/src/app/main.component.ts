@@ -149,7 +149,11 @@ export class MainComponent implements AfterViewInit  {
     this.save_and_update()
   }
 
-  toolbar_new_edge_confirm() {
+  toolbar_new_edge_confirm(event, gotonext) {
+    if (!!gotonext) {
+      event.srcElement.parentElement.nextElementSibling.firstChild.focus()
+      return
+    }
     this.dialogues.newEdge.display = false
     const node1 = Number(this.dialogues.newEdge.node1)
     const node2 = Number(this.dialogues.newEdge.node2)
@@ -195,8 +199,11 @@ export class MainComponent implements AfterViewInit  {
                   || this.dialogues.username.display) {
         return
     }
-    if (event.key.toLowerCase() == 'n') {
+    const key = event.key.toLowerCase()
+    if (key == 'n') {
       this.toolbar_new_node()
+    } else if (key == 'e') {
+      this.toolbar_new_edge()
     }
   }
 

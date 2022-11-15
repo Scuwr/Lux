@@ -56,11 +56,11 @@
 
 <p-dialog header="New Edge" [(visible)]="dialogues.newEdge.display" [style]="{width: '25vw'}" [baseZIndex]="10000">
   <span class="p-float-label">
-    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newEdge.node1" (keydown.enter)="toolbar_new_edge_confirm()" autofocus> 
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newEdge.node1" (keydown.enter)="toolbar_new_edge_confirm($event, true)" autofocus> 
     <label for="float-input">Node 1 ID</label>
   </span>
   <span class="p-float-label">
-    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newEdge.node2" (keydown.enter)="toolbar_new_edge_confirm()" autofocus> 
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newEdge.node2" (keydown.enter)="toolbar_new_edge_confirm($event, false)" autofocus> 
     <label for="float-input">Node 2 ID</label>
   </span>
   
