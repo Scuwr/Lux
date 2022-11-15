@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
 
 
 import {ConfirmationService, MessageService} from 'primeng/api';
@@ -44,6 +44,7 @@ export class MainComponent implements AfterViewInit  {
     // edges: [[0, 1], [1, 2]],
     node_names: [],
     edges: [],
+    comments: '',
   }
 
   graphStyle = {
@@ -54,6 +55,7 @@ export class MainComponent implements AfterViewInit  {
   // allUserNames: string[] = null;
   
   constructor(
+    private cdr: ChangeDetectorRef,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private mainService: MainService,
@@ -163,12 +165,14 @@ export class MainComponent implements AfterViewInit  {
     if (this.selectedTreeRowIndex >= 0) {
       await this.save_current_story_backend()
     }
+    this.clearGraph()
     this.selectedTreeRowIndex = index;
     let storyKey = this.stories[index].key
     let res = await this.mainService.userAnnotationGet(this.userName, storyKey).toPromise();
     this.graph = !!res['resp'] ? JSON.parse(res['resp']) : {};
     this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
     this.graph.edges = !!this.graph.edges ? this.graph.edges : []
+    this.graph.comments = !!this.graph.comments ? this.graph.comments : ''
     this.update()
     this.setLoader.emit(false)
   }
@@ -182,6 +186,7 @@ export class MainComponent implements AfterViewInit  {
   clearGraph() {
     this.graph.node_names = []
     this.graph.edges = []
+    this.graph.comments = ''
     this.setClickedNode(null)
     this.update()
   }

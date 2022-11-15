@@ -88,15 +88,21 @@
     </div>
 </p-toolbar>
 
+
+  <div class="storyarea">
+    <textarea [rows]="5" pInputTextarea [ngModel]="selectedTreeRowIndex >= 0 ? stories[selectedTreeRowIndex].text : 'No story selected.'" autoResize="autoResize" disabled="true"></textarea>
+  </div>
+
+  Comments:
+  <div class="commentarea" *ngIf="!!stories[selectedTreeRowIndex]">
+    <textarea [rows]="3" pInputTextarea [(ngModel)]="stories[selectedTreeRowIndex].comments" autoResize="autoResize" [disabled]="selectedTreeRowIndex < 0"></textarea>
+  </div>
+
   <!-- GRAPH -->
   <div class="graph">
     <div #mermaid></div>
   </div>
 
-
-  <div class="storyarea">
-    <textarea [rows]="5" pInputTextarea [ngModel]="selectedTreeRowIndex >= 0 ? stories[selectedTreeRowIndex].text : 'No story selected.'" autoResize="autoResize" disabled="true"></textarea>
-  </div>
 
 
 
