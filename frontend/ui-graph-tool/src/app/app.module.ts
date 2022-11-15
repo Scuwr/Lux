@@ -16,13 +16,17 @@ import { TableModule } from 'primeng/table';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import {InputTextareaModule} from 'primeng/inputtextarea';
 import {TooltipModule} from 'primeng/tooltip';
+import { BlockUIModule } from "primeng/blockui";
+import {ProgressSpinnerModule} from 'primeng/progressspinner';
 
+import { MainComponent } from './main.component';
 import { AppComponent } from './app.component';
-import { AppService } from './app.services';
+import { MainService } from './main.services';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    MainComponent,
   ],
   imports: [
     BrowserModule,
@@ -41,11 +45,13 @@ import { AppService } from './app.services';
     ContextMenuModule,
     InputTextareaModule,
     TooltipModule,
+    BlockUIModule,
+    ProgressSpinnerModule,
   ],
   providers: [
     MessageService,
     ConfirmationService,
-    AppService,
+    MainService,
   ],
   bootstrap: [AppComponent]
 })

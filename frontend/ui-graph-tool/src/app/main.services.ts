@@ -19,7 +19,7 @@ const API = {
 }
 
 @Injectable()
-export class AppService {
+export class MainService {
     constructor(private http: HttpClient) { }
 
     usersAdd(user) {
