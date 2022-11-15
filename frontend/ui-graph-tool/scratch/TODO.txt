@@ -1,6 +1,6 @@
 TODO:
 ✔️ Search that is really a “goto”
-    Keyboard shortcuts (general and for the graph)
+✔️ Keyboard shortcuts (general and for the graph)
     Add story id in the URL
     Goto last
  ~ Record basic telemetry (when the story is requested, etc) [on user login and on story update]
