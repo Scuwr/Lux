@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter } from 'rxjs/operators';
+import { filter, first } from 'rxjs/operators';
 
 
 
@@ -107,6 +107,7 @@ export class MainComponent implements AfterViewInit  {
     })
     
     const sub = this.route.queryParams.pipe(
+        first()
       ).subscribe((params) => {
         // console.log(params);
         // console.log(params);
@@ -116,7 +117,6 @@ export class MainComponent implements AfterViewInit  {
           if (match.length > 0) this.sidebar_click_story(id)
         }
         // console.log('SUBSC');
-        sub.unsubscribe()
       })
   }
 

@@ -18,7 +18,7 @@ TODO:
 
 ✔️  add edge popup can choose two node numbers
 ✔️  number the nodes -> when adding new node pick number to attach to, no number then last
-
+FIX ERROR ADD EDGE TO LAST NODE
 
 # LINUX:
 redis-cli -p 6397
