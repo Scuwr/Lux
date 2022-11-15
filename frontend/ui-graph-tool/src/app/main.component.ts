@@ -162,9 +162,9 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.newNode.display = false
     this.dialogues.newNode.input = this.sanitize_input(this.dialogues.newNode.input)
     const newNodeId = mermaid_utils.addNode(this.graph, this.dialogues.newNode.input)
-    const conn = Number(this.dialogues.newNode.connectedNode)
-    if (Number.isInteger(conn) && conn >= 1 && conn < this.graph.node_names.length) {
-      mermaid_utils.addEdge(this.graph, conn-1, newNodeId)
+    const conn = Number(this.dialogues.newNode.connectedNode + '') - 1
+    if (Number.isInteger(conn) && conn >= 0 && conn < newNodeId) {
+      mermaid_utils.addEdge(this.graph, conn, newNodeId)
     } else if (newNodeId >= 1) { // connect to last new node unless its the only node in the graph
       mermaid_utils.addEdge(this.graph, newNodeId-1, newNodeId)
     }
@@ -177,11 +177,11 @@ export class MainComponent implements AfterViewInit  {
       return
     }
     this.dialogues.newEdge.display = false
-    const node1 = Number(this.dialogues.newEdge.node1)
-    const node2 = Number(this.dialogues.newEdge.node2)
-    if (Number.isInteger(node1) && node1 >= 1 && node1 < this.graph.node_names.length
-        && Number.isInteger(node2) && node2 >= 1 && node2 < this.graph.node_names.length) {
-      mermaid_utils.addEdge(this.graph, node1-1, node2-1)
+    const node1 = Number(this.dialogues.newEdge.node1 + '') - 1
+    const node2 = Number(this.dialogues.newEdge.node2 + '') - 1
+    if (Number.isInteger(node1) && node1 >= 0 && node1 < this.graph.node_names.length
+        && Number.isInteger(node2) && node2 >= 0 && node2 < this.graph.node_names.length) {
+      mermaid_utils.addEdge(this.graph, node1, node2)
     } else {
       this.messageService.add({severity:'error', summary:'Error', detail:'Error in input.'})
     }
