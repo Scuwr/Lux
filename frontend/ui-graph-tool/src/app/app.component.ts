@@ -15,13 +15,6 @@ import { mermaid_utils } from './mermaid_utils'
 export class AppComponent implements AfterViewInit  {
   @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
 
-  BaseContextMenu = [
-    { label: "New", command: () => this.toolbar_new_node() },
-    { label: "Rename", disabled: () => !this.graphStyle.clicked, command: () => this.toolbar_rename() },
-    { label: "Delete Node", disabled: () => !this.graphStyle.clicked, command: () => this.toolbar_delete_node() },
-    { label: "Clear Node Edges", disabled: () => !this.graphStyle.clicked, command: () => this.toolbar_clear_node_edges() },
-  ];
-  contextMenu = [...this.BaseContextMenu]
 
   stories: any = [
     // {
@@ -80,37 +73,20 @@ export class AppComponent implements AfterViewInit  {
   }
 
   async username_confirm() {
-    // let loggedIn = false;
-    // this.allUserNames.forEach(v => {
-    //   if (!loggedIn && this.usernameDialogInput.toLowerCase() == v.toLowerCase()) {
-    //     this.userName = v;
-    //     this.usernameDialogDisplay = false;
-    //     loggedIn = true;
-    //     this.appService.telemetryAdd(this.userName, 'login').subscribe((resp) => {})
-    //   }
-    // });
     this.userName = this.usernameDialogInput.toLowerCase();
     this.usernameDialogDisplay = false;
     this.appService.telemetryAdd(this.userName, 'login').subscribe((resp) => {})
-    // if (loggedIn) {
-      // LOADING STORIES
-      let res = await this.appService.storyGetAll().toPromise();
-      let arr = res['resp'];
-      // console.log(arr);
-      let keys = Object.keys(arr)
-      Object.entries(arr).forEach(entry => {
-        let key = entry[0]
-        let story = entry[1]
-        this.stories.push({
-          text: story,
-          key: key
-        })
+    let res = await this.appService.storyGetAll().toPromise();
+    let arr = res['resp'];
+    Object.entries(arr).forEach(entry => {
+      let key = entry[0]
+      let story = entry[1]
+      this.stories.push({
+        text: story,
+        key: key
       })
-    // } else {
-    //   this.messageService.add({severity:'error', summary:'User not found', detail:'user does not exist in the database'})
-    // }
+    })
   }
-
 
   toolbar_new_node() {
     this.renameDialogInput = ''
@@ -165,9 +141,6 @@ export class AppComponent implements AfterViewInit  {
     }
   }
 
-  // toolbar_mark_story() {
-  //   this.stories[this.selectedTreeRowIndex].completed = !this.stories[this.selectedTreeRowIndex].completed
-  // }
   toolbar_clear_graph() {
     this.confirmationService.confirm({
       message: 'Are you sure you want to clear the current graph?',
@@ -177,21 +150,6 @@ export class AppComponent implements AfterViewInit  {
       reject: () => {}
     });
   }
-  // toolbar_delete_story() {
-  //   this.confirmationService.confirm({
-  //     message: 'Are you sure you want to delete this story?',
-  //     header: 'Delete Story',
-  //     icon: 'pi pi-exclamation-triangle',
-  //     accept: () => {
-  //       this.stories.splice(this.selectedTreeRowIndex, 1)
-  //       this.selectedTreeRowIndex -= 1;
-  //       if (this.selectedTreeRowIndex < 0 && this.stories.length > 0) {
-  //         this.selectedTreeRowIndex = 0;
-  //       }
-  //       this.sidebar_click_story(this.selectedTreeRowIndex)
-  //     },
-  //   });
-  // }
 
   @HostListener('document:keydown.escape', ['$event']) onEscapeKey(event: KeyboardEvent) {
     this.setClickedNode(null)
@@ -308,12 +266,6 @@ export class AppComponent implements AfterViewInit  {
 
   setClickedNode(nodeClicked) {
     this.graphStyle.clicked = nodeClicked
-    this.contextMenu = this.BaseContextMenu.map(m => Object.assign({}, m))
-    this.contextMenu.forEach(m => {
-      if ('disabled' in m) {
-        m['disabled'] = m['disabled']() as any
-      }
-    })
   }
 
   clearGraph() {

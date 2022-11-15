@@ -93,26 +93,12 @@
 
     <div class="p-toolbar-group-right">
 
-      <!-- <div *ngIf="selectedTreeRowIndex >= 0 && !!this.stories[this.selectedTreeRowIndex].completed; then thenBlock else elseBlock"></div>
-      <ng-template #thenBlock>  
-        MARKED
-        <p-button icon="pi pi-flag" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" 
-          label="Unmark" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_mark_story()"></p-button>
-      </ng-template>
-      <ng-template #elseBlock>
-        NOT MARKED OR NO SELECTED
-        <p-button icon="pi pi-flag" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-success ui-button" 
-          label="Mark" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_mark_story()"></p-button>
-      </ng-template> -->
-
       <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" 
           label="Clear Graph" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_clear_graph()"></p-button>
-      <!-- <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" 
-          label="Delete Story" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_delete_story()"></p-button> -->
     </div>
 </p-toolbar>
 
-  <p-contextMenu [target]="mermaid" [model]="contextMenu" ></p-contextMenu>
+  <p-contextMenu [target]="mermaid" ></p-contextMenu>
   <!-- GRAPH -->
   <div class="graph">
     <div #mermaid></div>
