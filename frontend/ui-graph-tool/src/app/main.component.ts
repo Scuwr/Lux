@@ -169,6 +169,18 @@ export class MainComponent implements AfterViewInit  {
     });
   }
 
+  @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
+    if (this.selectedTreeRowIndex < 0 
+                  || this.dialogues.newNode.display
+                  || this.dialogues.rename.display
+                  || this.dialogues.username.display) {
+        return
+    }
+    if (event.key.toLowerCase() == 'n') {
+      this.toolbar_new_node()
+    }
+  }
+
   @HostListener('document:keydown.escape', ['$event']) onEscapeKey(event: KeyboardEvent) {
     this.setClickedNode(null)
     this.update()
