@@ -112,7 +112,7 @@ export class mermaid_utils {
     ;(window as any).callBackFn = callback;
   }
 
-  static decode_google_sheet_copy(text) {
+  private static decode_google_sheet_copy(text) {
     let res = []
     let inseideQuote = false
     let currentCellIndex = 0

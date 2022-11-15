@@ -169,9 +169,6 @@ export class AppComponent implements AfterViewInit  {
       this.update()
       return
     }
-    // if(!this.stories[index].graph) {
-    //   this.stories[index].graph = {}
-    // }
     let storyKey = this.stories[index].key
     let res = await this.appService.userAnnotationGet(this.userName, storyKey).toPromise();
     this.graph = !!res['resp'] ? JSON.parse(res['resp']) : {};
@@ -179,88 +176,6 @@ export class AppComponent implements AfterViewInit  {
     this.graph.edges = !!this.graph.edges ? this.graph.edges : []
     this.update()
   }
-
-  sidebar_add_new_stories() {
-    this.newStoryDialogInput = ''
-    this.newStoryDialogDisplay = true
-  }
-  sidebar_add_new_stories_confirm() {
-    this.newStoryDialogDisplay = false
-    const addIndex = this.selectedTreeRowIndex >= 0 ? this.selectedTreeRowIndex+1 : this.stories.length;
-    this.stories.splice(addIndex, 0, {text: this.newStoryDialogInput})
-    this.sidebar_click_story(addIndex)
-  }
-
-  sidebar_load_data_from_clipboard() {
-    navigator.clipboard.readText()
-    .then(text => {
-      const sheet = mermaid_utils.decode_google_sheet_copy(text)
-      this.confirmationService.confirm({
-        message: 'Are you sure you want to load the following stories? <br/> Story Count: <b>' + sheet.length + '</b>',
-        header: 'Load from clipboard',
-        accept: () => {
-          sheet.forEach((cell) => this.stories.push({text: cell}))
-        },
-      });
-    })
-    .catch(err => {
-      console.error('Failed to read clipboard contents: ', err);
-    });
-  }
-
-  sidebar_load_data_from_file() {
-    let input = document.createElement('input');
-    input.type = 'file';
-    input.onchange = e => { 
-      let file = (e.target as any).files[0]; 
-      // 
-
-      let reader = new FileReader();
-      reader.readAsText(file,'UTF-8');
-      reader.onload = readerEvent => {
-          let content = readerEvent.target.result;
-          let loadedStories = JSON.parse(content as any)
-          loadedStories.forEach((cell) => {
-            if (!('text' in cell)) {
-              return
-            }
-            this.stories.push(cell)
-          })
-      }
-    }
-    input.click();
-  }
-
-  sidebar_clear_all_stories() {
-    this.confirmationService.confirm({
-      message: 'Are you sure you want to DELETE ALL DATA?',
-      header: 'Delete All Data',
-      accept: () => {
-        setTimeout(() => {
-          this.confirmationService.confirm({
-            message: 'Are you really sure you want to DELETE ALL DATA?',
-            header: 'Delete All Data',
-            accept: () => {
-              this.stories = [];
-              this.clearGraph();
-              this.selectedTreeRowIndex = -1;
-            },
-          });
-        }, 500);
-      },
-    });
-  }
-
-  sidebar_export() {
-    var a = document.createElement("a");
-    var file = new Blob([JSON.stringify(this.stories)], {type: 'text'});
-    a.href = URL.createObjectURL(file);
-    a.download = 'export.txt';
-    a.click();
-  }
-
-
-
 
 
 

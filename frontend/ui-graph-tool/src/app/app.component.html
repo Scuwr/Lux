@@ -37,16 +37,6 @@
   </ng-template>
 </p-dialog>
 
-<p-dialog header="New Story" [(visible)]="newStoryDialogDisplay" [style]="{width: '50vw'}" [baseZIndex]="10000">
-  <textarea [rows]="20" pInputTextarea [(ngModel)]="newStoryDialogInput" [ngStyle]="{'width':'100%', 'max-width': '100%'}" autofocus></textarea>
-
-  
-  <ng-template pTemplate="footer">
-    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="sidebar_add_new_stories_confirm()" label="Confirm"></p-button>
-    <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="newStoryDialogDisplay=false" label="Cancel" styleClass="p-button-text ui-button"></p-button>
-  </ng-template>
-</p-dialog>
-
 
 <div>
 
