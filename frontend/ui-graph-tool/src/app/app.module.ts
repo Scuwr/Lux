@@ -22,6 +22,7 @@ import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import { MainComponent } from './main.component';
 import { AppComponent } from './app.component';
 import { MainService } from './main.services';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { MainService } from './main.services';
     TooltipModule,
     BlockUIModule,
     ProgressSpinnerModule,
+    AppRoutingModule,
   ],
   providers: [
     MessageService,

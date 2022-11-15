@@ -1,4 +1,7 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
+
 
 
 import {ConfirmationService, MessageService} from 'primeng/api';
@@ -67,8 +70,13 @@ export class MainComponent implements AfterViewInit  {
 
   constructor(
     private cdr: ChangeDetectorRef,
+    private router: Router,
+    private route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute,
+
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
+
     private mainService: MainService,
   ) {
     // this.userName = 'TEMPUSER';
@@ -96,6 +104,16 @@ export class MainComponent implements AfterViewInit  {
       })
       this.filteredStories = this.allStories.map(v => v)
     })
+    this.route.queryParams.pipe(
+      ).subscribe((params) => {
+        console.log(params);
+        
+        if (!!params.storyId) {
+          const id = params.storyId
+          const match = this.allStories.filter(s => s.key == id)
+          if (match.length > 0) this.sidebar_click_story(id)
+        }
+      })
   }
 
   toolbar_new_node() {
@@ -219,6 +237,12 @@ export class MainComponent implements AfterViewInit  {
     }
     this.clearGraph()
     this.selectedTreeRowIndex = index;
+    this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams: {storyId: index}, 
+        queryParamsHandling: 'merge', // remove to replace all query params by provided
+      });
+  
     let storyKey = this.allStories[index].key
     let res = await this.mainService.userAnnotationGet(this.userName, storyKey).toPromise();
     this.graph = !!res['resp'] ? JSON.parse(res['resp']) : {};

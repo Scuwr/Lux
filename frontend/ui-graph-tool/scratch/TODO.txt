@@ -16,8 +16,7 @@ TODO:
 ✔️  Put the story above the graph (so the story doesn't move while the graph changes)
 ✔️  When adding a new node, default the connection to the last added node
 
-
-    add edge popup can choose two node numbers
+✔️  add edge popup can choose two node numbers
 ✔️  number the nodes -> when adding new node pick number to attach to, no number then last
 
 
