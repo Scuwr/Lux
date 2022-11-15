@@ -26,14 +26,21 @@ export class MainComponent implements AfterViewInit  {
     // },
   ];
 
-  usernameDialogDisplay = true;
-  usernameDialogInput = null;
-
-  renameDialogDisplay = false;
-  renameDialogInput = null;
-
-  newNodeDialogDisplay = false;
-  newNodeDialogInput = null;
+  dialogues = {
+    username: {
+      display: true,
+      input: null
+    },
+    rename: {
+      display: false,
+      input: null,
+    },
+    newNode: {
+      display: false,
+      input: null,
+      connectedNode: null,
+    },
+  }
 
   selectedTreeRowIndex = -1;
 
@@ -75,8 +82,8 @@ export class MainComponent implements AfterViewInit  {
   }
 
   async username_confirm() {
-    this.userName = this.usernameDialogInput.toLowerCase();
-    this.usernameDialogDisplay = false;
+    this.userName = this.dialogues.username.input.toLowerCase();
+    this.dialogues.username.display = false;
     this.mainService.telemetryAdd(this.userName, 'login').subscribe((resp) => {})
     let res = await this.mainService.storyGetAll().toPromise();
     let arr = res['resp'];
@@ -91,15 +98,16 @@ export class MainComponent implements AfterViewInit  {
   }
 
   toolbar_new_node() {
-    this.newNodeDialogInput = ''
-    this.newNodeDialogDisplay = true
+    this.dialogues.newNode.input = ''
+    this.dialogues.newNode.connectedNode = ''
+    this.dialogues.newNode.display = true
   }
 
   toolbar_rename() {
     if(!!this.graphStyle.clicked) {
       const current_node_name = this.graph.node_names[this.graphStyle.clicked]
-      this.renameDialogInput = current_node_name
-      this.renameDialogDisplay = true
+      this.dialogues.rename.input = current_node_name
+      this.dialogues.rename.display = true
     }
   }
 
@@ -114,17 +122,24 @@ export class MainComponent implements AfterViewInit  {
     return node_name
   }
 
-  async toolbar_raneme_confirm() {
-    this.renameDialogDisplay = false
-    this.renameDialogInput = this.sanitize_input(this.renameDialogInput)
-    this.graph.node_names[this.graphStyle.clicked] = this.renameDialogInput
+  toolbar_raneme_confirm() {
+    this.dialogues.rename.display = false
+    this.dialogues.rename.input = this.sanitize_input(this.dialogues.rename.input)
+    this.graph.node_names[this.graphStyle.clicked] = this.dialogues.rename.input
     this.save_and_update()
   }
 
   toolbar_new_node_confirm() {
-    this.newNodeDialogDisplay = false
-    this.newNodeDialogInput = this.sanitize_input(this.newNodeDialogInput)
-    mermaid_utils.addNode(this.graph, this.newNodeDialogInput)
+    this.dialogues.newNode.display = false
+    this.dialogues.newNode.input = this.sanitize_input(this.dialogues.newNode.input)
+    const newNodeId = mermaid_utils.addNode(this.graph, this.dialogues.newNode.input)
+    const conn = Number(this.dialogues.newNode.connectedNode)
+    if (Number.isInteger(conn) && conn >= 1 && conn < this.graph.node_names.length) {
+      mermaid_utils.addEdge(this.graph, conn-1, newNodeId)
+    } else if (newNodeId >= 1) { // connect to last new node unless its the only node in the graph
+      mermaid_utils.addEdge(this.graph, newNodeId-1, newNodeId)
+    }
+    
     this.save_and_update()
   }
 
