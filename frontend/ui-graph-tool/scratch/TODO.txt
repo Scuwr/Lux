@@ -1,5 +1,5 @@
 TODO:
-    Search that is really a “goto”
+✔️ Search that is really a “goto”
     Keyboard shortcuts (general and for the graph)
     Add story id in the URL
     Goto last

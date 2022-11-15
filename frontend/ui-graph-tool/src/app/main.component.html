@@ -21,16 +21,16 @@
     <label for="float-input">Username</label>
   </span>
   
-<ng-template pTemplate="footer">
-  <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="username_confirm()" label="Login"></p-button>
-</ng-template>
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="username_confirm()" label="Login"></p-button>
+  </ng-template>
 </p-dialog>
 
 <p-dialog header="Node Name" [(visible)]="dialogues.rename.display" [style]="{width: '25vw'}" [baseZIndex]="10000">
-    <span class="p-float-label">
-      <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.rename.input" (keydown.enter)="toolbar_raneme_confirm()" autofocus> 
-      <label for="float-input">New Name</label>
-    </span>
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.rename.input" (keydown.enter)="toolbar_raneme_confirm()" autofocus> 
+    <label for="float-input">New Name</label>
+  </span>
     
   <ng-template pTemplate="footer">
     <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_raneme_confirm()" label="Confirm"></p-button>
@@ -48,10 +48,26 @@
     <label for="float-input">Connected Node</label>
   </span>
   
-<ng-template pTemplate="footer">
-  <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_new_node_confirm()" label="Confirm"></p-button>
-  <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="newNodeDialogDisplay=false" label="Cancel" styleClass="p-button-text ui-button"></p-button>
-</ng-template>
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_new_node_confirm()" label="Confirm"></p-button>
+    <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="dialogues.newNode.display=false" label="Cancel" styleClass="p-button-text ui-button"></p-button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog header="New Edge" [(visible)]="dialogues.newEdge.display" [style]="{width: '25vw'}" [baseZIndex]="10000">
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newEdge.node1" (keydown.enter)="toolbar_new_edge_confirm()" autofocus> 
+    <label for="float-input">Node 1 ID</label>
+  </span>
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newEdge.node2" (keydown.enter)="toolbar_new_edge_confirm()" autofocus> 
+    <label for="float-input">Node 2 ID</label>
+  </span>
+  
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_new_edge_confirm()" label="Confirm"></p-button>
+    <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="dialogues.newEdge.display=false" label="Cancel" styleClass="p-button-text ui-button"></p-button>
+  </ng-template>
 </p-dialog>
 
 
@@ -95,13 +111,15 @@
   <p-toolbar>
     <div class="p-toolbar-group-left">
         <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'8px'}" 
-            label="New" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_new_node()"></p-button>
+            label="Node" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_new_node()"></p-button>
+        <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'8px'}" 
+            label="Edge" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_new_edge()"></p-button>
         <p-button icon="pi pi-pencil" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-warning ui-button" 
             label="Rename" [disabled]="!graphStyle.clicked" (onClick)="toolbar_rename()"></p-button>
         <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" 
-            label="Delete Node" [disabled]="!graphStyle.clicked" (onClick)="toolbar_delete_node()"></p-button>
+            label="Node" [disabled]="!graphStyle.clicked" (onClick)="toolbar_delete_node()"></p-button>
         <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" 
-            label="Clear Node Edges" [disabled]="!graphStyle.clicked" (onClick)="toolbar_clear_node_edges()"></p-button>
+            label="Edge" [disabled]="!graphStyle.clicked" (onClick)="toolbar_clear_node_edges()"></p-button>
     </div>
 
     <div class="p-toolbar-group-right">

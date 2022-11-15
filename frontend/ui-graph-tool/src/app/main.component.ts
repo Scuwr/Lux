@@ -36,6 +36,11 @@ export class MainComponent implements AfterViewInit  {
       input: null,
       connectedNode: null,
     },
+    newEdge: {
+      display: false,
+      node1: null,
+      node2: null,
+    },
   }
 
 
@@ -99,6 +104,12 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.newNode.display = true
   }
 
+  toolbar_new_edge() {
+    this.dialogues.newEdge.node1 = ''
+    this.dialogues.newEdge.node2 = ''
+    this.dialogues.newEdge.display = true
+  }
+
   toolbar_rename() {
     if(!!this.graphStyle.clicked) {
       const current_node_name = this.graph.node_names[this.graphStyle.clicked]
@@ -135,7 +146,19 @@ export class MainComponent implements AfterViewInit  {
     } else if (newNodeId >= 1) { // connect to last new node unless its the only node in the graph
       mermaid_utils.addEdge(this.graph, newNodeId-1, newNodeId)
     }
-    
+    this.save_and_update()
+  }
+
+  toolbar_new_edge_confirm() {
+    this.dialogues.newEdge.display = false
+    const node1 = Number(this.dialogues.newEdge.node1)
+    const node2 = Number(this.dialogues.newEdge.node2)
+    if (Number.isInteger(node1) && node1 >= 1 && node1 < this.graph.node_names.length
+        && Number.isInteger(node2) && node2 >= 1 && node2 < this.graph.node_names.length) {
+      mermaid_utils.addEdge(this.graph, node1-1, node2-1)
+    } else {
+      this.messageService.add({severity:'error', summary:'Error', detail:'Error in input.'})
+    }
     this.save_and_update()
   }
 
