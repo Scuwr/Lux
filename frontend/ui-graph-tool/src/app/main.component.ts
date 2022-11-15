@@ -20,9 +20,7 @@ export class MainComponent implements AfterViewInit  {
 
   stories: any = [
     // {
-    //   text: 'hello',
-    // },
-    // {
+    //   key: 1,
     //   text: 'hello2hello2hello2hello2hello2hello2hello2hello2',
     //   completed: true,
     // },
@@ -33,9 +31,9 @@ export class MainComponent implements AfterViewInit  {
 
   renameDialogDisplay = false;
   renameDialogInput = null;
-  renameDialogInNewNodeMode = false;
-  newStoryDialogDisplay = false;
-  newStoryDialogInput = null;
+
+  newNodeDialogDisplay = false;
+  newNodeDialogInput = null;
 
   selectedTreeRowIndex = -1;
 
@@ -93,9 +91,8 @@ export class MainComponent implements AfterViewInit  {
   }
 
   toolbar_new_node() {
-    this.renameDialogInput = ''
-    this.renameDialogDisplay = true
-    this.renameDialogInNewNodeMode = true
+    this.newNodeDialogInput = ''
+    this.newNodeDialogDisplay = true
   }
 
   toolbar_rename() {
@@ -103,29 +100,31 @@ export class MainComponent implements AfterViewInit  {
       const current_node_name = this.graph.node_names[this.graphStyle.clicked]
       this.renameDialogInput = current_node_name
       this.renameDialogDisplay = true
-      this.renameDialogInNewNodeMode = false
     }
   }
-  async toolbar_raneme_confirm() {
-    this.renameDialogDisplay = false
-    
+
+  private sanitize_input(node_name) {
     const reg = '0-9 a-z A-Z \- \/ \& \' . ,'
     const matchReg = new RegExp('^[' + reg + ']+$')
     const replaceReg = new RegExp('[^' + reg + ']', 'g')
-    if (!this.renameDialogInput.match(matchReg)) {
-      // this.messageService.add({severity:'error', summary:'Name Error', detail:'Name contains invalid characters'})
-      // return
+    if (!node_name.match(matchReg)) {
       this.messageService.add({severity:'warn', summary:'Name Sanitized', detail:'Name contains invalid characters that were removed'})
-      console.log(this.renameDialogInput);
-      this.renameDialogInput = this.renameDialogInput.replaceAll(replaceReg, '')
-      console.log(this.renameDialogInput);
-      
+      node_name = node_name.replaceAll(replaceReg, '')
     }
-    if(this.renameDialogInNewNodeMode) {
-      mermaid_utils.addNode(this.graph, this.renameDialogInput)
-    } else {
-      this.graph.node_names[this.graphStyle.clicked] = this.renameDialogInput
-    }
+    return node_name
+  }
+
+  async toolbar_raneme_confirm() {
+    this.renameDialogDisplay = false
+    this.renameDialogInput = this.sanitize_input(this.renameDialogInput)
+    this.graph.node_names[this.graphStyle.clicked] = this.renameDialogInput
+    this.save_and_update()
+  }
+
+  toolbar_new_node_confirm() {
+    this.newNodeDialogDisplay = false
+    this.newNodeDialogInput = this.sanitize_input(this.newNodeDialogInput)
+    mermaid_utils.addNode(this.graph, this.newNodeDialogInput)
     this.save_and_update()
   }
 

@@ -71,10 +71,17 @@ export class mermaid_utils {
   }
 
   static obj_to_graph_str(graph, graphStyle?) {
-    let result = 'graph LR \n'
+    let result = 'graph '
+    if (!!graphStyle.td) {
+      result += 'TD'
+    } else {
+      result += 'LR'
+    }
+    result += ' \n'
     graph.node_names.forEach((name, i) => {
       const nodename = i;
       name = this.sanatizeName(name)
+      name = (i+1) + ': ' + name
       name = this.addNewLineToName(name)
       const line = nodename + '([' + name + '])';
       const callbackLine = 'click ' + nodename + ' callBackFn';

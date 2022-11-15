@@ -37,6 +37,23 @@
   </ng-template>
 </p-dialog>
 
+<p-dialog header="Node Name" [(visible)]="newNodeDialogDisplay" [style]="{width: '25vw'}" [baseZIndex]="10000">
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="newNodeDialogInput" (keydown.enter)="toolbar_new_node_confirm()" autofocus> 
+    <label for="float-input">New Name</label>
+  </span>
+  
+<ng-template pTemplate="footer">
+  <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_new_node_confirm()" label="Confirm"></p-button>
+  <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="newNodeDialogDisplay=false" label="Cancel" styleClass="p-button-text ui-button"></p-button>
+</ng-template>
+</p-dialog>
+
+
+
+
+
+
 
 <div>
 
@@ -94,8 +111,8 @@
   </div>
 
   Comments:
-  <div class="commentarea" *ngIf="!!stories[selectedTreeRowIndex]">
-    <textarea [rows]="3" pInputTextarea [(ngModel)]="stories[selectedTreeRowIndex].comments" autoResize="autoResize" [disabled]="selectedTreeRowIndex < 0"></textarea>
+  <div class="commentarea">
+    <textarea [rows]="3" pInputTextarea [(ngModel)]="graph.comments" autoResize="autoResize" [disabled]="selectedTreeRowIndex < 0"></textarea>
   </div>
 
   <!-- GRAPH -->
