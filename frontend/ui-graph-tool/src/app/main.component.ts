@@ -17,14 +17,10 @@ export class MainComponent implements AfterViewInit  {
 
   @Output() setLoader = new EventEmitter();
 
+  userName = null;
 
-  stories: any = [
-    // {
-    //   key: 1,
-    //   text: 'hello2hello2hello2hello2hello2hello2hello2hello2',
-    //   completed: true,
-    // },
-  ];
+  selectedTreeRowIndex = -1;
+  sidenavVisible = true;
 
   dialogues = {
     username: {
@@ -42,7 +38,15 @@ export class MainComponent implements AfterViewInit  {
     },
   }
 
-  selectedTreeRowIndex = -1;
+
+  filteredStories = [
+    // {
+    //   key: 1,
+    //   text: 'hello2hello2hello2hello2hello2hello2hello2hello2',
+    //   completed: true,
+    // },
+  ];
+  allStories = [];
 
   graph = {
     // node_names: ['Start', 'Is it', 'End'],
@@ -56,19 +60,12 @@ export class MainComponent implements AfterViewInit  {
     clicked: null
   }
 
-  userName = null;
-  // allUserNames: string[] = null;
-  
   constructor(
     private cdr: ChangeDetectorRef,
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
     private mainService: MainService,
   ) {
-    // this.appService.storyGetAll().subscribe((res) => {
-    //   console.log('getall', res);
-      
-    // })
     // this.userName = 'TEMPUSER';
   }
 
@@ -77,8 +74,6 @@ export class MainComponent implements AfterViewInit  {
     window['mermaid_utils'] = mermaid_utils
     mermaid_utils.init()
     this.update()
-
-    // this.allUserNames = (await this.appService.usersGet().toPromise())['resp']
   }
 
   async username_confirm() {
@@ -90,10 +85,11 @@ export class MainComponent implements AfterViewInit  {
     Object.entries(arr).forEach(entry => {
       let key = entry[0]
       let story = entry[1]
-      this.stories.push({
+      this.allStories.push({
         text: story,
         key: key
       })
+      this.filteredStories = this.allStories.map(v => v)
     })
   }
 
@@ -193,7 +189,7 @@ export class MainComponent implements AfterViewInit  {
     }
     this.clearGraph()
     this.selectedTreeRowIndex = index;
-    let storyKey = this.stories[index].key
+    let storyKey = this.allStories[index].key
     let res = await this.mainService.userAnnotationGet(this.userName, storyKey).toPromise();
     this.graph = !!res['resp'] ? JSON.parse(res['resp']) : {};
     this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
@@ -203,13 +199,24 @@ export class MainComponent implements AfterViewInit  {
     this.setLoader.emit(false)
   }
 
+  sidenavSearchInput(searchText: string, enterKey: boolean) {
+    if (searchText.length == 0) {
+      this.filteredStories = this.allStories.map(v => v)
+    } else if (enterKey) {
+      searchText = searchText.toLowerCase()
+      this.filteredStories = this.allStories.filter((story) => {
+        return story.text.toLowerCase().indexOf(searchText) > -1
+      })
+    }
+  }
 
 
-  setClickedNode(nodeClicked) {
+
+  private setClickedNode(nodeClicked) {
     this.graphStyle.clicked = nodeClicked
   }
 
-  clearGraph() {
+  private clearGraph() {
     this.graph.node_names = []
     this.graph.edges = []
     this.graph.comments = ''
@@ -236,7 +243,7 @@ export class MainComponent implements AfterViewInit  {
   }
 
   async save_current_story_backend() {
-    let storyKey = this.stories[this.selectedTreeRowIndex].key
+    let storyKey = this.allStories[this.selectedTreeRowIndex].key
     let graph = JSON.stringify(this.graph)
     let res = await this.mainService.userAnnotationAdd(this.userName, storyKey, graph).toPromise();
     this.mainService.telemetryAdd(this.userName, 'edit ' + storyKey).subscribe((resp) => {})

@@ -2,7 +2,6 @@
 .sidenav {
     height: 100%; /* 100% Full-height */
     // width: 0; /* 0 width - change this with JavaScript */
-    width: 250px;
     position: fixed; /* Stay in place */
     // z-index: 1; /* Stay on top */
     // top: 0; /* Stay at the top */
@@ -11,6 +10,11 @@
     overflow-x: hidden; /* Disable horizontal scroll */
     // padding-top: 60px; /* Place content 60px from the top */
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+
+    width: 0px;
+    &.sidenav-visible {
+        width: 250px;
+    }
 
     ::ng-deep .p-toolbar {
         padding: 0rem;
@@ -57,7 +61,10 @@
 
     transition: margin-left .5s;
     // padding: 20px;
-    margin-left: 240px;
+    margin-left: 0px;
+    &.sidenav-visible {
+        margin-left: 240px;
+    }
 }
 
 .graph {
