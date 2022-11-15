@@ -14,9 +14,9 @@
 <p-toast></p-toast>
 <p-confirmDialog></p-confirmDialog>
 
-<p-dialog header="Username" [(visible)]="usernameDialogDisplay" [modal]="true" [closeOnEscape]="false" [closable]="false" [style]="{width: '25vw'}" [baseZIndex]="10000">
+<p-dialog header="Username" [(visible)]="dialogues.username.display" [modal]="true" [closeOnEscape]="false" [closable]="false" [style]="{width: '25vw'}" [baseZIndex]="10000">
   <span class="p-float-label">
-    <input id="float-input" type="text" pInputText [(ngModel)]="usernameDialogInput" (keydown.enter)="username_confirm()" autofocus> 
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.username.input" (keydown.enter)="username_confirm()" autofocus> 
     <label for="float-input">Username</label>
   </span>
   
@@ -25,22 +25,26 @@
 </ng-template>
 </p-dialog>
 
-<p-dialog header="Node Name" [(visible)]="renameDialogDisplay" [style]="{width: '25vw'}" [baseZIndex]="10000">
+<p-dialog header="Node Name" [(visible)]="dialogues.rename.display" [style]="{width: '25vw'}" [baseZIndex]="10000">
     <span class="p-float-label">
-      <input id="float-input" type="text" pInputText [(ngModel)]="renameDialogInput" (keydown.enter)="toolbar_raneme_confirm()" autofocus> 
+      <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.rename.input" (keydown.enter)="toolbar_raneme_confirm()" autofocus> 
       <label for="float-input">New Name</label>
     </span>
     
   <ng-template pTemplate="footer">
     <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_raneme_confirm()" label="Confirm"></p-button>
-    <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="renameDialogDisplay=false" label="Cancel" styleClass="p-button-text ui-button"></p-button>
+    <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="dialogues.rename.display=false" label="Cancel" styleClass="p-button-text ui-button"></p-button>
   </ng-template>
 </p-dialog>
 
-<p-dialog header="Node Name" [(visible)]="newNodeDialogDisplay" [style]="{width: '25vw'}" [baseZIndex]="10000">
+<p-dialog header="Node Name" [(visible)]="dialogues.newNode.display" [style]="{width: '25vw'}" [baseZIndex]="10000">
   <span class="p-float-label">
-    <input id="float-input" type="text" pInputText [(ngModel)]="newNodeDialogInput" (keydown.enter)="toolbar_new_node_confirm()" autofocus> 
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newNode.input" (keydown.enter)="toolbar_new_node_confirm()" autofocus> 
     <label for="float-input">New Name</label>
+  </span>
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newNode.connectedNode" (keydown.enter)="toolbar_new_node_confirm()" autofocus> 
+    <label for="float-input">Connected Node</label>
   </span>
   
 <ng-template pTemplate="footer">
