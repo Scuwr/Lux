@@ -105,15 +105,18 @@ export class MainComponent implements AfterViewInit  {
       })
       this.filteredStories = this.allStories.map(v => v)
     })
-    this.route.queryParams.pipe(
+    
+    const sub = this.route.queryParams.pipe(
       ).subscribe((params) => {
-        console.log(params);
-        
+        // console.log(params);
+        // console.log(params);
         if (!!params.storyId) {
           const id = params.storyId
           const match = this.allStories.filter(s => s.key == id)
           if (match.length > 0) this.sidebar_click_story(id)
         }
+        // console.log('SUBSC');
+        sub.unsubscribe()
       })
   }
 
