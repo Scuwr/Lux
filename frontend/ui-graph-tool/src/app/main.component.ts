@@ -24,6 +24,7 @@ export class MainComponent implements AfterViewInit  {
 
   selectedTreeRowIndex = -1;
   sidenavVisible = true;
+  selectedElement = null; // prevent KB shortcuts if selected element
 
   dialogues = {
     username: {
@@ -212,9 +213,11 @@ export class MainComponent implements AfterViewInit  {
 
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
     if (this.selectedTreeRowIndex < 0 
-                  || this.dialogues.newNode.display
-                  || this.dialogues.rename.display
-                  || this.dialogues.username.display) {
+                  || !!this.selectedElement
+                  || !!this.dialogues.newNode.display
+                  || !!this.dialogues.newEdge.display
+                  || !!this.dialogues.rename.display
+                  || !!this.dialogues.username.display) {
         return
     }
     const key = event.key.toLowerCase()
@@ -229,6 +232,15 @@ export class MainComponent implements AfterViewInit  {
     this.setClickedNode(null)
     this.update()
   }
+
+  onFocus(event?) {
+    if(event){
+        this.selectedElement = event.target;
+    } else {
+        this.selectedElement = null; 
+    }
+  }
+
 
   async sidebar_click_story(index) {
     this.setLoader.emit(true)

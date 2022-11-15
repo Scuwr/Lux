@@ -88,7 +88,13 @@
           <p-button icon="pi pi-file-o" styleClass="p-button-warning ui-button" pTooltip="Load From File" [ngStyle]="{'margin-right':'8px'}" (onClick)="sidebar_load_data_from_file()"></p-button>
           <p-button icon="pi pi-save" styleClass="ui-button" pTooltip="Save to File" (onClick)="sidebar_export()"></p-button> -->
   <!-- </p-toolbar> -->
-  <input type="text" pInputText (input)="sidenavSearchInput($event.target.value, false)" (keyup.enter)="sidenavSearchInput($event.target.value, true)"> 
+  <!-- SEARCH BOX -->
+  <input type="text" pInputText 
+      (input)="sidenavSearchInput($event.target.value, false)" 
+      (keyup.enter)="sidenavSearchInput($event.target.value, true)"
+      (focus)="onFocus($event)" (blur)="onFocus()"
+    > 
+    <!-- STORY LIST -->
     <p-table [value]="filteredStories" [scrollable]="true" scrollHeight="80vh">
       <ng-template pTemplate="header">
           <tr>
@@ -136,7 +142,10 @@
 
   Comments:
   <div class="commentarea">
-    <textarea [rows]="3" pInputTextarea [(ngModel)]="graph.comments" autoResize="autoResize" [disabled]="selectedTreeRowIndex < 0"></textarea>
+    <textarea [rows]="3" pInputTextarea [(ngModel)]="graph.comments" 
+        autoResize="autoResize" [disabled]="selectedTreeRowIndex < 0"
+        (focus)="onFocus($event)" (blur)="onFocus()"
+    ></textarea>
   </div>
 
   <!-- GRAPH -->
