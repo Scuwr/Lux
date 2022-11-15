@@ -123,10 +123,10 @@ During boarding First Officer and I smelled an acrid odor. It started to get str
 `)
 
 arr.forEach(s => {
-//    app.appService.storyAdd(s).subscribe((k) => console.log(k))
+//    app.mainService.storyAdd(s).subscribe((k) => console.log(k))
 })
 
-app.appService.usersAdd('arkareem').subscribe()
-app.appService.usersAdd('test').subscribe()
-app.appService.usersAdd('test1').subscribe()
-app.appService.usersAdd('test2').subscribe()
+app.mainService.usersAdd('arkareem').subscribe()
+app.mainService.usersAdd('test').subscribe()
+app.mainService.usersAdd('test1').subscribe()
+app.mainService.usersAdd('test2').subscribe()

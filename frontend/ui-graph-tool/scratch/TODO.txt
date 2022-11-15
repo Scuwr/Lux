@@ -18,14 +18,16 @@ TODO:
 
 ✔️  add edge popup can choose two node numbers
 ✔️  number the nodes -> when adding new node pick number to attach to, no number then last
-FIX ERROR ADD EDGE TO LAST NODE
+✔️  FIX ERROR ADD EDGE TO LAST NODE
 
 # LINUX:
 redis-cli -p 6397
+# List all tables: KEYS * 
+# List all story keys / values: HKEYS v0:story   HGETALL v0:story
 # redis-cli -p 6397 FLUSHALL
 make start-redis
 
 # WINDOWS:
-node server.js
+npm run backend
 npm start
-ng build --prod
+ng build
