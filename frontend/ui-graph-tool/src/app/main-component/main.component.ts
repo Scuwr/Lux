@@ -9,6 +9,8 @@ import { MainService } from './main.services';
 
 
 import { mermaid_utils } from './mermaid_utils'
+import { Store } from '@ngrx/store';
+import { PopLoader, PushLoader } from '../ngrx/main.reducer';
 
 @Component({
   selector: 'main-root',
@@ -79,6 +81,7 @@ export class MainComponent implements AfterViewInit  {
 
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
+    private store: Store,
 
     private mainService: MainService,
   ) {
@@ -100,12 +103,13 @@ export class MainComponent implements AfterViewInit  {
       if (!!params.username) { // username found in url parameters, login
         this.dialogues.username.input = params.username
         this.username_confirm()
+        this.cdr.detectChanges()
       }
     })
   }
 
   async username_confirm() {
-    this.setLoader.emit(true)
+    this.store.dispatch(PushLoader())
 
     this.username = this.dialogues.username.input.toLowerCase();
     this.dialogues.username.display = false;
@@ -140,7 +144,7 @@ export class MainComponent implements AfterViewInit  {
         }
       })
 
-    this.setLoader.emit(false)
+    this.store.dispatch(PopLoader())
   }
 
   toolbar_new_node() {
@@ -297,7 +301,7 @@ export class MainComponent implements AfterViewInit  {
 
 
   async sidebar_click_story(storyKey) {
-    this.setLoader.emit(true)
+    this.store.dispatch(PushLoader())
     if (!!this.selectedStory) {
       await this.save_current_story_backend()
     }
@@ -316,7 +320,7 @@ export class MainComponent implements AfterViewInit  {
     this.graph.edges = !!this.graph.edges ? this.graph.edges : []
     this.graph.comments = !!this.graph.comments ? this.graph.comments : ''
     this.update()
-    this.setLoader.emit(false)
+    this.store.dispatch(PopLoader())
   }
 
   sidenavSearchInput(searchText: string, enterKey: boolean) {

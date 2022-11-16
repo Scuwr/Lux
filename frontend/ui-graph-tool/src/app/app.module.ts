@@ -19,6 +19,9 @@ import {TooltipModule} from 'primeng/tooltip';
 import { BlockUIModule } from "primeng/blockui";
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
 
+import { StoreModule } from '@ngrx/store';
+import { mainFeatureKey, mainReducer } from './ngrx/main.reducer';
+
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main-component/main.component';
@@ -32,6 +35,7 @@ import { MainService } from './main-component/main.services';
   imports: [
     BrowserModule,
     HttpClientModule,
+    StoreModule.forRoot({ [mainFeatureKey]: mainReducer }),
 
     ToolbarModule,
     ButtonModule,
