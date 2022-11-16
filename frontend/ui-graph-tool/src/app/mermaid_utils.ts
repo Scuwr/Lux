@@ -42,10 +42,10 @@ export class mermaid_utils {
 
   private static sanatizeName(name) {
     const brokenWords = ['interpolate', 'call', 'click']
-    const regexstr = brokenWords.map(w => '(' + w + ')').join('|')
+    const regexstr = brokenWords.map(w => '[^a-zA-Z](' + w + ')[^a-zA-Z]').join('|')
     const regex = new RegExp(regexstr, 'g')
     if(name.match(regex)) {
-      name = name.replaceAll(regex, (w) => {return w + '_'})
+      name = name.replaceAll(regex, (w) => {return w.substring(0, w.length-1) + '_' + w.substring(w.length-1)})
       console.warn('Name sanatized', name);
     }
     return name
