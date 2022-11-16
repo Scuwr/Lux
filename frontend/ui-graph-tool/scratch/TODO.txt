@@ -5,8 +5,8 @@ TODO:
     Could we have a keyboard shortcut for rename when a node is selected
     A button to show a help page that displays the ekeyboard shortcuts
     And adding in the username to the url so we can share links
-    A small bug: I typed in "recalled drone" and it displays as "recall_ed drone"
-    Can you change "n" so that when a node is selected it connects to that node, not to the last created node? And then unselects that node This is a lot faster than making the node, then disconnecting it, and reconnecting it
+✔️  A small bug: I typed in "recalled drone" and it displays as "recall_ed drone"
+✔️ Can you change "n" so that when a node is selected it connects to that node, not to the last created node? And then unselects that node This is a lot faster than making the node, then disconnecting it, and reconnecting it
     It would also be very useful to add another view-only mode where you see all of the graphs for a story, labeled with who made each graph
 
     Goto last
