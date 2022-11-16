@@ -76,18 +76,27 @@
 </p-dialog>
 
 <!-- HELP DIALOGUE -->
-<p-dialog header="Help Menu" [(visible)]="dialogues.help.display" [modal]="true" [style]="{width: '50vw'}" [baseZIndex]="10000">
+<p-dialog header="Help Menu" [(visible)]="dialogues.help.display" [modal]="true" [style]="{width: '35vw'}" [baseZIndex]="10000">
   <div>
-    <p-panel header="Keyboard Shortcuts">
-      <span class="helpDialogueKey">N</span>
-        New node
+    <p-panel header="Keyboard Shortcuts" class="helpDialogue">
+      <span class="helpKey">N</span>
+        <span class="helpText">New node</span>
       <br>
-      <span class="helpDialogueKey">R</span>
-        Rename node (while node is selected)
+      <span class="helpKey">R</span>
+        <span class="helpText">Rename node (while node is selected)</span>
       <br>
-      <span class="helpDialogueKey">E</span>
-        New edge
+      <span class="helpKey">E</span>
+        <span class="helpText">New edge</span>
+
       <br>
+      <br>
+
+      <span class="helpKey">[</span>
+        <span class="helpText">Previous story</span>
+      <br>
+      <span class="helpKey">]</span>
+        <span class="helpText">Next story</span>
+
 
 
     </p-panel>

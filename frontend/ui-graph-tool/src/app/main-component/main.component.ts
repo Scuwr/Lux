@@ -269,8 +269,8 @@ export class MainComponent implements AfterViewInit  {
   }
 
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
-    if (!this.selectedStory 
-                  || !!this.selectedElement
+    // EXIT IF DIALOGUE OPEN OR TYPING IN A SELECTED ELEMENT
+    if (!!this.selectedElement
                   || !!this.dialogues.newNode.display
                   || !!this.dialogues.newEdge.display
                   || !!this.dialogues.rename.display
@@ -278,6 +278,15 @@ export class MainComponent implements AfterViewInit  {
         return
     }
     const key = event.key.toLowerCase()
+    if (key == '?') { // HELP MENU
+      this.dialogues.help.display = true
+    }
+
+    // EXIT IF NO STORY SELECTED
+    if (!this.selectedStory) {
+      return
+    }
+
     if (key == 'n') { // NEW NODE
       this.toolbar_new_node()
     } else if (key == 'e') { // NEW EDGE
@@ -286,8 +295,13 @@ export class MainComponent implements AfterViewInit  {
       if (!!this.graphStyle.clicked) {
         this.toolbar_rename()
       }
-    } else if (key == '?') { // HELP MENU
-      this.dialogues.help.display = true
+    } else if (key == '[' || key == ']') { // previous/next story
+      const dx = key == '[' ? -1 : 1
+      const selectedStoryIndex = this.allStories.findIndex(v => v.key == this.selectedStory.key)
+      const newIndex = selectedStoryIndex + dx
+      if (newIndex >= 0 && newIndex < this.allStories.length) {
+        this.sidebar_click_story(this.allStories[newIndex].key)
+      }
     }
   }
 
