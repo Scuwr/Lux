@@ -121,9 +121,9 @@ export class MainComponent implements AfterViewInit  {
       })
   }
 
-  toolbar_new_node() {
+  toolbar_new_node(connectedNode?) {
     this.dialogues.newNode.input = ''
-    this.dialogues.newNode.connectedNode = ''
+    this.dialogues.newNode.connectedNode = !!connectedNode ? connectedNode : ''
     this.dialogues.newNode.display = true
   }
 
@@ -226,7 +226,13 @@ export class MainComponent implements AfterViewInit  {
     }
     const key = event.key.toLowerCase()
     if (key == 'n') {
-      this.toolbar_new_node()
+      let conn = null;
+      if (!!this.graphStyle.clicked) {
+        conn = Number(this.graphStyle.clicked)+1
+        this.setClickedNode(null)
+        this.update()
+      }
+      this.toolbar_new_node(conn)
     } else if (key == 'e') {
       this.toolbar_new_edge()
     }
