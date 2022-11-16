@@ -258,7 +258,8 @@ export class MainComponent implements AfterViewInit  {
         queryParams: {storyId: storyKey}, 
         queryParamsHandling: 'merge', // remove to replace all query params by provided
       });
-  
+
+    this.mainService.telemetryAdd(this.userName, 'get ' + storyKey).subscribe((resp) => {})
     let res = await this.mainService.userAnnotationGet(this.userName, storyKey).toPromise();
     this.graph = !!res['resp'] ? JSON.parse(res['resp']) : {};
     this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
