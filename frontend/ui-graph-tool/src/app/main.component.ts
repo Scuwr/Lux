@@ -21,7 +21,7 @@ export class MainComponent implements AfterViewInit  {
 
   @Output() setLoader = new EventEmitter();
 
-  userName = null;
+  username = null;
 
   selectedStory = null;
   sidenavVisible = true;
@@ -85,17 +85,31 @@ export class MainComponent implements AfterViewInit  {
     // this.userName = 'TEMPUSER';
   }
 
-  async ngAfterViewInit(){
+  ngAfterViewInit(){
     window['app'] = this
     window['mermaid_utils'] = mermaid_utils
     mermaid_utils.init()
     this.update()
+    this.check_params_username()
+  }
+
+  check_params_username() {
+    this.route.queryParams.pipe(
+      first()
+    ).subscribe((params) => {
+      if (!!params.username) { // username found in url parameters, login
+        this.dialogues.username.input = params.username
+        this.username_confirm()
+      }
+    })
   }
 
   async username_confirm() {
-    this.userName = this.dialogues.username.input.toLowerCase();
+    this.setLoader.emit(true)
+
+    this.username = this.dialogues.username.input.toLowerCase();
     this.dialogues.username.display = false;
-    this.mainService.telemetryAdd(this.userName, 'login').subscribe((resp) => {})
+    this.mainService.telemetryAdd(this.username, 'login').subscribe((resp) => {})
     let res = await this.mainService.storyGetAll().toPromise();
     let arr = res['resp'];
     Object.entries(arr).forEach(entry => {
@@ -107,19 +121,26 @@ export class MainComponent implements AfterViewInit  {
       })
       this.filteredStories = this.allStories.map(v => v)
     })
+
+    setTimeout(() => {
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams: {username: this.username}, 
+        queryParamsHandling: 'merge'
+      })
+    }, 0);
     
-    const sub = this.route.queryParams.pipe(
+    this.route.queryParams.pipe(
         first()
       ).subscribe((params) => {
-        // console.log(params);
-        // console.log(params);
         if (!!params.storyId) {
           const id = params.storyId
           const match = this.allStories.filter(s => s.key == id)
           if (match.length > 0) this.sidebar_click_story(id)
         }
-        // console.log('SUBSC');
       })
+
+    this.setLoader.emit(false)
   }
 
   toolbar_new_node() {
@@ -285,11 +306,11 @@ export class MainComponent implements AfterViewInit  {
     this.router.navigate([], {
         relativeTo: this.activatedRoute,
         queryParams: {storyId: storyKey}, 
-        queryParamsHandling: 'merge', // remove to replace all query params by provided
-      });
+        queryParamsHandling: 'merge',
+      })
 
-    this.mainService.telemetryAdd(this.userName, 'get ' + storyKey).subscribe((resp) => {})
-    let res = await this.mainService.userAnnotationGet(this.userName, storyKey).toPromise();
+    this.mainService.telemetryAdd(this.username, 'get ' + storyKey).subscribe((resp) => {})
+    let res = await this.mainService.userAnnotationGet(this.username, storyKey).toPromise();
     this.graph = !!res['resp'] ? JSON.parse(res['resp']) : {};
     this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
     this.graph.edges = !!this.graph.edges ? this.graph.edges : []
@@ -349,8 +370,8 @@ export class MainComponent implements AfterViewInit  {
   async save_current_story_backend() {
     let storyKey = this.selectedStory.key
     let graph = JSON.stringify(this.graph)
-    let res = await this.mainService.userAnnotationAdd(this.userName, storyKey, graph).toPromise();
-    this.mainService.telemetryAdd(this.userName, 'edit ' + storyKey).subscribe((resp) => {})
+    let res = await this.mainService.userAnnotationAdd(this.username, storyKey, graph).toPromise();
+    this.mainService.telemetryAdd(this.username, 'edit ' + storyKey).subscribe((resp) => {})
     return res
   }
 
