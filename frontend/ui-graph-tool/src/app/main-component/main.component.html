@@ -5,9 +5,10 @@
   <span>Graph Tool</span>
   <p-button [icon]="!!sidenavVisible ? 'pi pi-arrow-left' : 'pi pi-arrow-right'" (onClick)="sidenavVisible = !sidenavVisible" pTooltip="Open/Close sidebar" [ngStyle]="{'margin-left':'8px'}"></p-button>
     <div class="spacer"></div>
-  <div [ngStyle]="{'padding-right':'30px'}">
+  <div [ngStyle]="{'padding-right':'16px'}">
     Username: {{username}}
   </div>
+  <p-button icon="pi pi-question-circle" [ngStyle]="{'margin-right':'16px'}" (click)="dialogues.help.display = true"></p-button>
 </div>
 
 
@@ -74,6 +75,28 @@
   </ng-template>
 </p-dialog>
 
+<!-- HELP DIALOGUE -->
+<p-dialog header="Help Menu" [(visible)]="dialogues.help.display" [modal]="true" [style]="{width: '50vw'}" [baseZIndex]="10000">
+  <div>
+    <p-panel header="Keyboard Shortcuts">
+      <span class="helpDialogueKey">N</span>
+        New node
+      <br>
+      <span class="helpDialogueKey">R</span>
+        Rename node (while node is selected)
+      <br>
+      <span class="helpDialogueKey">E</span>
+        New edge
+      <br>
+
+
+    </p-panel>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="dialogues.help.display = false" label="Close"></p-button>
+  </ng-template>
+</p-dialog>
 
 
 
@@ -98,19 +121,19 @@
       (keyup.enter)="sidenavSearchInput($event.target.value, true)"
       (focus)="onFocus($event)" (blur)="onFocus()"
     > 
-    <!-- STORY LIST -->
-    <p-table [value]="filteredStories" [scrollable]="true" scrollHeight="80vh" (onPageChange)="paginate($event)">
-      <ng-template pTemplate="header">
-          <tr>
-              <th style="max-width:50px">Story</th>
-          </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-story>
-          <tr #storyRow (click)="sidebar_click_story(story.key)">
-              <td class="storyrow" [ngClass]="{'selected': story.key==selectedStory?.key, 'completed': !!story.completed}" >{{story.text}}</td>
-          </tr>
-      </ng-template>
-    </p-table>
+  <!-- STORY LIST -->
+  <p-table [value]="filteredStories" [scrollable]="true" scrollHeight="80vh" (onPageChange)="paginate($event)">
+    <ng-template pTemplate="header">
+        <tr>
+            <th style="max-width:50px">Story</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-story>
+        <tr #storyRow (click)="sidebar_click_story(story.key)">
+            <td class="storyrow" [ngClass]="{'selected': story.key==selectedStory?.key, 'completed': !!story.completed}" >{{story.text}}</td>
+        </tr>
+    </ng-template>
+  </p-table>
 </div>
 
 

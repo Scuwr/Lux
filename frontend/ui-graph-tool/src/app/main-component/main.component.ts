@@ -2,14 +2,12 @@ import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, 
 import { ActivatedRoute, Router } from '@angular/router';
 import { filter, first } from 'rxjs/operators';
 
-
-
-import {ConfirmationService, MessageService} from 'primeng/api';
-import { MainService } from './main.services';
-
-
-import { mermaid_utils } from './mermaid_utils'
 import { Store } from '@ngrx/store';
+import {ConfirmationService, MessageService} from 'primeng/api';
+
+
+import { MainService } from './main.services';
+import { mermaid_utils } from './mermaid_utils'
 import { PopLoader, PushLoader } from '../ngrx/main.reducer';
 
 @Component({
@@ -48,6 +46,9 @@ export class MainComponent implements AfterViewInit  {
       node1: null,
       node2: null,
     },
+    help: {
+      display: true,
+    }
   }
 
 
@@ -285,6 +286,8 @@ export class MainComponent implements AfterViewInit  {
       if (!!this.graphStyle.clicked) {
         this.toolbar_rename()
       }
+    } else if (key == '?') { // HELP MENU
+      this.dialogues.help.display = true
     }
   }
 

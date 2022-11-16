@@ -18,6 +18,7 @@ import {InputTextareaModule} from 'primeng/inputtextarea';
 import {TooltipModule} from 'primeng/tooltip';
 import { BlockUIModule } from "primeng/blockui";
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
+import {PanelModule} from 'primeng/panel';
 
 import { StoreModule } from '@ngrx/store';
 import { mainFeatureKey, mainReducer } from './ngrx/main.reducer';
@@ -52,6 +53,8 @@ import { MainService } from './main-component/main.services';
     TooltipModule,
     BlockUIModule,
     ProgressSpinnerModule,
+    PanelModule,
+
     AppRoutingModule,
   ],
   providers: [
