@@ -95,15 +95,15 @@
       (focus)="onFocus($event)" (blur)="onFocus()"
     > 
     <!-- STORY LIST -->
-    <p-table [value]="filteredStories" [scrollable]="true" scrollHeight="80vh">
+    <p-table [value]="filteredStories" [scrollable]="true" scrollHeight="80vh" (onPageChange)="paginate($event)">
       <ng-template pTemplate="header">
           <tr>
               <th style="max-width:50px">Story</th>
           </tr>
       </ng-template>
       <ng-template pTemplate="body" let-story>
-          <tr (click)="sidebar_click_story(story.key)">
-              <td class="storyrow" [ngClass]="{'selected': story.key==selectedTreeRowIndex, 'completed': !!story.completed}" >{{story.text}}</td>
+          <tr #storyRow (click)="sidebar_click_story(story.key)">
+              <td class="storyrow" [ngClass]="{'selected': story.key==selectedStory?.key, 'completed': !!story.completed}" >{{story.text}}</td>
           </tr>
       </ng-template>
     </p-table>
@@ -117,9 +117,9 @@
   <p-toolbar>
     <div class="p-toolbar-group-left">
         <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'8px'}" 
-            label="N&#818;ode" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_new_node()"></p-button>
+            label="N&#818;ode" [disabled]="!selectedStory" (onClick)="toolbar_new_node()"></p-button>
         <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'8px'}" 
-            label="E&#818;dge" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_new_edge()"></p-button>
+            label="E&#818;dge" [disabled]="!selectedStory" (onClick)="toolbar_new_edge()"></p-button>
         <p-button icon="pi pi-pencil" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-warning ui-button" 
             label="Rename" [disabled]="!graphStyle.clicked" (onClick)="toolbar_rename()"></p-button>
         <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" 
@@ -131,19 +131,19 @@
     <div class="p-toolbar-group-right">
 
       <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" 
-          label="Clear Graph" [disabled]="selectedTreeRowIndex < 0" (onClick)="toolbar_clear_graph()"></p-button>
+          label="Clear Graph" [disabled]="!selectedStory" (onClick)="toolbar_clear_graph()"></p-button>
     </div>
 </p-toolbar>
 
 
   <div class="storyarea">
-    <textarea [rows]="5" pInputTextarea [ngModel]="selectedTreeRowIndex >= 0 ? allStories[selectedTreeRowIndex].text : 'No story selected.'" autoResize="autoResize" disabled="true"></textarea>
+    <textarea [rows]="5" pInputTextarea [ngModel]="!!selectedStory ? selectedStory?.text : 'No story selected.'" autoResize="autoResize" disabled="true"></textarea>
   </div>
 
   Comments:
   <div class="commentarea">
     <textarea [rows]="3" pInputTextarea [(ngModel)]="graph.comments" 
-        autoResize="autoResize" [disabled]="selectedTreeRowIndex < 0"
+        autoResize="autoResize" [disabled]="!selectedStory"
         (focus)="onFocus($event)" (blur)="onFocus()"
     ></textarea>
   </div>

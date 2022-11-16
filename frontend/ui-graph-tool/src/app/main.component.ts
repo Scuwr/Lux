@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { filter, first } from 'rxjs/operators';
 
@@ -17,12 +17,13 @@ import { mermaid_utils } from './mermaid_utils'
 })
 export class MainComponent implements AfterViewInit  {
   @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
+  @ViewChildren('storyRow', { read: ElementRef }) rowElement: QueryList<ElementRef>;
 
   @Output() setLoader = new EventEmitter();
 
   userName = null;
 
-  selectedTreeRowIndex = -1;
+  selectedStory = null;
   sidenavVisible = true;
   selectedElement = null; // prevent KB shortcuts if selected element
 
@@ -215,7 +216,7 @@ export class MainComponent implements AfterViewInit  {
   }
 
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
-    if (this.selectedTreeRowIndex < 0 
+    if (!this.selectedStory 
                   || !!this.selectedElement
                   || !!this.dialogues.newNode.display
                   || !!this.dialogues.newEdge.display
@@ -245,20 +246,19 @@ export class MainComponent implements AfterViewInit  {
   }
 
 
-  async sidebar_click_story(index) {
+  async sidebar_click_story(storyKey) {
     this.setLoader.emit(true)
-    if (this.selectedTreeRowIndex >= 0) {
+    if (!!this.selectedStory) {
       await this.save_current_story_backend()
     }
     this.clearGraph()
-    this.selectedTreeRowIndex = index;
+    this.selectedStory = this.allStories.filter(v => v.key == storyKey)[0]
     this.router.navigate([], {
         relativeTo: this.activatedRoute,
-        queryParams: {storyId: index}, 
+        queryParams: {storyId: storyKey}, 
         queryParamsHandling: 'merge', // remove to replace all query params by provided
       });
   
-    let storyKey = this.allStories[index].key
     let res = await this.mainService.userAnnotationGet(this.userName, storyKey).toPromise();
     this.graph = !!res['resp'] ? JSON.parse(res['resp']) : {};
     this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
@@ -277,6 +277,11 @@ export class MainComponent implements AfterViewInit  {
         return story.text.toLowerCase().indexOf(searchText) > -1
       })
     }
+  }
+
+  paginate(event) {
+    console.log(event);
+    
   }
 
 
@@ -312,7 +317,7 @@ export class MainComponent implements AfterViewInit  {
   }
 
   async save_current_story_backend() {
-    let storyKey = this.allStories[this.selectedTreeRowIndex].key
+    let storyKey = this.selectedStory.key
     let graph = JSON.stringify(this.graph)
     let res = await this.mainService.userAnnotationAdd(this.userName, storyKey, graph).toPromise();
     this.mainService.telemetryAdd(this.userName, 'edit ' + storyKey).subscribe((resp) => {})
