@@ -122,25 +122,44 @@ export class MainComponent implements AfterViewInit  {
       })
   }
 
-  toolbar_new_node(connectedNode?) {
+  toolbar_new_node() {
+    let conn = null
+    if (!!this.graphStyle.clicked) {
+      conn = Number(this.graphStyle.clicked)+1
+      this.setClickedNode(null)
+      this.update()
+    }
+
     this.dialogues.newNode.input = ''
-    this.dialogues.newNode.connectedNode = !!connectedNode ? connectedNode : ''
+    this.dialogues.newNode.connectedNode = !!conn ? conn : ''
     this.dialogues.newNode.display = true
   }
 
   toolbar_new_edge() {
-    this.dialogues.newEdge.node1 = ''
+    let conn = null
+    if (!!this.graphStyle.clicked) {
+      conn = Number(this.graphStyle.clicked)+1
+      this.setClickedNode(null)
+      this.update()
+    }
+
+    this.dialogues.newEdge.node1 = !!conn ? conn : ''
     this.dialogues.newEdge.node2 = ''
     this.dialogues.newEdge.display = true
   }
 
   toolbar_rename() {
-    if(!!this.graphStyle.clicked) {
-      const current_node_name = this.graph.node_names[this.graphStyle.clicked]
-      this.dialogues.rename.input = current_node_name
-      this.dialogues.rename.display = true
+    if (!this.graphStyle.clicked) {
+      return
     }
-  }
+    let conn = Number(this.graphStyle.clicked)+1
+    this.setClickedNode(null)
+    this.update()
+
+    const current_node_name = this.graph.node_names[conn]
+    this.dialogues.rename.input = current_node_name
+    this.dialogues.rename.display = true
+}
 
   private sanitize_input(node_name) {
     const reg = '0-9 a-z A-Z \- \/ \& \' . ,'
@@ -231,16 +250,14 @@ export class MainComponent implements AfterViewInit  {
         return
     }
     const key = event.key.toLowerCase()
-    if (key == 'n') {
-      let conn = null;
-      if (!!this.graphStyle.clicked) {
-        conn = Number(this.graphStyle.clicked)+1
-        this.setClickedNode(null)
-        this.update()
-      }
-      this.toolbar_new_node(conn)
-    } else if (key == 'e') {
+    if (key == 'n') { // NEW NODE
+      this.toolbar_new_node()
+    } else if (key == 'e') { // NEW EDGE
       this.toolbar_new_edge()
+    } else if (key == 'r') { // RENAME
+      if (!!this.graphStyle.clicked) {
+        this.toolbar_rename()
+      }
     }
   }
 

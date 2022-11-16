@@ -1,8 +1,8 @@
 TODO:
-    Maybe a zoom button, so that sometimes you want to see an overview but sometimes you want a scroll bar at the bottom? Some graphs get really tiny
+✔️  (IMPLEMENTED TOP-DOWN LEFT-RIGHT TOGGLE BUTTON) Maybe a zoom button, so that sometimes you want to see an overview but sometimes you want a scroll bar at the bottom? Some graphs get really tiny
     Keyboard shortcuts for next/prev story
     Could we limit the number of edges between nodes? At most 1 edge between any two nodes?
-    Could we have a keyboard shortcut for rename when a node is selected
+✔️  Could we have a keyboard shortcut for rename when a node is selected
     A button to show a help page that displays the ekeyboard shortcuts
     And adding in the username to the url so we can share links
 ✔️  A small bug: I typed in "recalled drone" and it displays as "recall_ed drone"
