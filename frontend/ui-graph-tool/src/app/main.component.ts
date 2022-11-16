@@ -67,7 +67,8 @@ export class MainComponent implements AfterViewInit  {
   }
 
   graphStyle = {
-    clicked: null
+    clicked: null,
+    LR: true,
   }
 
   constructor(
@@ -213,6 +214,11 @@ export class MainComponent implements AfterViewInit  {
       accept: () => {this.clearGraph()},
       reject: () => {}
     });
+  }
+
+  toolbar_flip_graph_style() {
+    this.graphStyle.LR = !this.graphStyle.LR
+    this.update()
   }
 
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {

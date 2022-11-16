@@ -120,16 +120,18 @@
   <!-- GRAPH TOOLBAR -->
   <p-toolbar>
     <div class="p-toolbar-group-left">
-        <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'8px'}" 
+        <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'5px'}" 
             label="N&#818;ode" [disabled]="!selectedStory" (onClick)="toolbar_new_node()"></p-button>
-        <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'8px'}" 
+        <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'5px'}" 
             label="E&#818;dge" [disabled]="!selectedStory" (onClick)="toolbar_new_edge()"></p-button>
-        <p-button icon="pi pi-pencil" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-warning ui-button" 
+        <p-button icon="pi pi-pencil" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-warning ui-button" 
             label="Rename" [disabled]="!graphStyle.clicked" (onClick)="toolbar_rename()"></p-button>
-        <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" 
+        <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-help ui-button" 
             label="Node" [disabled]="!graphStyle.clicked" (onClick)="toolbar_delete_node()"></p-button>
-        <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-help ui-button" 
+        <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-help ui-button" 
             label="Edge" [disabled]="!graphStyle.clicked" (onClick)="toolbar_clear_node_edges()"></p-button>
+        <p-button [icon]="!!graphStyle?.LR ? 'pi pi-arrows-h' : 'pi pi-arrows-v'" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-help ui-button" 
+            [disabled]="!selectedStory" (onClick)="toolbar_flip_graph_style()"></p-button>
     </div>
 
     <div class="p-toolbar-group-right">

@@ -72,7 +72,7 @@ export class mermaid_utils {
 
   static obj_to_graph_str(graph, graphStyle?) {
     let result = 'graph '
-    if (!!graphStyle.td) {
+    if (graphStyle?.LR == false) {
       result += 'TD'
     } else {
       result += 'LR'
