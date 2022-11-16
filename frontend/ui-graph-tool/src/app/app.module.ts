@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule } from '@angular/forms';
 
 import { ToolbarModule } from 'primeng/toolbar';
 import { ButtonModule } from 'primeng/button';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { DialogModule } from 'primeng/dialog';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { InputTextModule } from 'primeng/inputtext';
-import { FormsModule } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmationService , MessageService} from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -19,10 +19,10 @@ import {TooltipModule} from 'primeng/tooltip';
 import { BlockUIModule } from "primeng/blockui";
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
 
-import { MainComponent } from './main.component';
 import { AppComponent } from './app.component';
-import { MainService } from './main.services';
 import { AppRoutingModule } from './app-routing.module';
+import { MainComponent } from './main-component/main.component';
+import { MainService } from './main-component/main.services';
 
 @NgModule({
   declarations: [
