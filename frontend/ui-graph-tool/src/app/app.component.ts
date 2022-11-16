@@ -17,8 +17,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.store.select(selectLoaderTasks).subscribe(loadingTasks => {
-      // this.loader = loadingTasks > 0
-      console.log(this.loader)
+      this.loader = loadingTasks > 0
+      // console.log(this.loader)
       this.cdr.detectChanges()
     })
   }

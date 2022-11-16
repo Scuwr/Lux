@@ -93,7 +93,10 @@ export class MainComponent implements AfterViewInit  {
     window['mermaid_utils'] = mermaid_utils
     mermaid_utils.init()
     this.update()
-    this.check_params_username()
+
+    setTimeout(() => {
+      this.check_params_username()
+    }, 0);
   }
 
   check_params_username() {
@@ -103,7 +106,6 @@ export class MainComponent implements AfterViewInit  {
       if (!!params.username) { // username found in url parameters, login
         this.dialogues.username.input = params.username
         this.username_confirm()
-        this.cdr.detectChanges()
       }
     })
   }
