@@ -3,6 +3,13 @@
 /redis-6.2.7
 dump.rdb
 redis_*.pid
+redis-6.2.7.tar.gz
+
+nohup.out
+server.log
+server_error.log
+
+package-lock.json
 
 # compiled output
 # /dist
