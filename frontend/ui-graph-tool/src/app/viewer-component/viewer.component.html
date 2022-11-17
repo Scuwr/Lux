@@ -30,7 +30,7 @@
 
   </p-toolbar>
 
-  <p-tabView styleClass="dark" *ngIf="!!allGraphs && !!allGraphs.keys" [(activeIndex)]="tabViewIndex" (onChange)="updateTabView()">
+  <p-tabView styleClass="graphTabView" *ngIf="!!allGraphs && !!allGraphs.keys" [(activeIndex)]="tabViewIndex" (onChange)="updateTabView()">
       <p-tabPanel [header]="key" *ngFor="let key of allGraphs.keys; let i = index">
       </p-tabPanel>
   </p-tabView>
