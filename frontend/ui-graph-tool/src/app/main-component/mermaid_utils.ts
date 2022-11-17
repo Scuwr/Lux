@@ -84,7 +84,7 @@ export class mermaid_utils {
       name = (i+1) + ': ' + name
       name = this.addNewLineToName(name)
       const line = nodename + '([' + name + '])';
-      const callbackLine = 'click ' + nodename + ' callBackFn';
+      const callbackLine = 'click ' + nodename + ' callBackFnForMermaidJS';
       result += line + '\n'
       result += callbackLine + '\n'
     })
@@ -113,10 +113,10 @@ export class mermaid_utils {
 
     if(!callback) {
       callback = (nodeId) => {
-        console.log('Hit callBackFn', nodeId);
+        console.log('Hit graph callback function that was left empty', nodeId);
       }
     }
-    ;(window as any).callBackFn = callback;
+    ;(window as any).callBackFnForMermaidJS = callback;
   }
 
   static willBeCyclic(graph, node1, node2) {
@@ -131,38 +131,35 @@ export class mermaid_utils {
 
     // This function is a variation of DFSUtil() in
     // https://www.geeksforgeeks.org/archives/18212
-    const isCyclicUtil = (i,visited,recStack) => {
-      // Mark the current node as visited and
-      // part of recursion stack
-      if (recStack[i])
+    const isCyclicUtil = (i, visited, visitedDirty) => {
+      if (visitedDirty[i])
           return true;
 
       if (visited[i])
           return false;
 
+      // Mark the current node as visited and part of recursion stack
       visited[i] = true;
-      recStack[i] = true;
+      visitedDirty[i] = true;
 
       let children = adj.filter((pair) => pair[0] == i).map((pair) => pair[1]);
       
       for (let c=0;c< children.length;c++)
-          if (isCyclicUtil(children[c], visited, recStack))
+          if (isCyclicUtil(children[c], visited, visitedDirty))
               return true;
 
-      recStack[i] = false;
+      visitedDirty[i] = false;
 
       return false;
     }
 
-    // Mark all the vertices as not visited and
-    // not part of recursion stack
+    // Mark all the vertices as not visited and not dirty
     let visited = Array(V).fill(false);
-    let recStack = Array(V).fill(false);
+    let visitedDirty = Array(V).fill(false);
 
-    // Call the recursive helper function to
-    // detect cycle in different DFS trees
+    // Call the recursive helper function to detect cycle in different DFS trees
     for (let i = 0; i < V; i++)
-      if (isCyclicUtil(i, visited, recStack))
+      if (isCyclicUtil(i, visited, visitedDirty))
         return true;
 
     return false;
