@@ -28,11 +28,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main-component/main.component';
 import { MainService } from './main-component/main.services';
 import { AutofocusDirective } from './utils/autofocus.directive';
+import { SidenavComponent } from './sidenav/sidenav.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainComponent,
+    SidenavComponent,
     AutofocusDirective,
   ],
   imports: [

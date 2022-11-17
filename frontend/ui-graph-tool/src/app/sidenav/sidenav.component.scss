@@ -1,0 +1,39 @@
+
+/* The side navigation menu */
+.sidenav {
+    height: calc(100vh - 60px); // 60px for header and 9 for ??? to make it look right
+    position: fixed; /* Stay in place */
+    // z-index: 1; /* Stay on top */
+    // top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    // padding-top: 60px; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+
+    width: 0px;
+    &.sidenav-visible {
+        width: 250px;
+    }
+
+    ::ng-deep .p-toolbar {
+        padding: 0rem;
+        justify-content: flex-start;
+    }
+}
+
+.storyrow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &.selected {
+        background-color: #1976d2;
+    }
+    &.completed {
+        background-color: #0c4e3d;
+    }
+    &.selected.completed {
+        background-color: #12916f;
+    }
+}

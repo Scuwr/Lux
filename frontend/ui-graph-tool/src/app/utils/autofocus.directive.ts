@@ -10,7 +10,6 @@ export class AutofocusDirective {
     constructor(private el: ElementRef) { }
 
     ngOnInit() {
-        console.log('TTEST');
     }
 
     @Input() set autofocus(condition: boolean) {

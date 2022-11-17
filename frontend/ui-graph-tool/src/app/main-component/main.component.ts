@@ -8,7 +8,7 @@ import {ConfirmationService, MessageService} from 'primeng/api';
 
 import { MainService } from './main.services';
 import { mermaid_utils } from './mermaid_utils'
-import { PopLoader, PushLoader, selectSideNavStatus, setSideNavVisible } from '../ngrx/main.reducer';
+import { mainActions, selectAllStories, selectMainState, selectSelectedStory, selectSideNavStatus } from '../ngrx/main.reducer';
 
 @Component({
   selector: 'main-root',
@@ -54,14 +54,14 @@ export class MainComponent implements AfterViewInit  {
   }
 
 
-  filteredStories = [
-    // {
-    //   key: 1,
-    //   text: 'hello2hello2hello2hello2hello2hello2hello2hello2',
-    //   completed: true,
-    // },
-  ];
-  allStories = [];
+  allStories = null
+  // [
+  //   {
+  //     key: 1,
+  //     text: 'hello2hello2hello2hello2hello2hello2hello2hello2',
+  //     completed: true,
+  //   },
+  // ];
 
   graph = {
     // node_names: ['Start', 'Is it', 'End'],
@@ -102,6 +102,24 @@ export class MainComponent implements AfterViewInit  {
       this.cdr.detectChanges()
     })
 
+    this.store.select(selectAllStories).subscribe(v => this.allStories = v)
+
+    this.store.select(selectSelectedStory).subscribe(v => {
+      this.setSelectedStory(v)
+    })
+
+    this.store.select(selectMainState).subscribe(state => {
+      switch (state.action) {
+        case mainActions.setKeyboardFocudEle.type:
+          console.log('kb focus', state.payload);
+          this.onFocusKeyboardElement(state.payload)
+          break;
+      
+        default:
+          break;
+      }
+    })
+
     setTimeout(() => {
       this.check_params_username()
     }, 0);
@@ -119,7 +137,7 @@ export class MainComponent implements AfterViewInit  {
   }
 
   async username_confirm() {
-    this.store.dispatch(PushLoader())
+    this.store.dispatch(mainActions.PushLoader())
 
     this.username = this.dialogues.username.input.toLowerCase();
     this.username = this.username.replaceAll(/[^a-z0-9]*/g, '')
@@ -127,15 +145,16 @@ export class MainComponent implements AfterViewInit  {
     this.mainService.telemetryAdd(this.username, 'login').subscribe((resp) => {})
     let res = await this.mainService.storyGetAll().toPromise();
     let arr = res['resp'];
+    const result = []
     Object.entries(arr).forEach(entry => {
       let key = entry[0]
       let story = entry[1]
-      this.allStories.push({
+      result.push({
         text: story,
         key: key
       })
-      this.filteredStories = this.allStories.map(v => v)
     })
+    this.store.dispatch(mainActions.setAllStories({allStories: result}))
 
     setTimeout(() => {
       this.router.navigate([], {
@@ -151,11 +170,11 @@ export class MainComponent implements AfterViewInit  {
         if (!!params.storyId) {
           const id = params.storyId
           const match = this.allStories.filter(s => s.key == id)
-          if (match.length > 0) this.sidebar_click_story(id)
+          if (match.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
         }
       })
 
-    this.store.dispatch(PopLoader())
+    this.store.dispatch(mainActions.PopLoader())
   }
 
   toolbar_new_node() {
@@ -311,8 +330,9 @@ export class MainComponent implements AfterViewInit  {
     } else if (key == '[' || key == ']') { // previous/next story
       const dx = key == '[' ? -1 : 1
       const newIndex = this.selectedStoryIndex + dx
-      if (newIndex >= 0 && newIndex < this.allStories.length) {
-        this.sidebar_click_story(this.allStories[newIndex].key)
+      const story = this.allStories[newIndex]
+      if (story !== undefined) {
+        this.store.dispatch(mainActions.setSelectedStory({ selectedStory: story }))
       }
 
     } else if (keyCode >= '0'.charCodeAt(0) && keyCode <= '9'.charCodeAt(0)) { // 0-9 select char
@@ -351,11 +371,11 @@ export class MainComponent implements AfterViewInit  {
   }
 
   toggleSidenav() {
-    this.store.dispatch(setSideNavVisible({ status: !this.sidenavVisible}))
+    this.store.dispatch(mainActions.setSideNavVisible({ status: !this.sidenavVisible}))
   }
 
-  async sidebar_click_story(storyKey) {
-    this.store.dispatch(PushLoader())
+  async setSelectedStory(story) {
+    this.store.dispatch(mainActions.PushLoader())
     let backendSave: Promise<any> = Promise.resolve()
     if (!!this.selectedStory) {
       backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph)
@@ -363,16 +383,21 @@ export class MainComponent implements AfterViewInit  {
       this.selectedStoryIndex = -1
       this.clearGraph()
     }
+    if (!story) {
+      this.store.dispatch(mainActions.PopLoader())
+      return
+    }
 
-    this.mainService.telemetryAdd(this.username, 'get ' + storyKey).subscribe((resp) => {})
-    let res = await this.mainService.userAnnotationGet(this.username, storyKey).toPromise();
+    this.mainService.telemetryAdd(this.username, 'get ' + story.key).subscribe((resp) => {})
+    let res = await this.mainService.userAnnotationGet(this.username, story.key).toPromise();
     await backendSave
 
-    this.selectedStoryIndex = this.allStories.findIndex(v => v.key == storyKey)
-    this.selectedStory = this.allStories[this.selectedStoryIndex]
+    this.selectedStory = story
+    this.selectedStoryIndex = this.allStories.findIndex(v => v.key == story.key)
+
     this.router.navigate([], {
         relativeTo: this.activatedRoute,
-        queryParams: {storyId: storyKey}, 
+        queryParams: {storyId: story.key}, 
         queryParamsHandling: 'merge',
       })
 
@@ -381,23 +406,7 @@ export class MainComponent implements AfterViewInit  {
     this.graph.edges = !!this.graph.edges ? this.graph.edges : []
     this.graph.comments = !!this.graph.comments ? this.graph.comments : ''
     this.update()
-    this.store.dispatch(PopLoader())
-  }
-
-  sidenavSearchInput(searchText: string, enterKey: boolean) {
-    if (searchText.length == 0) {
-      this.filteredStories = this.allStories.map(v => v)
-    } else if (enterKey) {
-      searchText = searchText.toLowerCase()
-      this.filteredStories = this.allStories.filter((story) => {
-        return story.text.toLowerCase().indexOf(searchText) > -1
-      })
-    }
-  }
-
-  paginate(event) {
-    console.log(event);
-    
+    this.store.dispatch(mainActions.PopLoader())
   }
 
 
