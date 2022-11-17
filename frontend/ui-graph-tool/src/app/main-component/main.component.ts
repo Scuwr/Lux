@@ -212,10 +212,10 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.newNode.input = this.sanitize_input(this.dialogues.newNode.input)
     const newNodeId = mermaid_utils.addNode(this.graph, this.dialogues.newNode.input)
     const conn = Number(this.dialogues.newNode.connectedNode + '') - 1
-    if (Number.isInteger(conn) && conn >= 0 && conn < newNodeId) {
-      mermaid_utils.addEdge(this.graph, conn, newNodeId)
+    if (conn >= 0) {
+      this.addEdge(conn, newNodeId)
     } else if (newNodeId >= 1) { // connect to last new node unless its the only node in the graph
-      mermaid_utils.addEdge(this.graph, newNodeId-1, newNodeId)
+      this.addEdge(newNodeId-1, newNodeId)
     }
     this.save_and_update()
   }
@@ -228,13 +228,10 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.newEdge.display = false
     const node1 = Number(this.dialogues.newEdge.node1 + '') - 1
     const node2 = Number(this.dialogues.newEdge.node2 + '') - 1
-    if (Number.isInteger(node1) && node1 >= 0 && node1 < this.graph.node_names.length
-        && Number.isInteger(node2) && node2 >= 0 && node2 < this.graph.node_names.length) {
-      mermaid_utils.addEdge(this.graph, node1, node2)
-    } else {
-      this.messageService.add({severity:'error', summary:'Error', detail:'Error in input.'})
+    const succ = this.addEdge(node1, node2)
+    if (succ) {
+      this.save_and_update()
     }
-    this.save_and_update()
   }
 
   toolbar_delete_node() {
@@ -369,6 +366,20 @@ export class MainComponent implements AfterViewInit  {
     this.graphStyle.clicked = nodeClicked
   }
 
+  private addEdge(node1, node2) {
+    node1 = Number(node1)
+    node2 = Number(node2)
+
+    if (Number.isInteger(node1) && node1 >= 0 && node1 < this.graph.node_names.length
+        && Number.isInteger(node2) && node2 >= 0 && node2 < this.graph.node_names.length) {
+      mermaid_utils.addEdge(this.graph, node1, node2)
+      return true
+    } else {
+      this.messageService.add({severity:'error', summary:'Edge Error', detail:'Error adding edge.'})
+      return false
+    }
+  }
+
   private clearGraph() {
     this.graph.node_names = []
     this.graph.edges = []
@@ -377,7 +388,20 @@ export class MainComponent implements AfterViewInit  {
     this.update()
   }
 
-  callback(nodeClicked) {
+  private async save_current_story_backend(storyKey, graph) {
+    graph = JSON.stringify(graph)
+    let res = await this.mainService.userAnnotationAdd(this.username, storyKey, graph).toPromise();
+    this.mainService.telemetryAdd(this.username, 'edit ' + storyKey).subscribe((resp) => {})
+    return res
+  }
+
+  private save_and_update() {
+    this.save_current_story_backend(this.selectedStory.key, this.graph).then((resp) => {
+      this.update();
+    })
+  }
+
+  private callback(nodeClicked) {
     if (this.graphStyle.clicked == nodeClicked) {  // same node clicked twice
       // this.toolbar_rename()
       this.setClickedNode(null)
@@ -389,24 +413,12 @@ export class MainComponent implements AfterViewInit  {
       this.setClickedNode(nodeClicked)
       this.update()
     } else { // two nodes clicked, add edge
-      mermaid_utils.addEdge(this.graph, this.graphStyle.clicked, nodeClicked)
+      this.addEdge(this.graphStyle.clicked, nodeClicked)
       this.setClickedNode(null)
       this.save_and_update()
     }
   }
 
-  async save_current_story_backend(storyKey, graph) {
-    graph = JSON.stringify(graph)
-    let res = await this.mainService.userAnnotationAdd(this.username, storyKey, graph).toPromise();
-    this.mainService.telemetryAdd(this.username, 'edit ' + storyKey).subscribe((resp) => {})
-    return res
-  }
-
-  save_and_update() {
-    this.save_current_story_backend(this.selectedStory.key, this.graph).then((resp) => {
-      this.update();
-    })
-  }
   update() {
     const element: any = this.mermaidDiv.nativeElement
     const graph_str = mermaid_utils.obj_to_graph_str(this.graph, this.graphStyle)
