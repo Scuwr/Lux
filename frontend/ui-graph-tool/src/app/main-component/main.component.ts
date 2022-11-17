@@ -221,7 +221,7 @@ export class MainComponent implements AfterViewInit  {
   }
 
   toolbar_new_edge_confirm(event, gotonext) {
-    if (!!gotonext) {
+    if (!!gotonext) { // go to next input box
       event.srcElement.parentElement.nextElementSibling.firstChild.focus()
       return
     }
@@ -370,14 +370,21 @@ export class MainComponent implements AfterViewInit  {
     node1 = Number(node1)
     node2 = Number(node2)
 
-    if (Number.isInteger(node1) && node1 >= 0 && node1 < this.graph.node_names.length
-        && Number.isInteger(node2) && node2 >= 0 && node2 < this.graph.node_names.length) {
-      mermaid_utils.addEdge(this.graph, node1, node2)
-      return true
-    } else {
+    const validInputs =    Number.isInteger(node1) && node1 >= 0 && node1 < this.graph.node_names.length
+                        && Number.isInteger(node2) && node2 >= 0 && node2 < this.graph.node_names.length
+    if (!validInputs) {
       this.messageService.add({severity:'error', summary:'Edge Error', detail:'Error adding edge.'})
       return false
     }
+
+    // check new edge will cause cycle
+    const willCycle = mermaid_utils.willBeCyclic(this.graph, node1, node2)
+    if (willCycle) {
+      this.messageService.add({severity:'error', summary:'Edge Cycle Error', detail:'Error adding edge. Cycle detected.'})
+      return false
+    }
+    mermaid_utils.addEdge(this.graph, node1, node2)
+    return true
   }
 
   private clearGraph() {
