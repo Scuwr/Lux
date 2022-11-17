@@ -47,7 +47,7 @@ export class MainComponent implements AfterViewInit  {
       node2: null,
     },
     help: {
-      display: true,
+      display: false,
     }
   }
 
@@ -321,10 +321,17 @@ export class MainComponent implements AfterViewInit  {
 
   async sidebar_click_story(storyKey) {
     this.store.dispatch(PushLoader())
+    let backendSave: Promise<any> = Promise.resolve()
     if (!!this.selectedStory) {
-      await this.save_current_story_backend()
+      backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph)
+      this.selectedStory = null
+      this.clearGraph()
     }
-    this.clearGraph()
+
+    this.mainService.telemetryAdd(this.username, 'get ' + storyKey).subscribe((resp) => {})
+    let res = await this.mainService.userAnnotationGet(this.username, storyKey).toPromise();
+    await backendSave
+
     this.selectedStory = this.allStories.filter(v => v.key == storyKey)[0]
     this.router.navigate([], {
         relativeTo: this.activatedRoute,
@@ -332,8 +339,6 @@ export class MainComponent implements AfterViewInit  {
         queryParamsHandling: 'merge',
       })
 
-    this.mainService.telemetryAdd(this.username, 'get ' + storyKey).subscribe((resp) => {})
-    let res = await this.mainService.userAnnotationGet(this.username, storyKey).toPromise();
     this.graph = !!res['resp'] ? JSON.parse(res['resp']) : {};
     this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
     this.graph.edges = !!this.graph.edges ? this.graph.edges : []
@@ -390,16 +395,15 @@ export class MainComponent implements AfterViewInit  {
     }
   }
 
-  async save_current_story_backend() {
-    let storyKey = this.selectedStory.key
-    let graph = JSON.stringify(this.graph)
+  async save_current_story_backend(storyKey, graph) {
+    graph = JSON.stringify(graph)
     let res = await this.mainService.userAnnotationAdd(this.username, storyKey, graph).toPromise();
     this.mainService.telemetryAdd(this.username, 'edit ' + storyKey).subscribe((resp) => {})
     return res
   }
 
   save_and_update() {
-    this.save_current_story_backend().then((resp) => {
+    this.save_current_story_backend(this.selectedStory.key, this.graph).then((resp) => {
       this.update();
     })
   }
