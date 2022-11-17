@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter, first } from 'rxjs/operators';
+import { filter, first, takeUntil } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
 import {ConfirmationService, MessageService} from 'primeng/api';
@@ -9,6 +9,7 @@ import {ConfirmationService, MessageService} from 'primeng/api';
 import { MainService } from '../main-component/main.services';
 import { mermaid_utils } from '../main-component/mermaid_utils'
 import { mainActions, selectAllStories, selectMainState, selectSelectedStory, selectSideNavStatus } from '../ngrx/main.reducer';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-viewer',
@@ -18,6 +19,8 @@ import { mainActions, selectAllStories, selectMainState, selectSelectedStory, se
 export class ViewerComponent implements AfterViewInit  {
   @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
   @ViewChildren('storyRow', { read: ElementRef }) rowElement: QueryList<ElementRef>;
+
+  private readonly ngDestroyed$ = new Subject();
 
   selectedStory = null;
   selectedStoryIndex = -1;
@@ -56,27 +59,42 @@ export class ViewerComponent implements AfterViewInit  {
     // this.userName = 'TEMPUSER';
   }
 
+  public ngOnDestroy() {
+    this.ngDestroyed$.next();
+    this.ngDestroyed$.complete();
+  }
+
   ngAfterViewInit(){
     window['app'] = this
     window['mermaid_utils'] = mermaid_utils
     mermaid_utils.init()
     this.update()
 
-    this.store.select(selectSideNavStatus).subscribe(status => {
+    this.store.select(selectSideNavStatus)
+      .pipe(takeUntil(this.ngDestroyed$))
+      .subscribe(status => {
       this.sidenavVisible = status
       this.cdr.detectChanges()
     })
 
-    this.store.select(selectAllStories).subscribe(v => this.allStories = v)
+    this.store.select(selectAllStories)
+      .pipe(takeUntil(this.ngDestroyed$))
+      .subscribe(v => this.allStories = v)
 
-    this.store.select(selectSelectedStory).subscribe(v => {
-      this.setSelectedStory(v)
+    this.store.select(selectSelectedStory)
+      .pipe(takeUntil(this.ngDestroyed$))
+      .subscribe(v => {
+        if (!v || v.key == this.selectedStory?.key) {
+          return
+        }
+        this.setSelectedStory(v)
     })
 
-    this.store.select(selectMainState).subscribe(state => {
+    this.store.select(selectMainState)
+      .pipe(takeUntil(this.ngDestroyed$))
+      .subscribe(state => {
       switch (state.action) {
         case mainActions.setKeyboardFocudEle.type:
-          console.log('kb focus', state.payload);
           this.onFocusKeyboardElement(state.payload)
           break;
       
@@ -85,10 +103,23 @@ export class ViewerComponent implements AfterViewInit  {
       }
     })
 
-    this.fetchStories()
+    // this.store.select(selectAllStories).subscribe(v => this.allStories = v)
+    this.fetchStories().then(() => {
+      this.checkParamsUsername()
+    })
+  }
+
+  onEditModeButton() {
+    this.router.navigate(['/home'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
   }
 
   async fetchStories() {
+    if (!!this.allStories && this.allStories.length > 0) {
+      return
+    }
     this.store.dispatch(mainActions.PushLoader())
     let res = await this.mainService.storyGetAll().toPromise();
     let arr = res['resp'];
@@ -102,18 +133,19 @@ export class ViewerComponent implements AfterViewInit  {
       })
     })
     this.store.dispatch(mainActions.setAllStories({allStories: result}))
-
-    this.route.queryParams.pipe(
-        first()
-      ).subscribe((params) => {
-        if (!!params.storyId) {
-          const id = params.storyId
-          const match = this.allStories.filter(s => s.key == id)
-          if (match.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
-        }
-      })
-
     this.store.dispatch(mainActions.PopLoader())
+  }
+
+  checkParamsUsername() {
+    this.route.queryParams.pipe(
+      first()
+    ).subscribe((params) => {
+      if (!!params.storyId && params.storyId != this.selectedStory?.key) {
+        const id = params.storyId
+        const match = this.allStories.filter(s => s.key == id)
+        if (match.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
+      }
+    })
   }
 
   toolbar_flip_graph_style() {
@@ -160,13 +192,7 @@ export class ViewerComponent implements AfterViewInit  {
   async setSelectedStory(story) {
     this.store.dispatch(mainActions.PushLoader())
 
-    if (!story) {
-      this.store.dispatch(mainActions.PopLoader())
-      return
-    }
-
     let res: any = await this.mainService.userAnnotationGetAllUsers(story.key).toPromise()
-    console.log(res['data']);
     
     this.allGraphs = res
     this.allGraphs.data = this.allGraphs.data.map(v => JSON.parse(v))
@@ -174,7 +200,6 @@ export class ViewerComponent implements AfterViewInit  {
 
     this.allGraphs.keys = this.allGraphs.keys.filter((v, i) => !indicesToRemove.includes(i))
     this.allGraphs.data = this.allGraphs.data.filter((v, i) => !indicesToRemove.includes(i))
-    console.log(this.allGraphs);
 
     this.selectedStory = story
     this.selectedStoryIndex = this.allStories.findIndex(v => v.key == story.key)

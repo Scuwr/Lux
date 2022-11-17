@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, HostListener, OnInit, Output, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter, first } from 'rxjs/operators';
+import { filter, first, takeUntil } from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
 import {ConfirmationService, MessageService} from 'primeng/api';
@@ -9,6 +9,7 @@ import {ConfirmationService, MessageService} from 'primeng/api';
 import { MainService } from './main.services';
 import { mermaid_utils } from './mermaid_utils'
 import { mainActions, selectAllStories, selectMainState, selectSelectedStory, selectSideNavStatus } from '../ngrx/main.reducer';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'main-root',
@@ -19,6 +20,8 @@ export class MainComponent implements AfterViewInit  {
   @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
   @ViewChildren('storyRow', { read: ElementRef }) rowElement: QueryList<ElementRef>;
   @ViewChild('edgeDialogInp2') edgeDialogInp2: ElementRef; // to change focus
+
+  private readonly ngDestroyed$ = new Subject();
 
   username = null;
 
@@ -89,24 +92,40 @@ export class MainComponent implements AfterViewInit  {
     // this.userName = 'TEMPUSER';
   }
 
+  public ngOnDestroy() {
+    this.ngDestroyed$.next();
+    this.ngDestroyed$.complete();
+  }
+
   ngAfterViewInit(){
     window['app'] = this
     window['mermaid_utils'] = mermaid_utils
     mermaid_utils.init()
     this.update()
 
-    this.store.select(selectSideNavStatus).subscribe(status => {
+    this.store.select(selectSideNavStatus)
+      .pipe(takeUntil(this.ngDestroyed$))
+      .subscribe(status => {
       this.sidenavVisible = status
       this.cdr.detectChanges()
     })
 
-    this.store.select(selectAllStories).subscribe(v => this.allStories = v)
+    this.store.select(selectAllStories)
+      .pipe(takeUntil(this.ngDestroyed$))
+      .subscribe(v => this.allStories = v)
 
-    this.store.select(selectSelectedStory).subscribe(v => {
+    this.store.select(selectSelectedStory)
+      .pipe(takeUntil(this.ngDestroyed$))
+      .subscribe(v => {
+      if (!!v && v.key == this.selectedStory?.key) {
+        return
+      }
       this.setSelectedStory(v)
     })
 
-    this.store.select(selectMainState).subscribe(state => {
+    this.store.select(selectMainState)
+      .pipe(takeUntil(this.ngDestroyed$))
+      .subscribe(state => {
       switch (state.action) {
         case mainActions.setKeyboardFocudEle.type:
           console.log('kb focus', state.payload);
@@ -123,6 +142,13 @@ export class MainComponent implements AfterViewInit  {
     }, 0);
   }
 
+  onViewModeButton() {
+    this.router.navigate(['/view'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
+  }
+
   check_params_username() {
     this.route.queryParams.pipe(
       first()
@@ -135,25 +161,34 @@ export class MainComponent implements AfterViewInit  {
   }
 
   async username_confirm() {
-    this.store.dispatch(mainActions.PushLoader())
-
-    this.username = this.dialogues.username.input.toLowerCase();
-    this.username = this.username.replaceAll(/[^a-z0-9]*/g, '')
+    this.dialogues.username.input = this.dialogues.username.input.toLowerCase();
+    this.dialogues.username.input = this.dialogues.username.input.replaceAll(/[^a-z0-9]*/g, '')
+    if (this.dialogues.username.input.length == 0) {
+      this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
+      return
+    }
+    this.username = this.dialogues.username.input
     this.dialogues.username.display = false;
-    this.mainService.telemetryAdd(this.username, 'login').subscribe((resp) => {})
-    let res = await this.mainService.storyGetAll().toPromise();
-    let arr = res['resp'];
-    const result = []
-    Object.entries(arr).forEach(entry => {
-      let key = entry[0]
-      let story = entry[1]
-      result.push({
-        text: story,
-        key: key
-      })
-    })
-    this.store.dispatch(mainActions.setAllStories({allStories: result}))
 
+    if (!this.allStories) {  // FETCH STORIES
+      this.store.dispatch(mainActions.PushLoader())
+      this.mainService.telemetryAdd(this.username, 'login').subscribe((resp) => {})
+      let res = await this.mainService.storyGetAll().toPromise();
+      let arr = res['resp'];
+      const result = []
+      Object.entries(arr).forEach(entry => {
+        let key = entry[0]
+        let story = entry[1]
+        result.push({
+          text: story,
+          key: key
+        })
+      })
+      this.store.dispatch(mainActions.setAllStories({allStories: result}))
+      this.store.dispatch(mainActions.PopLoader())
+    }
+
+    // set username in url
     setTimeout(() => {
       this.router.navigate([], {
         relativeTo: this.activatedRoute,
@@ -162,6 +197,7 @@ export class MainComponent implements AfterViewInit  {
       })
     }, 0);
     
+    // fetch storyid from url
     this.route.queryParams.pipe(
         first()
       ).subscribe((params) => {
@@ -171,8 +207,6 @@ export class MainComponent implements AfterViewInit  {
           if (match.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
         }
       })
-
-    this.store.dispatch(mainActions.PopLoader())
   }
 
   toolbar_new_node() {
