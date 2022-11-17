@@ -25,7 +25,7 @@ export class MainComponent implements AfterViewInit  {
 
   selectedStory = null;
   sidenavVisible = true;
-  selectedElement = null; // prevent KB shortcuts if selected element
+  keyboardCaptureElement = null; // prevent KB shortcuts if selected element
 
   dialogues = {
     username: {
@@ -270,7 +270,7 @@ export class MainComponent implements AfterViewInit  {
 
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
     // EXIT IF DIALOGUE OPEN OR TYPING IN A SELECTED ELEMENT
-    if (!!this.selectedElement
+    if (!!this.keyboardCaptureElement
                   || !!this.dialogues.newNode.display
                   || !!this.dialogues.newEdge.display
                   || !!this.dialogues.rename.display
@@ -310,11 +310,11 @@ export class MainComponent implements AfterViewInit  {
     this.update()
   }
 
-  onFocus(event?) {
+  onFocusKeyboardElement(event?) {
     if(event){
-        this.selectedElement = event.target;
+        this.keyboardCaptureElement = event.target;
     } else {
-        this.selectedElement = null; 
+        this.keyboardCaptureElement = null; 
     }
   }
 

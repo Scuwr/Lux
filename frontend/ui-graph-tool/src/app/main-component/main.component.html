@@ -128,7 +128,7 @@
   <input type="text" pInputText 
       (input)="sidenavSearchInput($event.target.value, false)" 
       (keyup.enter)="sidenavSearchInput($event.target.value, true)"
-      (focus)="onFocus($event)" (blur)="onFocus()"
+      (focus)="onFocusKeyboardElement($event)" (blur)="onFocusKeyboardElement()"
     > 
   <!-- STORY LIST -->
   <p-table [value]="filteredStories" [scrollable]="true" scrollHeight="80vh" (onPageChange)="paginate($event)">
@@ -187,7 +187,7 @@
       <span class="p-float-label">
         <textarea [rows]="3" pInputTextarea id="float-input" [(ngModel)]="graph.comments" 
             autoResize="autoResize" [disabled]="!selectedStory"
-            (focus)="onFocus($event)" (blur)="onFocus()"
+            (focus)="onFocusKeyboardElement($event)" (blur)="onFocusKeyboardElement()"
         ></textarea>
         <label for="float-input">Comments</label>
       </span>
