@@ -20,8 +20,6 @@ export class MainComponent implements AfterViewInit  {
   @ViewChildren('storyRow', { read: ElementRef }) rowElement: QueryList<ElementRef>;
   @ViewChild('edgeDialogInp2') edgeDialogInp2: ElementRef; // to change focus
 
-  @Output() setLoader = new EventEmitter();
-
   username = null;
 
   selectedStory = null;

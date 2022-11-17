@@ -19,6 +19,7 @@ import {TooltipModule} from 'primeng/tooltip';
 import { BlockUIModule } from "primeng/blockui";
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {PanelModule} from 'primeng/panel';
+import {TabViewModule} from 'primeng/tabview';
 
 import { StoreModule } from '@ngrx/store';
 import { mainFeatureKey, mainReducer } from './ngrx/main.reducer';
@@ -29,6 +30,7 @@ import { MainComponent } from './main-component/main.component';
 import { MainService } from './main-component/main.services';
 import { AutofocusDirective } from './utils/autofocus.directive';
 import { SidenavComponent } from './sidenav/sidenav.component';
+import { ViewerComponent } from './viewer-component/viewer.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,7 @@ import { SidenavComponent } from './sidenav/sidenav.component';
     MainComponent,
     SidenavComponent,
     AutofocusDirective,
+    ViewerComponent,
   ],
   imports: [
     BrowserModule,
@@ -58,6 +61,7 @@ import { SidenavComponent } from './sidenav/sidenav.component';
     BlockUIModule,
     ProgressSpinnerModule,
     PanelModule,
+    TabViewModule,
 
     AppRoutingModule,
   ],
