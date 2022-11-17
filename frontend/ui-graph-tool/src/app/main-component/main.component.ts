@@ -116,6 +116,7 @@ export class MainComponent implements AfterViewInit  {
     this.store.dispatch(PushLoader())
 
     this.username = this.dialogues.username.input.toLowerCase();
+    this.username = this.username.replaceAll(/[^a-z0-9]*/g, '')
     this.dialogues.username.display = false;
     this.mainService.telemetryAdd(this.username, 'login').subscribe((resp) => {})
     let res = await this.mainService.storyGetAll().toPromise();
