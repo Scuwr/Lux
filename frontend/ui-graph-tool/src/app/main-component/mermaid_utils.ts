@@ -26,6 +26,11 @@ export class mermaid_utils {
     graph.edges.push([i, j])
   }
 
+  static sortEdges(graph) {
+    const N = graph.node_names.length
+    graph.edges.sort((a, b) => (a[0]-b[0])*N+(a[1]-b[1]))
+  }
+
   static deleteNodeEdges(graph, i) {
     graph.edges = graph.edges.filter(edge => edge[0]!=i && edge[1]!=i);
   }
