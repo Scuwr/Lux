@@ -24,6 +24,7 @@ export class MainComponent implements AfterViewInit  {
   username = null;
 
   selectedStory = null;
+  selectedStoryIndex = -1;
   sidenavVisible = true;
   keyboardCaptureElement = null; // prevent KB shortcuts if selected element
 
@@ -294,8 +295,7 @@ export class MainComponent implements AfterViewInit  {
       }
     } else if (key == '[' || key == ']') { // previous/next story
       const dx = key == '[' ? -1 : 1
-      const selectedStoryIndex = this.allStories.findIndex(v => v.key == this.selectedStory.key)
-      const newIndex = selectedStoryIndex + dx
+      const newIndex = this.selectedStoryIndex + dx
       if (newIndex >= 0 && newIndex < this.allStories.length) {
         this.sidebar_click_story(this.allStories[newIndex].key)
       }
@@ -322,6 +322,7 @@ export class MainComponent implements AfterViewInit  {
     if (!!this.selectedStory) {
       backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph)
       this.selectedStory = null
+      this.selectedStoryIndex = -1
       this.clearGraph()
     }
 
@@ -329,7 +330,8 @@ export class MainComponent implements AfterViewInit  {
     let res = await this.mainService.userAnnotationGet(this.username, storyKey).toPromise();
     await backendSave
 
-    this.selectedStory = this.allStories.filter(v => v.key == storyKey)[0]
+    this.selectedStoryIndex = this.allStories.findIndex(v => v.key == storyKey)
+    this.selectedStory = this.allStories[this.selectedStoryIndex]
     this.router.navigate([], {
         relativeTo: this.activatedRoute,
         queryParams: {storyId: storyKey}, 
