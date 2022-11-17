@@ -8,7 +8,7 @@ import {ConfirmationService, MessageService} from 'primeng/api';
 
 import { MainService } from './main.services';
 import { mermaid_utils } from './mermaid_utils'
-import { PopLoader, PushLoader } from '../ngrx/main.reducer';
+import { PopLoader, PushLoader, selectSideNavStatus, setSideNavVisible } from '../ngrx/main.reducer';
 
 @Component({
   selector: 'main-root',
@@ -18,6 +18,7 @@ import { PopLoader, PushLoader } from '../ngrx/main.reducer';
 export class MainComponent implements AfterViewInit  {
   @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
   @ViewChildren('storyRow', { read: ElementRef }) rowElement: QueryList<ElementRef>;
+  @ViewChild('edgeDialogInp2') edgeDialogInp2: ElementRef; // to change focus
 
   @Output() setLoader = new EventEmitter();
 
@@ -25,7 +26,7 @@ export class MainComponent implements AfterViewInit  {
 
   selectedStory = null;
   selectedStoryIndex = -1;
-  sidenavVisible = true;
+  sidenavVisible = null;
   keyboardCaptureElement = null; // prevent KB shortcuts if selected element
 
   dialogues = {
@@ -95,6 +96,11 @@ export class MainComponent implements AfterViewInit  {
     window['mermaid_utils'] = mermaid_utils
     mermaid_utils.init()
     this.update()
+
+    this.store.select(selectSideNavStatus).subscribe(status => {
+      this.sidenavVisible = status
+      this.cdr.detectChanges()
+    })
 
     setTimeout(() => {
       this.check_params_username()
@@ -171,6 +177,9 @@ export class MainComponent implements AfterViewInit  {
       conn = Number(this.graphStyle.clicked)+1
       this.setClickedNode(null)
       this.update()
+      setTimeout(() => {
+        this.edgeDialogInp2.nativeElement.focus()
+      }, 50);
     }
 
     this.dialogues.newEdge.node1 = !!conn ? conn : ''
@@ -267,6 +276,7 @@ export class MainComponent implements AfterViewInit  {
     this.update()
   }
 
+  keyboardMem = {inp: '', time: Date.now()};
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
     // EXIT IF DIALOGUE OPEN OR TYPING IN A SELECTED ELEMENT
     if (!!this.keyboardCaptureElement
@@ -277,6 +287,7 @@ export class MainComponent implements AfterViewInit  {
         return
     }
     const key = event.key.toLowerCase()
+    const keyCode = key.charCodeAt(0)
     if (key == '?') { // HELP MENU
       this.dialogues.help.display = true
     }
@@ -288,17 +299,40 @@ export class MainComponent implements AfterViewInit  {
 
     if (key == 'n') { // NEW NODE
       this.toolbar_new_node()
+
     } else if (key == 'e') { // NEW EDGE
       this.toolbar_new_edge()
+
     } else if (key == 'r') { // RENAME
       if (!!this.graphStyle.clicked) {
         this.toolbar_rename()
       }
+
     } else if (key == '[' || key == ']') { // previous/next story
       const dx = key == '[' ? -1 : 1
       const newIndex = this.selectedStoryIndex + dx
       if (newIndex >= 0 && newIndex < this.allStories.length) {
         this.sidebar_click_story(this.allStories[newIndex].key)
+      }
+
+    } else if (keyCode >= '0'.charCodeAt(0) && keyCode <= '9'.charCodeAt(0)) { // 0-9 select char
+      if (Date.now() - this.keyboardMem.time > 500) {
+        this.keyboardMem.inp = ''
+      }
+      this.keyboardMem.inp += key
+      this.keyboardMem.time = Date.now()
+      const node = Number(this.keyboardMem.inp) - 1
+      const nodeSingle = Number(key) - 1
+      console.log(node, nodeSingle);
+      if (Number.isInteger(node) && node >= 0 && node < this.graph.node_names.length) {
+        this.setClickedNode(node + '')
+        this.update()
+      } else {
+        this.keyboardMem.inp = ''
+        if (Number.isInteger(nodeSingle) && nodeSingle >= 0 && nodeSingle < this.graph.node_names.length) {
+          this.setClickedNode(nodeSingle + '')
+          this.update()
+        }
       }
     }
   }
@@ -316,6 +350,9 @@ export class MainComponent implements AfterViewInit  {
     }
   }
 
+  toggleSidenav() {
+    this.store.dispatch(setSideNavVisible({ status: !this.sidenavVisible}))
+  }
 
   async sidebar_click_story(storyKey) {
     this.store.dispatch(PushLoader())

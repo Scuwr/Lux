@@ -3,7 +3,7 @@
 <div class="toolbar" role="banner">
   <img width="110" alt="Logo" src="assets/dag.png"/>
   <span>Graph Tool</span>
-  <p-button [icon]="!!sidenavVisible ? 'pi pi-arrow-left' : 'pi pi-arrow-right'" (onClick)="sidenavVisible = !sidenavVisible" pTooltip="Open/Close sidebar" [ngStyle]="{'margin-left':'8px'}"></p-button>
+  <p-button [icon]="!!sidenavVisible ? 'pi pi-arrow-left' : 'pi pi-arrow-right'" (onClick)="toggleSidenav()" pTooltip="Open/Close sidebar" [ngStyle]="{'margin-left':'8px'}"></p-button>
     <div class="spacer"></div>
   <div [ngStyle]="{'padding-right':'16px'}">
     Username: {{username}}
@@ -12,9 +12,6 @@
 </div>
 
 
-
-<p-toast></p-toast>
-<p-confirmDialog></p-confirmDialog>
 
 <!-- LOGIN DIALOGUE -->
 <p-dialog header="Username" [(visible)]="dialogues.username.display" [modal]="true" [closeOnEscape]="false" [closable]="false" [style]="{width: '25vw'}" [baseZIndex]="10000">
@@ -48,7 +45,7 @@
     <label for="float-input">New Name</label>
   </span>
   <span class="p-float-label">
-    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newNode.connectedNode" (keydown.enter)="toolbar_new_node_confirm()" autofocus> 
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newNode.connectedNode" (keydown.enter)="toolbar_new_node_confirm()"> 
     <label for="float-input">Connected Node</label>
   </span>
   
@@ -65,7 +62,7 @@
     <label for="float-input">Node 1 ID</label>
   </span>
   <span class="p-float-label">
-    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newEdge.node2" (keydown.enter)="toolbar_new_edge_confirm($event, false)" autofocus> 
+    <input #edgeDialogInp2 id="float-input" type="text" pInputText [(ngModel)]="dialogues.newEdge.node2" (keydown.enter)="toolbar_new_edge_confirm($event, false)"> 
     <label for="float-input">Node 2 ID</label>
   </span>
   

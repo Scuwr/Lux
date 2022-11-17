@@ -27,11 +27,13 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MainComponent } from './main-component/main.component';
 import { MainService } from './main-component/main.services';
+import { AutofocusDirective } from './utils/autofocus.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     MainComponent,
+    AutofocusDirective,
   ],
   imports: [
     BrowserModule,
