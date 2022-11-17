@@ -377,6 +377,13 @@ export class MainComponent implements AfterViewInit  {
       return false
     }
 
+    // check new edge is a duplicate
+    const isDup = this.graph.edges.some(pair => Number(pair[0])==node1 && Number(pair[1])==node2)
+    if (isDup) {
+      this.messageService.add({severity:'error', summary:'Edge Error', detail:'Duplicate edge not allowed.'})
+      return false
+    }
+
     // check new edge will cause cycle
     const willCycle = mermaid_utils.willBeCyclic(this.graph, node1, node2)
     if (willCycle) {
