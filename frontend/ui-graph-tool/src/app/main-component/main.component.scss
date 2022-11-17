@@ -31,7 +31,7 @@
 
 /* The side navigation menu */
 .sidenav {
-    height: 100%;
+    height: calc(100vh - 60px); // 60px for header and 9 for ??? to make it look right
     position: fixed; /* Stay in place */
     // z-index: 1; /* Stay on top */
     // top: 0; /* Stay at the top */
@@ -68,6 +68,16 @@
     }
 }
 
+:host ::ng-deep .graphToolbar {
+    padding: 10px;
+    height: 60px;
+}
+
+.scrollableContent {
+    overflow:auto;
+    height: calc(100vh - 120px); // 60px for header and 70px for graphtoolbar
+}
+
 .storyarea {
     .p-inputtext {
         opacity: 1;
@@ -93,7 +103,7 @@
     // padding: 20px;
     margin-left: 0px;
     &.sidenav-visible {
-        margin-left: 240px;
+        margin-left: 248px;
     }
 }
 

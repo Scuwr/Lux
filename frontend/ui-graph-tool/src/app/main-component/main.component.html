@@ -131,7 +131,7 @@
       (focus)="onFocusKeyboardElement($event)" (blur)="onFocusKeyboardElement()"
     > 
   <!-- STORY LIST -->
-  <p-table [value]="filteredStories" [scrollable]="true" scrollHeight="80vh" (onPageChange)="paginate($event)">
+  <p-table [value]="filteredStories" [scrollable]="true" (onPageChange)="paginate($event)">
     <ng-template pTemplate="header">
         <tr>
             <th style="max-width:50px">Story</th>
@@ -150,7 +150,7 @@
 <div class="content" role="main" [ngClass]="{'sidenav-visible': sidenavVisible}">
 
   <!-- GRAPH TOOLBAR -->
-  <p-toolbar>
+  <p-toolbar styleClass="graphToolbar">
     <div class="p-toolbar-group-left">
         <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'5px'}" 
             label="N&#818;ode" [disabled]="!selectedStory" (onClick)="toolbar_new_node()"></p-button>
@@ -174,7 +174,7 @@
   </p-toolbar>
 
 
-  <div class="enableScroll">
+  <div class="scrollableContent">
 
     <!-- STORY -->
     <div class="storyarea">

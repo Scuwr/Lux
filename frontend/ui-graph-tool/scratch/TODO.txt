@@ -1,8 +1,13 @@
 TODO:
+
+I’d also add buttons for edge labellingg
+And a button for shape selection
+This is second order: a button to reverse the edge direction (and correct mistakes)
+
 ✔️ Keyboard shortcuts for next/prev story CAUSING DELETION IF QUICK
 ✔️  (IMPLEMENTED TOP-DOWN LEFT-RIGHT TOGGLE BUTTON) Maybe a zoom button, so that sometimes you want to see an overview but sometimes you want a scroll bar at the bottom? Some graphs get really tiny
 ✔️  Keyboard shortcuts for next/prev story
-    Could we limit the number of edges between nodes? At most 1 edge between any two nodes?
+✔️  Could we limit the number of edges between nodes? At most 1 edge between any two nodes?
 ✔️  Could we have a keyboard shortcut for rename when a node is selected
 ✔️ A button to show a help page that displays the ekeyboard shortcuts
 ✔️ And adding in the username to the url so we can share links
@@ -22,7 +27,7 @@ TODO:
 
 
     show "story nr out of total stories"
-    Only DAGs, reject changes that cause loops
+✔️  Only DAGs, reject changes that cause loops
 ✔️  Put the story above the graph (so the story doesn't move while the graph changes)
 ✔️  When adding a new node, default the connection to the last added node
 
