@@ -14,6 +14,7 @@ const API = {
 
     userAnnotationAdd: '/api/userAnnotationAdd',
     userAnnotationGet: '/api/userAnnotationGet',
+    userAnnotationGetAllUsers: '/api/userAnnotationGetAllUsers',
 
     telemetryAdd: '/api/telemetryAdd'
 }
@@ -48,6 +49,10 @@ export class MainService {
 
     userAnnotationGet(user, storyNum) {
         return this.http.post(API.userAnnotationGet, {'user': user, 'storyNum': storyNum});
+    }
+
+    userAnnotationGetAllUsers(storyNum) {
+        return this.http.post(API.userAnnotationGetAllUsers, {'storyNum': storyNum});
     }
 
     telemetryAdd(user, data) {

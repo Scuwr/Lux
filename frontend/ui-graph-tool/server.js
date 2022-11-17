@@ -50,6 +50,7 @@ const API = {
 
     userAnnotationAdd: '/api/userAnnotationAdd',
     userAnnotationGet: '/api/userAnnotationGet',
+    userAnnotationGetAllUsers: '/api/userAnnotationGetAllUsers',
 
     telemetryAdd: '/api/telemetryAdd'
 }
@@ -70,6 +71,25 @@ app.post(API.userAnnotationGet, (req, res) => {
     client.hget(TABLES.userAnnotations, key, (err, data) => {
         res.send({ 
             resp: data 
+        })
+    })
+})
+app.post(API.userAnnotationGetAllUsers, (req, res) => {
+    const key = ':' + req.body.storyNum;
+    client.hkeys(TABLES.userAnnotations, (err, allKeys) => {
+        const keys = allKeys.filter(v => v.endsWith(key))
+        if (keys.length == 0) {
+            res.send({ 
+                keys: [],
+                data: [],
+            })
+            return
+        }
+        client.hmget(TABLES.userAnnotations, keys, (err, data) => {
+            res.send({ 
+                keys: keys,
+                data: data,
+            })
         })
     })
 })
