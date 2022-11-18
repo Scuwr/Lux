@@ -16,7 +16,11 @@ export class mermaid_utils {
     mermaid.initialize(config);
   }
 
-    
+  static isEmpty(graph) {
+    const hasData = graph.node_names.length > 0 || graph.comments.length > 0
+    return !hasData
+  }
+  
   static addNode(graph, name) {
     graph.node_names.push(name)
     return graph.node_names.length - 1
@@ -26,7 +30,7 @@ export class mermaid_utils {
     graph.edges.push([i, j])
   }
 
-  static sortEdges(graph) {
+  private static sortEdges(graph) {
     const N = graph.node_names.length
     graph.edges.sort((a, b) => (a[0]-b[0])*N+(a[1]-b[1]))
   }

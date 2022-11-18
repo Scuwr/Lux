@@ -196,7 +196,7 @@ export class ViewerComponent implements AfterViewInit  {
     
     this.allGraphs = res
     this.allGraphs.data = this.allGraphs.data.map(v => JSON.parse(v))
-    const indicesToRemove = this.allGraphs.data.map((v, i) => v.node_names.length == 0 ? i : -1)
+    const indicesToRemove = this.allGraphs.data.map((v, i) => mermaid_utils.isEmpty(v) ? i : -1)
 
     this.allGraphs.keys = this.allGraphs.keys.filter((v, i) => !indicesToRemove.includes(i))
     this.allGraphs.data = this.allGraphs.data.filter((v, i) => !indicesToRemove.includes(i))
