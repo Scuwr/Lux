@@ -342,7 +342,7 @@ export class MainComponent implements AfterViewInit  {
       this.dialogues.help.display = true
     } else if (key == '[' || key == ']') { // previous/next story
       const dx = key == '[' ? -1 : 1
-      const curIndex = this.allStories.findIndex(v => v.key == this.selectedStory.key)
+      const curIndex = this.allStories.findIndex(v => v.key == this.selectedStory?.key)
       let newIndex = curIndex + dx
       newIndex = newIndex % this.allStories.length
       newIndex = newIndex >= 0 ? newIndex : newIndex+this.allStories.length
