@@ -54,6 +54,9 @@
     background: #1e1e1e;
     height: 50px;
 }
+:host ::ng-deep .userStory.userStory.userStory > a {
+    background-color: #142e33
+}
 
 .scrollableContent {
     overflow:auto;
@@ -85,7 +88,7 @@
     // padding: 20px;
     margin-left: 0px;
     &.sidenav-visible {
-        margin-left: 248px;
+        margin-left: 250px;
     }
 }
 

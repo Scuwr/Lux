@@ -528,7 +528,6 @@ export class MainComponent implements AfterViewInit  {
   @HostListener('window:beforeunload')
   @HostListener('window:unload', [ '$event' ])
   async saveBeforeUnload() {
-    console.log('saveBeforeUnload');
     localStorage.setItem('test', 1 + Number(localStorage.getItem('test')) + '')
     if (!!this.selectedStory) {
       const backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph)

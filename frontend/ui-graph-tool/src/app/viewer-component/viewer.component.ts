@@ -22,8 +22,10 @@ export class ViewerComponent implements AfterViewInit  {
 
   private readonly ngDestroyed$ = new Subject();
 
+  username = null;
+
   selectedStory = null;
-  sidenavVisible = null;
+  sidenavVisible = true;
   keyboardCaptureElement = null; // prevent KB shortcuts if selected element
 
 
@@ -144,6 +146,9 @@ export class ViewerComponent implements AfterViewInit  {
         const match = this.allStories.filter(s => s.key == id)
         if (match.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
       }
+      if (!!params.username) { // username found in url parameters, login
+        this.username = params.username
+      }
     })
   }
 
@@ -211,20 +216,27 @@ export class ViewerComponent implements AfterViewInit  {
         queryParamsHandling: 'merge',
       })
 
-    if (this.tabViewIndex >= this.allGraphs.keys.length) {
-      this.tabViewIndex = 0
-    }
-
-    this.updateTabView()
+    const curUserKey = this.allGraphs.keys.findIndex((v) => this.username == v)
+    this.tabViewIndex = curUserKey >= 0 ? curUserKey : 0
+    this.updateTabView(this.tabViewIndex)
     this.store.dispatch(mainActions.PopLoader())
   }
 
-  private updateTabView() {
+  private updateTabView(newIndex?) {
+    console.log('updateTabView', newIndex);
+    if (newIndex !== undefined) {
+      // this.tabViewIndex = 0
+      // this.cdr.detectChanges()
+      this.tabViewIndex = newIndex
+      this.cdr.detectChanges()
+    }
     this.graph = !!this.allGraphs.data[this.tabViewIndex] ? this.allGraphs.data[this.tabViewIndex] : {};
     this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
     this.graph.edges = !!this.graph.edges ? this.graph.edges : []
     this.graph.comments = !!this.graph.comments ? this.graph.comments : ''
-    this.update()
+    setTimeout(() => {
+      this.update()
+    }, 0);
   }
 
 
