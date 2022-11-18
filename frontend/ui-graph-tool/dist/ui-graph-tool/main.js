@@ -507,7 +507,7 @@ class MainComponent {
         }
         else if (key == '[' || key == ']') { // previous/next story
             const dx = key == '[' ? -1 : 1;
-            const curIndex = this.allStories.findIndex(v => v.key == this.selectedStory.key);
+            const curIndex = this.allStories.findIndex(v => { var _a; return v.key == ((_a = this.selectedStory) === null || _a === void 0 ? void 0 : _a.key); });
             let newIndex = curIndex + dx;
             newIndex = newIndex % this.allStories.length;
             newIndex = newIndex >= 0 ? newIndex : newIndex + this.allStories.length;
@@ -1054,7 +1054,7 @@ class SidenavComponent {
             this.selectedStory = v;
             if (!this.allStories)
                 return;
-            this.selectedStoryIndex = this.allStories.findIndex(v2 => v.key == v2.key);
+            this.selectedStoryIndex = this.allStories.findIndex(v2 => (v === null || v === void 0 ? void 0 : v.key) == v2.key);
         });
     }
     onFocusKeyboardElement(event) {
@@ -1352,13 +1352,9 @@ class ViewerComponent {
             return;
         }
         const key = event.key.toLowerCase();
-        // EXIT IF NO STORY SELECTED
-        if (!this.selectedStory) {
-            return;
-        }
         if (key == '[' || key == ']') { // previous/next story
             const dx = key == '[' ? -1 : 1;
-            const curIndex = this.allStories.findIndex(v => v.key == this.selectedStory.key);
+            const curIndex = this.allStories.findIndex(v => { var _a; return v.key == ((_a = this.selectedStory) === null || _a === void 0 ? void 0 : _a.key); });
             let newIndex = curIndex + dx;
             newIndex = newIndex % this.allStories.length;
             newIndex = newIndex >= 0 ? newIndex : newIndex + this.allStories.length;
