@@ -20,6 +20,19 @@ export class mermaid_utils {
     const hasData = graph.node_names?.length > 0 || graph.comments?.length > 0
     return !hasData
   }
+
+  static isEqual(graph1, graph2) {
+    if ( graph1.node_names?.length !== graph2.node_names?.length
+        || graph1.edges?.length !== graph2.edges?.length
+        || graph1.comments?.length !== graph2.comments?.length ) {
+      return false
+    }
+    if (graph1.comments !== graph2.comments) return false
+    if (graph1.node_names.some((_, i) => graph1.node_names[i] !== graph2.node_names[i])) return false
+    if (graph1.edges.some((_, i) => graph1.edges[i][0] !== graph2.edges[i][0] || graph1.edges[i][1] !== graph2.edges[i][1])) return false
+
+    return true
+  }
   
   static addNode(graph, name) {
     graph.node_names.push(name)

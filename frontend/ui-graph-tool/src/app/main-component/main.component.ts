@@ -71,6 +71,7 @@ export class MainComponent implements AfterViewInit  {
     edges: [],
     comments: '',
   }
+  graphSinceLastSave = {}
 
   graphStyle = {
     clicked: null,
@@ -312,7 +313,10 @@ export class MainComponent implements AfterViewInit  {
       message: 'Are you sure you want to clear the current graph?',
       header: 'Confirmation',
       icon: 'pi pi-exclamation-triangle',
-      accept: () => {this.clearGraph()},
+      accept: () => {
+        this.clearGraph()
+        this.save_and_update()
+      },
       reject: () => {}
     });
   }
@@ -406,9 +410,10 @@ export class MainComponent implements AfterViewInit  {
     this.store.dispatch(mainActions.PushLoader())
     let backendSave: Promise<any> = Promise.resolve()
     if (!!this.selectedStory) {
-      backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph)
+      backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph, this.graphSinceLastSave)
       this.selectedStory = null
       this.clearGraph()
+      this.update()
     }
     if (!story) {
       this.store.dispatch(mainActions.PopLoader())
@@ -431,6 +436,7 @@ export class MainComponent implements AfterViewInit  {
     this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
     this.graph.edges = !!this.graph.edges ? this.graph.edges : []
     this.graph.comments = !!this.graph.comments ? this.graph.comments : ''
+    this.graphSinceLastSave = JSON.parse(JSON.stringify(this.graph)) // duplicate graph
     this.update()
     this.store.dispatch(mainActions.PopLoader())
   }
@@ -474,14 +480,14 @@ export class MainComponent implements AfterViewInit  {
     this.graph.edges = []
     this.graph.comments = ''
     this.setClickedNode(null)
-    this.update()
   }
 
-  private async save_current_story_backend(storyKey, graph) {
-    if (mermaid_utils.isEmpty(graph)) {
-      console.log('skipping save');
+  private async save_current_story_backend(storyKey, graph, graphSinceLastSave) {
+    if (mermaid_utils.isEqual(graph, graphSinceLastSave)) {
+      console.log('skipping save, is dup')
       return
     }
+    console.log('saving...')
     graph = JSON.stringify(graph)
     let res = await this.mainService.userAnnotationAdd(this.username, storyKey, graph).toPromise();
     this.mainService.telemetryAdd(this.username, 'edit ' + storyKey).subscribe((resp) => {})
@@ -489,7 +495,8 @@ export class MainComponent implements AfterViewInit  {
   }
 
   private save_and_update() {
-    this.save_current_story_backend(this.selectedStory.key, this.graph).then((resp) => {
+    this.save_current_story_backend(this.selectedStory.key, this.graph, this.graphSinceLastSave).then((resp) => {
+      this.graphSinceLastSave = JSON.parse(JSON.stringify(this.graph)) // duplicate graph
       this.update();
     })
   }
@@ -532,7 +539,7 @@ export class MainComponent implements AfterViewInit  {
   async saveBeforeUnload() {
     localStorage.setItem('test', 1 + Number(localStorage.getItem('test')) + '')
     if (!!this.selectedStory) {
-      const backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph)
+      const backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph, this.graphSinceLastSave)
       this.selectedStory = null
       await backendSave
     }
