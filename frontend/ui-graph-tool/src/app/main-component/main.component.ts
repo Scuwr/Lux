@@ -128,7 +128,6 @@ export class MainComponent implements AfterViewInit  {
       .subscribe(state => {
       switch (state.action) {
         case mainActions.setKeyboardFocudEle.type:
-          console.log('kb focus', state.payload);
           this.onFocusKeyboardElement(state.payload)
           break;
       
@@ -252,7 +251,9 @@ export class MainComponent implements AfterViewInit  {
 }
 
   private sanitize_input(node_name) {
-    const reg = '0-9 a-z A-Z \- \/ \& \' . ,'
+    const reg = '0-9 a-z A-Z' + // alphanumeric
+      '\-' + // dashes (must not have space after dash)
+      '\/ \& \' . ,' // other characters
     const matchReg = new RegExp('^[' + reg + ']+$')
     const replaceReg = new RegExp('[^' + reg + ']', 'g')
     if (!node_name.match(matchReg)) {
@@ -375,7 +376,6 @@ export class MainComponent implements AfterViewInit  {
       this.keyboardMem.time = Date.now()
       const node = Number(this.keyboardMem.inp) - 1
       const nodeSingle = Number(key) - 1
-      console.log(node, nodeSingle);
       if (Number.isInteger(node) && node >= 0 && node < this.graph.node_names.length) {
         this.setClickedNode(node + '')
         this.update()
