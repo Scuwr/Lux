@@ -37,6 +37,7 @@ export class MainComponent implements AfterViewInit  {
     rename: {
       display: false,
       input: null,
+      node: null,
     },
     newNode: {
       display: false,
@@ -233,13 +234,14 @@ export class MainComponent implements AfterViewInit  {
     if (!this.graphStyle.clicked) {
       return
     }
-    let conn = Number(this.graphStyle.clicked)+1
+    let conn = Number(this.graphStyle.clicked)
     this.setClickedNode(null)
     this.update()
 
     const current_node_name = this.graph.node_names[conn]
     this.dialogues.rename.input = current_node_name
     this.dialogues.rename.display = true
+    this.dialogues.rename.node = conn
 }
 
   private sanitize_input(node_name) {
@@ -258,7 +260,7 @@ export class MainComponent implements AfterViewInit  {
   toolbar_raneme_confirm() {
     this.dialogues.rename.display = false
     this.dialogues.rename.input = this.sanitize_input(this.dialogues.rename.input)
-    this.graph.node_names[this.graphStyle.clicked] = this.dialogues.rename.input
+    this.graph.node_names[this.dialogues.rename.node] = this.dialogues.rename.input
     this.save_and_update()
   }
 
