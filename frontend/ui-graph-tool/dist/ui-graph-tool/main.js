@@ -1384,11 +1384,18 @@ class ViewerComponent {
             this.store.dispatch(_ngrx_main_reducer__WEBPACK_IMPORTED_MODULE_4__["mainActions"].PushLoader());
             let res = yield this.mainService.userAnnotationGetAllUsers(story.key).toPromise();
             this.allGraphs = res;
-            this.allGraphs.data = this.allGraphs.data.map(v => JSON.parse(v));
-            const indicesToRemove = this.allGraphs.data.map((v, i) => _main_component_mermaid_utils__WEBPACK_IMPORTED_MODULE_3__["mermaid_utils"].isEmpty(v) ? i : -1);
-            const suffixLen = (':' + story.key).length;
-            this.allGraphs.keys = this.allGraphs.keys.filter((v, i) => !indicesToRemove.includes(i)).map(v => v.substring(0, v.length - suffixLen));
-            this.allGraphs.data = this.allGraphs.data.filter((v, i) => !indicesToRemove.includes(i));
+            let keys = res.keys;
+            let data = res.data.map(v => JSON.parse(v));
+            const indicesToRemove = data.map((v, i) => _main_component_mermaid_utils__WEBPACK_IMPORTED_MODULE_3__["mermaid_utils"].isEmpty(v) ? i : -1); // remove empty stories
+            const suffixLen = (':' + story.key).length; // remove suffix :#id
+            keys = keys.filter((v, i) => !indicesToRemove.includes(i)).map(v => v.substring(0, v.length - suffixLen));
+            data = data.filter((v, i) => !indicesToRemove.includes(i));
+            // sort in pairs
+            const pair = keys.map((_, i) => ({ key: keys[i], data: data[i] }));
+            pair.sort((a, b) => (a.key < b.key) ? -1 : ((a.key == b.key) ? 0 : 1));
+            // final result
+            this.allGraphs.keys = pair.map((_, i) => pair[i].key);
+            this.allGraphs.data = pair.map((_, i) => pair[i].data);
             this.selectedStory = story;
             this.router.navigate([], {
                 relativeTo: this.activatedRoute,
@@ -1402,9 +1409,9 @@ class ViewerComponent {
         });
     }
     updateTabView(newIndex) {
-        // console.log('updateTabView', newIndex);
         if (newIndex !== undefined) {
-            this.tabViewIndex = 0;
+            const some_other_index_to_fix_bug = newIndex !== 0 ? 0 : 1;
+            this.tabViewIndex = some_other_index_to_fix_bug;
             this.cdr.detectChanges();
             this.tabViewIndex = newIndex;
             this.cdr.detectChanges();
