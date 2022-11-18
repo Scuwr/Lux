@@ -163,15 +163,9 @@ export class ViewerComponent implements AfterViewInit  {
         return
     }
     const key = event.key.toLowerCase()
-
-    // EXIT IF NO STORY SELECTED
-    if (!this.selectedStory) {
-      return
-    }
-
     if (key == '[' || key == ']') { // previous/next story
       const dx = key == '[' ? -1 : 1
-      const curIndex = this.allStories.findIndex(v => v.key == this.selectedStory.key)
+      const curIndex = this.allStories.findIndex(v => v.key == this.selectedStory?.key)
       let newIndex = curIndex + dx
       newIndex = newIndex % this.allStories.length
       newIndex = newIndex >= 0 ? newIndex : newIndex+this.allStories.length
