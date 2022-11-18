@@ -26,8 +26,7 @@ export class MainComponent implements AfterViewInit  {
   username = null;
 
   selectedStory = null;
-  selectedStoryIndex = -1;
-  sidenavVisible = null;
+  sidenavVisible = true;
   keyboardCaptureElement = null; // prevent KB shortcuts if selected element
 
   dialogues = {
@@ -92,11 +91,6 @@ export class MainComponent implements AfterViewInit  {
     // this.userName = 'TEMPUSER';
   }
 
-  public ngOnDestroy() {
-    this.ngDestroyed$.next();
-    this.ngDestroyed$.complete();
-  }
-
   ngAfterViewInit(){
     window['app'] = this
     window['mermaid_utils'] = mermaid_utils
@@ -114,15 +108,6 @@ export class MainComponent implements AfterViewInit  {
       .pipe(takeUntil(this.ngDestroyed$))
       .subscribe(v => this.allStories = v)
 
-    this.store.select(selectSelectedStory)
-      .pipe(takeUntil(this.ngDestroyed$))
-      .subscribe(v => {
-      if (!!v && v.key == this.selectedStory?.key) {
-        return
-      }
-      this.setSelectedStory(v)
-    })
-
     this.store.select(selectMainState)
       .pipe(takeUntil(this.ngDestroyed$))
       .subscribe(state => {
@@ -130,6 +115,13 @@ export class MainComponent implements AfterViewInit  {
         case mainActions.setKeyboardFocudEle.type:
           this.onFocusKeyboardElement(state.payload)
           break;
+
+        case mainActions.setSelectedStory.type:
+          if (!this.username || (!!state.selectedStory && state.selectedStory.key == this.selectedStory?.key)) {
+            break
+          }
+          this.setSelectedStory(state.selectedStory)
+          break
       
         default:
           break;
@@ -344,7 +336,8 @@ export class MainComponent implements AfterViewInit  {
       this.dialogues.help.display = true
     } else if (key == '[' || key == ']') { // previous/next story
       const dx = key == '[' ? -1 : 1
-      let newIndex = this.selectedStoryIndex + dx
+      const curIndex = this.allStories.findIndex(v => v.key == this.selectedStory.key)
+      let newIndex = curIndex + dx
       newIndex = newIndex % this.allStories.length
       newIndex = newIndex >= 0 ? newIndex : newIndex+this.allStories.length
       const story = this.allStories[newIndex]
@@ -413,7 +406,6 @@ export class MainComponent implements AfterViewInit  {
     if (!!this.selectedStory) {
       backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph)
       this.selectedStory = null
-      this.selectedStoryIndex = -1
       this.clearGraph()
     }
     if (!story) {
@@ -426,7 +418,6 @@ export class MainComponent implements AfterViewInit  {
     await backendSave
 
     this.selectedStory = story
-    this.selectedStoryIndex = this.allStories.findIndex(v => v.key == story.key)
 
     this.router.navigate([], {
         relativeTo: this.activatedRoute,
@@ -485,6 +476,10 @@ export class MainComponent implements AfterViewInit  {
   }
 
   private async save_current_story_backend(storyKey, graph) {
+    if (mermaid_utils.isEmpty(graph)) {
+      console.log('skipping save');
+      return
+    }
     graph = JSON.stringify(graph)
     let res = await this.mainService.userAnnotationAdd(this.username, storyKey, graph).toPromise();
     this.mainService.telemetryAdd(this.username, 'edit ' + storyKey).subscribe((resp) => {})
@@ -522,5 +517,24 @@ export class MainComponent implements AfterViewInit  {
     mermaid_utils.render(element, graph_str, this.callback.bind(this))
   }
 
+
+
+  public async ngOnDestroy() {
+    await this.saveBeforeUnload()
+    this.ngDestroyed$.next();
+    this.ngDestroyed$.complete();
+  }
+
+  @HostListener('window:beforeunload')
+  @HostListener('window:unload', [ '$event' ])
+  async saveBeforeUnload() {
+    console.log('saveBeforeUnload');
+    localStorage.setItem('test', 1 + Number(localStorage.getItem('test')) + '')
+    if (!!this.selectedStory) {
+      const backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph)
+      this.selectedStory = null
+      await backendSave
+    }
+  }
 
 }
