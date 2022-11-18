@@ -223,10 +223,10 @@ export class ViewerComponent implements AfterViewInit  {
   }
 
   private updateTabView(newIndex?) {
-    console.log('updateTabView', newIndex);
+    // console.log('updateTabView', newIndex);
     if (newIndex !== undefined) {
-      // this.tabViewIndex = 0
-      // this.cdr.detectChanges()
+      this.tabViewIndex = 0
+      this.cdr.detectChanges()
       this.tabViewIndex = newIndex
       this.cdr.detectChanges()
     }
