@@ -342,6 +342,15 @@ export class MainComponent implements AfterViewInit  {
     const keyCode = key.charCodeAt(0)
     if (key == '?') { // HELP MENU
       this.dialogues.help.display = true
+    } else if (key == '[' || key == ']') { // previous/next story
+      const dx = key == '[' ? -1 : 1
+      let newIndex = this.selectedStoryIndex + dx
+      newIndex = newIndex % this.allStories.length
+      newIndex = newIndex >= 0 ? newIndex : newIndex+this.allStories.length
+      const story = this.allStories[newIndex]
+      if (story !== undefined) {
+        this.store.dispatch(mainActions.setSelectedStory({ selectedStory: story }))
+      }
     }
 
     // EXIT IF NO STORY SELECTED
@@ -358,14 +367,6 @@ export class MainComponent implements AfterViewInit  {
     } else if (key == 'r') { // RENAME
       if (!!this.graphStyle.clicked) {
         this.toolbar_rename()
-      }
-
-    } else if (key == '[' || key == ']') { // previous/next story
-      const dx = key == '[' ? -1 : 1
-      const newIndex = this.selectedStoryIndex + dx
-      const story = this.allStories[newIndex]
-      if (story !== undefined) {
-        this.store.dispatch(mainActions.setSelectedStory({ selectedStory: story }))
       }
 
     } else if (keyCode >= '0'.charCodeAt(0) && keyCode <= '9'.charCodeAt(0)) { // 0-9 select char
