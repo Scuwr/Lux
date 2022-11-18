@@ -17,7 +17,7 @@ export class mermaid_utils {
   }
 
   static isEmpty(graph) {
-    const hasData = graph.node_names.length > 0 || graph.comments.length > 0
+    const hasData = graph.node_names?.length > 0 || graph.comments?.length > 0
     return !hasData
   }
   

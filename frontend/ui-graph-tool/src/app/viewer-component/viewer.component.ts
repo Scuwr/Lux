@@ -23,7 +23,6 @@ export class ViewerComponent implements AfterViewInit  {
   private readonly ngDestroyed$ = new Subject();
 
   selectedStory = null;
-  selectedStoryIndex = -1;
   sidenavVisible = null;
   keyboardCaptureElement = null; // prevent KB shortcuts if selected element
 
@@ -167,7 +166,10 @@ export class ViewerComponent implements AfterViewInit  {
 
     if (key == '[' || key == ']') { // previous/next story
       const dx = key == '[' ? -1 : 1
-      const newIndex = this.selectedStoryIndex + dx
+      const curIndex = this.allStories.findIndex(v => v.key == this.selectedStory.key)
+      let newIndex = curIndex + dx
+      newIndex = newIndex % this.allStories.length
+      newIndex = newIndex >= 0 ? newIndex : newIndex+this.allStories.length
       const story = this.allStories[newIndex]
       if (story !== undefined) {
         this.store.dispatch(mainActions.setSelectedStory({ selectedStory: story }))
@@ -198,12 +200,11 @@ export class ViewerComponent implements AfterViewInit  {
     this.allGraphs.data = this.allGraphs.data.map(v => JSON.parse(v))
     const indicesToRemove = this.allGraphs.data.map((v, i) => mermaid_utils.isEmpty(v) ? i : -1)
 
-    this.allGraphs.keys = this.allGraphs.keys.filter((v, i) => !indicesToRemove.includes(i))
+    const suffixLen = (':' + story.key).length
+    this.allGraphs.keys = this.allGraphs.keys.filter((v, i) => !indicesToRemove.includes(i)).map(v => v.substring(0, v.length - suffixLen))
     this.allGraphs.data = this.allGraphs.data.filter((v, i) => !indicesToRemove.includes(i))
 
     this.selectedStory = story
-    this.selectedStoryIndex = this.allStories.findIndex(v => v.key == story.key)
-
     this.router.navigate([], {
         relativeTo: this.activatedRoute,
         queryParams: {storyId: story.key}, 
