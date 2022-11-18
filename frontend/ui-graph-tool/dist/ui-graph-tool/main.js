@@ -245,6 +245,7 @@ class MainComponent {
             rename: {
                 display: false,
                 input: null,
+                node: null,
             },
             newNode: {
                 display: false,
@@ -275,6 +276,7 @@ class MainComponent {
             edges: [],
             comments: '',
         };
+        this.graphSinceLastSave = {};
         this.graphStyle = {
             clicked: null,
             LR: true,
@@ -407,12 +409,13 @@ class MainComponent {
         if (!this.graphStyle.clicked) {
             return;
         }
-        let conn = Number(this.graphStyle.clicked) + 1;
+        let conn = Number(this.graphStyle.clicked);
         this.setClickedNode(null);
         this.update();
         const current_node_name = this.graph.node_names[conn];
         this.dialogues.rename.input = current_node_name;
         this.dialogues.rename.display = true;
+        this.dialogues.rename.node = conn;
     }
     sanitize_input(node_name) {
         const reg = '0-9 a-z A-Z' + // alphanumeric
@@ -429,7 +432,7 @@ class MainComponent {
     toolbar_raneme_confirm() {
         this.dialogues.rename.display = false;
         this.dialogues.rename.input = this.sanitize_input(this.dialogues.rename.input);
-        this.graph.node_names[this.graphStyle.clicked] = this.dialogues.rename.input;
+        this.graph.node_names[this.dialogues.rename.node] = this.dialogues.rename.input;
         this.save_and_update();
     }
     toolbar_new_node_confirm() {
@@ -477,7 +480,10 @@ class MainComponent {
             message: 'Are you sure you want to clear the current graph?',
             header: 'Confirmation',
             icon: 'pi pi-exclamation-triangle',
-            accept: () => { this.clearGraph(); },
+            accept: () => {
+                this.clearGraph();
+                this.save_and_update();
+            },
             reject: () => { }
         });
     }
@@ -566,9 +572,10 @@ class MainComponent {
             this.store.dispatch(_ngrx_main_reducer__WEBPACK_IMPORTED_MODULE_4__["mainActions"].PushLoader());
             let backendSave = Promise.resolve();
             if (!!this.selectedStory) {
-                backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph);
+                backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph, this.graphSinceLastSave);
                 this.selectedStory = null;
                 this.clearGraph();
+                this.update();
             }
             if (!story) {
                 this.store.dispatch(_ngrx_main_reducer__WEBPACK_IMPORTED_MODULE_4__["mainActions"].PopLoader());
@@ -587,6 +594,7 @@ class MainComponent {
             this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : [];
             this.graph.edges = !!this.graph.edges ? this.graph.edges : [];
             this.graph.comments = !!this.graph.comments ? this.graph.comments : '';
+            this.graphSinceLastSave = JSON.parse(JSON.stringify(this.graph)); // duplicate graph
             this.update();
             this.store.dispatch(_ngrx_main_reducer__WEBPACK_IMPORTED_MODULE_4__["mainActions"].PopLoader());
         });
@@ -623,14 +631,14 @@ class MainComponent {
         this.graph.edges = [];
         this.graph.comments = '';
         this.setClickedNode(null);
-        this.update();
     }
-    save_current_story_backend(storyKey, graph) {
+    save_current_story_backend(storyKey, graph, graphSinceLastSave) {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
-            if (_mermaid_utils__WEBPACK_IMPORTED_MODULE_3__["mermaid_utils"].isEmpty(graph)) {
-                console.log('skipping save');
+            if (_mermaid_utils__WEBPACK_IMPORTED_MODULE_3__["mermaid_utils"].isEqual(graph, graphSinceLastSave)) {
+                console.log('skipping save, is dup');
                 return;
             }
+            console.log('saving...');
             graph = JSON.stringify(graph);
             let res = yield this.mainService.userAnnotationAdd(this.username, storyKey, graph).toPromise();
             this.mainService.telemetryAdd(this.username, 'edit ' + storyKey).subscribe((resp) => { });
@@ -638,7 +646,8 @@ class MainComponent {
         });
     }
     save_and_update() {
-        this.save_current_story_backend(this.selectedStory.key, this.graph).then((resp) => {
+        this.save_current_story_backend(this.selectedStory.key, this.graph, this.graphSinceLastSave).then((resp) => {
+            this.graphSinceLastSave = JSON.parse(JSON.stringify(this.graph)); // duplicate graph
             this.update();
         });
     }
@@ -676,7 +685,7 @@ class MainComponent {
         return Object(tslib__WEBPACK_IMPORTED_MODULE_0__["__awaiter"])(this, void 0, void 0, function* () {
             localStorage.setItem('test', 1 + Number(localStorage.getItem('test')) + '');
             if (!!this.selectedStory) {
-                const backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph);
+                const backendSave = this.save_current_story_backend(this.selectedStory.key, this.graph, this.graphSinceLastSave);
                 this.selectedStory = null;
                 yield backendSave;
             }
@@ -1393,10 +1402,10 @@ class ViewerComponent {
         });
     }
     updateTabView(newIndex) {
-        console.log('updateTabView', newIndex);
+        // console.log('updateTabView', newIndex);
         if (newIndex !== undefined) {
-            // this.tabViewIndex = 0
-            // this.cdr.detectChanges()
+            this.tabViewIndex = 0;
+            this.cdr.detectChanges();
             this.tabViewIndex = newIndex;
             this.cdr.detectChanges();
         }
@@ -1660,6 +1669,21 @@ class mermaid_utils {
         var _a, _b;
         const hasData = ((_a = graph.node_names) === null || _a === void 0 ? void 0 : _a.length) > 0 || ((_b = graph.comments) === null || _b === void 0 ? void 0 : _b.length) > 0;
         return !hasData;
+    }
+    static isEqual(graph1, graph2) {
+        var _a, _b, _c, _d, _e, _f;
+        if (((_a = graph1.node_names) === null || _a === void 0 ? void 0 : _a.length) !== ((_b = graph2.node_names) === null || _b === void 0 ? void 0 : _b.length)
+            || ((_c = graph1.edges) === null || _c === void 0 ? void 0 : _c.length) !== ((_d = graph2.edges) === null || _d === void 0 ? void 0 : _d.length)
+            || ((_e = graph1.comments) === null || _e === void 0 ? void 0 : _e.length) !== ((_f = graph2.comments) === null || _f === void 0 ? void 0 : _f.length)) {
+            return false;
+        }
+        if (graph1.comments !== graph2.comments)
+            return false;
+        if (graph1.node_names.some((_, i) => graph1.node_names[i] !== graph2.node_names[i]))
+            return false;
+        if (graph1.edges.some((_, i) => graph1.edges[i][0] !== graph2.edges[i][0] || graph1.edges[i][1] !== graph2.edges[i][1]))
+            return false;
+        return true;
     }
     static addNode(graph, name) {
         graph.node_names.push(name);
