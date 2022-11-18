@@ -40,7 +40,7 @@ export class SidenavComponent implements OnInit {
     this.store.select(selectSelectedStory).subscribe(v => {
       this.selectedStory = v
       if (!this.allStories) return
-      this.selectedStoryIndex = this.allStories.findIndex(v2 => v.key == v2.key)
+      this.selectedStoryIndex = this.allStories.findIndex(v2 => v?.key == v2.key)
     })
   }
 
