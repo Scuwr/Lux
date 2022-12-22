@@ -3,6 +3,8 @@ A UI Graph Tool for manually building causal graph from text
 
 To install:
 
+You need to install `nodejs` and you need `make`
+
     git clone PROJECT_URL
 
     cd ./frontend/ui-graph-tool
