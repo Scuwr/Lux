@@ -1,0 +1,49 @@
+TODO:
+✔️ seperate view mode
+✔️ Enforce DAG in graph
+✔️ Implement highlight nodes with 0-9 in keyboard
+✔️ Prev/Next story with "[" and "]" keyboard shortcuts
+✔️ backend only saves on changes
+✔️ telemetry on get story
+
+✔️ Button to toggle between horizontal and vertical graph
+✔️ enforce 1 edge out of a node
+✔️ Keyboard shortcut for rename
+✔️ Help menu for keyboard shortcuts
+✔️ Add username to the url so we can share links
+✔️ fix "recalled drone" displays as "recall_ed drone"
+✔️ "n" when a node is selected it connects to that node, not to the last created node? And then unselects that node This is a lot faster than making the node, then disconnecting it, and reconnecting it
+✔️ It would also be very useful to add another view-only mode where you see all of the graphs for a story, labeled with who made each graph
+✔️ show "story nr out of total stories"
+✔️ Search that is really a “goto”
+✔️ Keyboard shortcuts (general and for the graph)
+✔️ Add story id in the URL
+✔️ Record basic telemetry (when the story is requested, etc) [on user login and on story update]
+✔️  Only DAGs, reject changes that cause loops
+
+   (DB change) I’d also add buttons for edge labellingg
+   (DB change) And a button for shape selection
+   (DB change) Goto last
+   (Q: how to highlight edge?) This is second order: a button to reverse the edge direction (and correct mistakes)
+
+
+✔️ REDIS backend
+✔️  Buttons to create graphs should be buttons to retrieve stories
+✔️ Add annotator field
+✔️ Make autosave (e.g. per story change, previous-next, …)
+✔️  Put the story above the graph (so the story doesn't move while the graph changes)
+✔️  When adding a new node, default the connection to the last added node
+✔️  add edge popup can choose two node numbers
+✔️  number the nodes -> when adding new node pick number to attach to, no number then last
+
+# LINUX:
+redis-cli -p 6397
+# List all tables: KEYS * 
+# List all story keys / values: HKEYS v0:story   HGETALL v0:story
+# redis-cli -p 6397 FLUSHALL
+make start-redis
+
+# WINDOWS:
+npm run backend
+npm start
+npm run build

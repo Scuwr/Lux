@@ -1,0 +1,199 @@
+
+<!-- Toolbar -->
+<div class="toolbar" role="banner">
+  <p-button [icon]="!!sidenavVisible ? 'pi pi-arrow-left' : 'pi pi-arrow-right'" (onClick)="toggleSidenav()" pTooltip="Open/Close sidebar" [ngStyle]="{'margin-left':'8px'}"></p-button>
+  <img width="110" alt="Logo" src="assets/dag.png"/>
+  <span>Lux</span>
+    <div class="spacer"></div>
+  <div [ngStyle]="{'padding-right':'16px'}">
+    Username: {{username}}
+  </div>
+  <p-button icon="pi pi-question-circle" [ngStyle]="{'margin-right':'16px'}" (click)="dialogues.help.display = true"></p-button>
+  <p-button icon="fa-solid fa-binoculars" [ngStyle]="{'margin-right':'16px'}" (click)="onViewModeButton()"></p-button>
+</div>
+
+
+
+<!-- LOGIN DIALOGUE -->
+<p-dialog header="Username" [(visible)]="dialogues.username.display" [modal]="true" [closeOnEscape]="false" [closable]="false" [style]="{width: '25vw'}" [baseZIndex]="10000">
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.username.input" (keydown.enter)="username_confirm()" autofocus> 
+    <label for="float-input">Username</label>
+  </span>
+  
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="username_confirm()" label="Login"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- RENAME DIALOGUE -->
+<p-dialog header="Node Name" [(visible)]="dialogues.rename.display" [style]="{width: '25vw'}" [baseZIndex]="10000">
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.rename.input" (keydown.enter)="toolbar_raneme_confirm()" autofocus> 
+    <label for="float-input">New Name</label>
+  </span>
+    
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_raneme_confirm()" label="Confirm"></p-button>
+    <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="dialogues.rename.display=false" label="Cancel" styleClass="p-button-text ui-button"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- NEW NODE DIALOGUE -->
+<p-dialog header="Node Name" [(visible)]="dialogues.newNode.display" [style]="{width: '25vw'}" [baseZIndex]="10000">
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newNode.input" (keydown.enter)="toolbar_new_node_confirm()" autofocus> 
+    <label for="float-input">New Name</label>
+  </span>
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newNode.connectedNode" (keydown.enter)="toolbar_new_node_confirm()"> 
+    <label for="float-input">Connected Node</label>
+  </span>
+  <!--<span class="p-float-label">
+    <mat-slide-toggle [(ngModel)]="dialogues.newNode.physical" (keydown.enter)="toolbar_new_node_confirm()">Physical Effect</mat-slide-toggle>
+  </span>
+  <span class="p-float-label">
+    <mat-slide-toggle [(ngModel)]="dialogues.newNode.hypothetical" (keydown.enter)="toolbar_new_node_confirm()">Hypothetical Possibility</mat-slide-toggle>
+  </span>-->
+  
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_new_node_confirm()" label="Confirm"></p-button>
+    <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="dialogues.newNode.display=false" label="Cancel" styleClass="p-button-text ui-button"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- NEW EDGE DIALOGUE -->
+<p-dialog header="New Edge" [(visible)]="dialogues.newEdge.display" [style]="{width: '25vw'}" [baseZIndex]="10000">
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newEdge.node1" (keydown.enter)="toolbar_new_edge_confirm($event, true)" autofocus> 
+    <label for="float-input">Node 1 ID</label>
+  </span>
+  <span class="p-float-label">
+    <input #edgeDialogInp2 id="float-input" type="text" pInputText [(ngModel)]="dialogues.newEdge.node2" (keydown.enter)="toolbar_new_edge_confirm($event, false)"> 
+    <label for="float-input">Node 2 ID</label>
+  </span>
+  
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_new_edge_confirm()" label="Confirm"></p-button>
+    <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" (click)="dialogues.newEdge.display=false" label="Cancel" styleClass="p-button-text ui-button"></p-button>
+  </ng-template>
+</p-dialog>
+
+<!-- HELP DIALOGUE -->
+<p-dialog header="Help Menu" [(visible)]="dialogues.help.display" [modal]="true" [style]="{width: '35vw'}" [baseZIndex]="10000">
+  <div>
+    <p-panel header="Keyboard Shortcuts" class="helpDialogue">
+      <span class="boxedText">?</span>
+        <span class="helpText">Show Help Menu</span>
+
+      <br>
+      <br>
+      <span class="boxedText">C</span>
+        <span class="helpText">Toggle Confusing Story</span>
+      <br>
+      <span class="boxedText">N</span>
+        <span class="helpText">New node</span>
+      <br>
+      <span class="boxedText">R</span>
+        <span class="helpText">Rename node (while node is selected)</span>
+      <br>
+      <span class="boxedText">E</span>
+        <span class="helpText">New edge</span>
+
+      <br>
+      <br>
+
+      <span class="boxedText">[</span>
+        <span class="helpText">Previous story</span>
+      <br>
+      <span class="boxedText">]</span>
+        <span class="helpText">Next story</span>
+
+        <br>
+        <br>
+  
+        <span class="boxedText">0-9</span>
+          <span class="helpText">Highlight Nodes</span>
+
+
+    </p-panel>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="dialogues.help.display = false" label="Close"></p-button>
+  </ng-template>
+</p-dialog>
+
+
+
+
+
+
+<div>
+
+<app-sidenav></app-sidenav>
+
+
+<div class="content" role="main" [ngClass]="{'sidenav-visible': sidenavVisible}">
+
+  <!-- GRAPH TOOLBAR -->
+  <p-toolbar styleClass="graphToolbar">
+    <div class="p-toolbar-group-left">
+        <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'5px'}" 
+            label="N&#818;ode" [disabled]="!selectedStory || graph?.confusing" (onClick)="toolbar_new_node()"></p-button>
+        <p-button icon="pi pi-plus" [ngStyle]="{'margin-right':'5px'}" 
+            label="E&#818;dge" [disabled]="!selectedStory || graph?.confusing" (onClick)="toolbar_new_edge()"></p-button>
+        <p-button icon="pi pi-pencil" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-warning ui-button" 
+            label="R&#818;ename" [disabled]="!graphStyle.clicked" (onClick)="toolbar_rename()"></p-button>
+        <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-help ui-button" 
+            label="Node" [disabled]="!graphStyle.clicked" (onClick)="toolbar_delete_node()"></p-button>
+        <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-help ui-button" 
+            label="Edge" [disabled]="!graphStyle.clicked" (onClick)="toolbar_clear_node_edges()"></p-button>
+        <p-button [icon]="!!graphStyle?.LR ? 'pi pi-arrows-h' : 'pi pi-arrows-v'" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-help ui-button" 
+            [disabled]="!selectedStory" (onClick)="toolbar_flip_graph_style()"></p-button>
+    </div>
+
+    <div class="p-toolbar-group-right">
+      <p-button icon="pi pi-question" [ngStyle]="{'margin-right':'8px'}"
+          label="Confusing" [disabled]="!selectedStory" (onClick)="toolbar_flag_confusing()"></p-button>
+      <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" 
+          label="Clear Graph" [disabled]="!selectedStory" (onClick)="toolbar_clear_graph()"></p-button>
+    </div>
+  </p-toolbar>
+
+
+  <div class="scrollableContent">
+
+    <!-- STORY -->
+    <div class="storyarea">
+      <textarea [rows]="5" pInputTextarea [ngModel]="!!selectedStory ? selectedStory?.text : 'No story selected.'" autoResize="autoResize" disabled="true"></textarea>
+    </div>
+
+    <!-- COMMENTS -->
+    <div class="commentarea">
+      <!-- <span>&nbsp;</span> -->
+      <span class="p-float-label">
+        <textarea [rows]="3" pInputTextarea id="float-input" [(ngModel)]="graph.comments" 
+            autoResize="autoResize" [disabled]="!selectedStory"
+            (focus)="onFocusKeyboardElement($event)" (blur)="onFocusKeyboardElement()"
+        ></textarea>
+        <label for="float-input">Comments</label>
+      </span>
+    </div>
+
+    <!-- GRAPH -->
+    <div [class]="!!graph?.confusing ? 'graphObscured noclick' : 'graph'">
+      <div #mermaid></div>
+    </div>
+
+    <!-- CLOUD BACKGROUND :) -->
+    <svg id="clouds" xmlns="http://www.w3.org/2000/svg" width="2611.084" height="485.677" viewBox="0 0 2611.084 485.677">
+      <title>Gray Clouds Background</title>
+      <path id="Path_39" data-name="Path 39" d="M2379.709,863.793c10-93-77-171-168-149-52-114-225-105-264,15-75,3-140,59-152,133-30,2.83-66.725,9.829-93.5,26.25-26.771-16.421-63.5-23.42-93.5-26.25-12-74-77-130-152-133-39-120-212-129-264-15-54.084-13.075-106.753,9.173-138.488,48.9-31.734-39.726-84.4-61.974-138.487-48.9-52-114-225-105-264,15a162.027,162.027,0,0,0-103.147,43.044c-30.633-45.365-87.1-72.091-145.206-58.044-52-114-225-105-264,15-75,3-140,59-152,133-53,5-127,23-130,83-2,42,35,72,70,86,49,20,106,18,157,5a165.625,165.625,0,0,0,120,0c47,94,178,113,251,33,61.112,8.015,113.854-5.72,150.492-29.764a165.62,165.62,0,0,0,110.861-3.236c47,94,178,113,251,33,31.385,4.116,60.563,2.495,86.487-3.311,25.924,5.806,55.1,7.427,86.488,3.311,73,80,204,61,251-33a165.625,165.625,0,0,0,120,0c51,13,108,15,157-5a147.188,147.188,0,0,0,33.5-18.694,147.217,147.217,0,0,0,33.5,18.694c49,20,106,18,157,5a165.625,165.625,0,0,0,120,0c47,94,178,113,251,33C2446.709,1093.793,2554.709,922.793,2379.709,863.793Z" transform="translate(142.69 -634.312)" fill="#eee"/>
+    </svg>
+
+  </div>
+
+</div>
+
+</div>
