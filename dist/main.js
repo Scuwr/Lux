@@ -7,7 +7,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /mnt/d/Users/Christian/Documents/MIT/Lux/src/main.ts */"zUnb");
+module.exports = __webpack_require__(/*! /home/christian/MIT/Lux/src/main.ts */"zUnb");
 
 
 /***/ }),
@@ -258,6 +258,7 @@ class MainComponent {
                 display: false,
                 node1: null,
                 node2: null,
+                physical: true,
             },
             help: {
                 display: false,
@@ -280,13 +281,10 @@ class MainComponent {
                     phsyical: true,
                     hypothetical: false,
                 }],
-            edges: [],
-            /*
             edges: [{
-              edge: [],
-              physical: true,
-            }],
-            */
+                    edge: [],
+                    physical: true,
+                }],
             comments: '',
             confusing: false,
         };
@@ -419,6 +417,7 @@ class MainComponent {
         }
         this.dialogues.newEdge.node1 = !!conn ? conn : '';
         this.dialogues.newEdge.node2 = '';
+        this.dialogues.newEdge.physical = true;
         this.dialogues.newEdge.display = true;
     }
     toolbar_rename() {
@@ -617,10 +616,47 @@ class MainComponent {
                 queryParams: { storyId: story.key },
                 queryParamsHandling: 'merge',
             });
-            this.graph = !!res['resp'] ? JSON.parse(res['resp']) : {};
-            this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : [];
-            this.graph.edges = !!this.graph.edges ? this.graph.edges : [];
-            this.graph.comments = !!this.graph.comments ? this.graph.comments : '';
+            // PARSE RESPONSE
+            if (!!res['resp']) {
+                var json = JSON.parse(res['resp']);
+                // FIX OLD GRAPH VERSION
+                if (!json.node_names[0].hasOwnProperty('name')) {
+                    this.graph.node_names.pop();
+                    for (let i in json.node_names) {
+                        var node_names = {
+                            name: json.node_names[i],
+                            phsyical: true,
+                            hypothetical: false,
+                        };
+                        this.graph.node_names.push(node_names);
+                    }
+                }
+                else {
+                    this.graph.node_names = json.node_names;
+                }
+                // FIX OLD GRAPH VERSION
+                if (!json.edges[0].hasOwnProperty('edge')) {
+                    this.graph.edges.pop();
+                    for (let i in json.edges) {
+                        var edges = {
+                            edge: json.edges[i],
+                            physical: true,
+                        };
+                        this.graph.edges.push(edges);
+                    }
+                }
+                else {
+                    this.graph.edges = json.edges;
+                }
+                this.graph.comments = json.comments;
+                this.graph.confusing = json.confusing;
+            }
+            else {
+                this.graph.node_names = [];
+                this.graph.edges = [];
+                this.graph.comments = '';
+                this.graph.confusing = false;
+            }
             this.graphSinceLastSave = JSON.parse(JSON.stringify(this.graph)); // duplicate graph
             this.update();
             this.store.dispatch(_ngrx_main_reducer__WEBPACK_IMPORTED_MODULE_4__["mainActions"].PopLoader());
@@ -650,7 +686,11 @@ class MainComponent {
             this.messageService.add({ severity: 'error', summary: 'Edge Cycle Error', detail: 'Error adding edge. Cycle detected.' });
             return false;
         }
-        _mermaid_utils__WEBPACK_IMPORTED_MODULE_3__["mermaid_utils"].addEdge(this.graph, node1, node2);
+        var edge = {
+            edge: [node1, node2],
+            physical: true,
+        };
+        _mermaid_utils__WEBPACK_IMPORTED_MODULE_3__["mermaid_utils"].addEdge(this.graph, edge);
         return true;
     }
     clearGraph() {
@@ -699,7 +739,6 @@ class MainComponent {
     update() {
         const element = this.mermaidDiv.nativeElement;
         const graph_str = _mermaid_utils__WEBPACK_IMPORTED_MODULE_3__["mermaid_utils"].obj_to_graph_str(this.graph, this.graphStyle);
-        // console.log(graph_str)
         _mermaid_utils__WEBPACK_IMPORTED_MODULE_3__["mermaid_utils"].render(element, graph_str, this.callback.bind(this));
     }
     ngOnDestroy() {
@@ -1725,18 +1764,28 @@ class mermaid_utils {
         }
         if (graph1.comments !== graph2.comments)
             return false;
-        if (graph1.node_names.some((_, i) => graph1.node_names[i] !== graph2.node_names[i]))
-            return false;
-        if (graph1.edges.some((_, i) => graph1.edges[i][0] !== graph2.edges[i][0] || graph1.edges[i][1] !== graph2.edges[i][1]))
-            return false;
+        for (let i in graph1.node_names) {
+            if (graph1.node_names[i].name !== graph2.node_names[i].name)
+                return false;
+            if (graph1.node_names[i].physical !== graph2.node_names[i].physical)
+                return false;
+            if (graph1.node_names[i].hypothetical !== graph2.node_names[i].hypothetical)
+                return false;
+        }
+        for (let i in graph1.edges) {
+            if (graph1.edges[i].edge[0] !== graph2.edges[i].edge[0] || graph1.edges[i].edge[1] !== graph2.edges[i].edge[1])
+                return false;
+            if (graph1.edges[i].physical !== graph2.edges[i].physical)
+                return false;
+        }
         return true;
     }
     static addNode(graph, node) {
         graph.node_names.push(node);
         return graph.node_names.length - 1;
     }
-    static addEdge(graph, i, j) {
-        graph.edges.push([i, j]);
+    static addEdge(graph, edge) {
+        graph.edges.push(edge);
     }
     static sortEdges(graph) {
         const N = graph.node_names.length;
@@ -1795,16 +1844,19 @@ class mermaid_utils {
         result += ' \n';
         graph.node_names.forEach((node, i) => {
             const nodename = i;
-            node.name = this.sanatizeName(node.name);
-            node.name = (i + 1) + ': ' + node.name;
-            node.name = this.addNewLineToName(node.name);
-            const line = nodename + '([' + node.name + '])';
+            var name = this.sanatizeName(node.name);
+            name = (i + 1) + ': ' + name;
+            name = this.addNewLineToName(name);
+            const line = nodename + '([' + name + '])';
             const callbackLine = 'click ' + nodename + ' callBackFnForMermaidJS';
             result += line + '\n';
             result += callbackLine + '\n';
         });
         graph.edges.forEach((edge) => {
-            const line = edge[0] + ' --> ' + edge[1];
+            var line = edge.edge[0] + ' --> ' + edge.edge[1];
+            if (!edge.physical) {
+                line = edge.edge[0] + ' -.-> ' + edge.edge[1];
+            }
             result += line + '\n';
         });
         if (!!graphStyle) {

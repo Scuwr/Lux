@@ -21,18 +21,24 @@ export class mermaid_utils {
     return !hasData
   }
 
-  static isEqual(graph1, graph2) {
+  static isEqual(graph1, graph2){
     if ( graph1.node_names?.length !== graph2.node_names?.length
         || graph1.edges?.length !== graph2.edges?.length
         || graph1.comments?.length !== graph2.comments?.length 
         || graph1.confusing !== graph2.confusing) {
-      return false
+      return false;
     }
-    if (graph1.comments !== graph2.comments) return false
-    if (graph1.node_names.some((_, i) => graph1.node_names[i] !== graph2.node_names[i])) return false
-    if (graph1.edges.some((_, i) => graph1.edges[i][0] !== graph2.edges[i][0] || graph1.edges[i][1] !== graph2.edges[i][1])) return false
-
-    return true
+    if (graph1.comments !== graph2.comments) return false;
+    for (let i in graph1.node_names){
+      if (graph1.node_names[i].name !== graph2.node_names[i].name) return false;
+      if (graph1.node_names[i].physical !== graph2.node_names[i].physical) return false;
+      if (graph1.node_names[i].hypothetical !== graph2.node_names[i].hypothetical) return false;
+    }
+    for (let i in graph1.edges){
+      if (graph1.edges[i].edge[0] !== graph2.edges[i].edge[0] || graph1.edges[i].edge[1] !== graph2.edges[i].edge[1]) return false;
+    if (graph1.edges[i].physical !== graph2.edges[i].physical) return false;
+    }
+    return true;
   }
 
   static addNode(graph, node) {
@@ -40,8 +46,8 @@ export class mermaid_utils {
     return graph.node_names.length - 1
   }
 
-  static addEdge(graph, i, j) {
-    graph.edges.push([i, j])
+  static addEdge(graph, edge) {
+    graph.edges.push(edge)
   }
 
   private static sortEdges(graph) {
@@ -103,10 +109,10 @@ export class mermaid_utils {
     result += ' \n'
     graph.node_names.forEach((node, i) => {
       const nodename = i;
-      node.name = this.sanatizeName(node.name)
-      node.name = (i+1) + ': ' + node.name
-      node.name = this.addNewLineToName(node.name)
-      const line = nodename + '([' + node.name + '])';
+      var name = this.sanatizeName(node.name)
+      name = (i+1) + ': ' + name
+      name = this.addNewLineToName(name)
+      const line = nodename + '([' + name + '])';
       const callbackLine = 'click ' + nodename + ' callBackFnForMermaidJS';
       result += line + '\n'
       result += callbackLine + '\n'

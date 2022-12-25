@@ -479,6 +479,8 @@ export class MainComponent implements AfterViewInit  {
           
           this.graph.node_names.push(node_names)
         }
+      }else{
+        this.graph.node_names = json.node_names;
       }
 
       // FIX OLD GRAPH VERSION
@@ -493,7 +495,17 @@ export class MainComponent implements AfterViewInit  {
           
           this.graph.edges.push(edges)
         }
+      }else{
+        this.graph.edges = json.edges;
       }
+
+      this.graph.comments = json.comments;
+      this.graph.confusing = json.confusing;
+    }else{
+      this.graph.node_names = [];
+      this.graph.edges = [];
+      this.graph.comments = '';
+      this.graph.confusing = false;
     }
 
     this.graphSinceLastSave = JSON.parse(JSON.stringify(this.graph)) // duplicate graph
@@ -587,7 +599,6 @@ export class MainComponent implements AfterViewInit  {
   update() {
     const element: any = this.mermaidDiv.nativeElement
     const graph_str = mermaid_utils.obj_to_graph_str(this.graph, this.graphStyle)
-    // console.log(graph_str)
     mermaid_utils.render(element, graph_str, this.callback.bind(this))
   }
 
