@@ -17,7 +17,7 @@ import { Subject } from 'rxjs';
   styleUrls: ['./viewer.component.scss'],
 })
 export class ViewerComponent implements AfterViewInit  {
-  @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
+  @ViewChild('mermaidmain', { static: true }) mermaidDiv: ElementRef;
   @ViewChildren('storyRow', { read: ElementRef }) rowElement: QueryList<ElementRef>;
 
   private readonly ngDestroyed$ = new Subject();
@@ -35,14 +35,27 @@ export class ViewerComponent implements AfterViewInit  {
   tabViewIndex = 0;
 
   graph = {
-    node_names: [],
-    edges: [],
+    // node_names: ['Start', 'Is it', 'End'],
+    // edges: [[0, 1], [1, 2]],
+    //node_names: [],
+    node_names: [{
+      name: '',
+      physical: true,
+      hypothetical: false,
+    }],
+    edges: [{
+      edge: [],
+      physical: true,
+    }],
     comments: '',
+    confusing: false,
   }
 
   graphStyle = {
     clicked: null,
+    edgeClicked: null,
     LR: true,
+    labels: false,
   }
 
   constructor(
@@ -157,6 +170,11 @@ export class ViewerComponent implements AfterViewInit  {
     this.update()
   }
 
+  toolbar_toggle_labels(){
+    this.graphStyle.labels = !this.graphStyle.labels
+    this.update()
+  }
+
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
     // EXIT IF DIALOGUE OPEN OR TYPING IN A SELECTED ELEMENT
     if (!!this.keyboardCaptureElement) {
@@ -174,6 +192,8 @@ export class ViewerComponent implements AfterViewInit  {
         this.store.dispatch(mainActions.setSelectedStory({ selectedStory: story }))
       }
 
+    } else if (key == 'l') { // LABELS
+      this.toolbar_toggle_labels()
     }
   }
 
@@ -227,6 +247,7 @@ export class ViewerComponent implements AfterViewInit  {
   }
 
   private updateTabView(newIndex?) {
+    console.log("tabViewUpdate")
     if (newIndex !== undefined) {
       const some_other_index_to_fix_bug = newIndex !== 0 ? 0 : 1
       this.tabViewIndex = some_other_index_to_fix_bug
@@ -234,10 +255,52 @@ export class ViewerComponent implements AfterViewInit  {
       this.tabViewIndex = newIndex
       this.cdr.detectChanges()
     }
-    this.graph = !!this.allGraphs.data[this.tabViewIndex] ? this.allGraphs.data[this.tabViewIndex] : {};
-    this.graph.node_names = !!this.graph.node_names ? this.graph.node_names : []
-    this.graph.edges = !!this.graph.edges ? this.graph.edges : []
-    this.graph.comments = !!this.graph.comments ? this.graph.comments : ''
+
+    if(!!this.allGraphs.data[this.tabViewIndex]){
+      this.graph.node_names = []
+      this.graph.edges = []
+      this.graph.comments = ''
+      this.graph.confusing = false
+
+      let json = this.allGraphs.data[this.tabViewIndex];
+
+      if(!json.node_names[0].hasOwnProperty('name')){
+        for (let i in json.node_names){ 
+          const node_names = {
+            name: json.node_names[i],
+            physical: true,
+            hypothetical: false,
+          }
+          
+          this.graph.node_names.push(node_names)
+        }
+      }else{
+        this.graph.node_names = json.node_names;
+      }
+
+      // FIX OLD GRAPH VERSION
+      if(!!json.edges && !json.edges[0]?.hasOwnProperty('edge')){        
+        for (let i in json.edges){
+          const edges = {
+            edge: json.edges[i],
+            physical: true,
+          }
+          
+          this.graph.edges.push(edges)
+        }
+      }else{
+        this.graph.edges = json.edges;
+      }
+
+      this.graph.comments = json.comments;
+      this.graph.confusing = json.confusing;
+    }else{
+      this.graph.node_names = [];
+      this.graph.edges = [];
+      this.graph.comments = '';
+      this.graph.confusing = false;
+    }
+
     setTimeout(() => {
       this.update()
     }, 0);

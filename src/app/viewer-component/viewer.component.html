@@ -27,6 +27,8 @@
     <div class="p-toolbar-group-left">
         <p-button [icon]="!!graphStyle?.LR ? 'pi pi-arrows-h' : 'pi pi-arrows-v'" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-help ui-button" 
             [disabled]="!selectedStory" (onClick)="toolbar_flip_graph_style()"></p-button>
+        <p-button [icon]="!!graphStyle?.labels ? 'pi pi-eye' : 'pi pi-eye-slash'" [ngStyle]="{'margin-right':'8px'}" 
+            [disabled]="!selectedStory" (onClick)="toolbar_toggle_labels()"></p-button>
     </div>
 
   </p-toolbar>
@@ -56,8 +58,8 @@
     </div>
 
     <!-- GRAPH -->
-    <div class="graph">
-      <div #mermaid></div>
+    <div [class]="!!graph?.confusing ? 'graph obscured noclick' : 'graph'">
+      <div #mermaidmain></div>
     </div>
 
     <!-- CLOUD BACKGROUND :) -->

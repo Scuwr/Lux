@@ -20,6 +20,7 @@ import { BlockUIModule } from "primeng/blockui";
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {PanelModule} from 'primeng/panel';
 import {TabViewModule} from 'primeng/tabview';
+import {InputSwitchModule} from 'primeng/inputswitch';
 
 import { StoreModule } from '@ngrx/store';
 import { mainFeatureKey, mainReducer } from './ngrx/main.reducer';
@@ -62,7 +63,7 @@ import { ViewerComponent } from './viewer-component/viewer.component';
     ProgressSpinnerModule,
     PanelModule,
     TabViewModule,
-
+    InputSwitchModule,
     AppRoutingModule,
   ],
   providers: [

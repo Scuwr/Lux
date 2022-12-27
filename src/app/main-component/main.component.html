@@ -32,6 +32,10 @@
     <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.rename.input" (keydown.enter)="toolbar_raneme_confirm()" autofocus> 
     <label for="float-input">New Name</label>
   </span>
+  <h5>Abstract Concept</h5>
+  <p-inputSwitch [(ngModel)]="dialogues.rename.physical"></p-inputSwitch>
+  <h5>Hypothical Event</h5>
+  <p-inputSwitch [(ngModel)]="dialogues.rename.hypothetical"></p-inputSwitch>
     
   <ng-template pTemplate="footer">
     <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_raneme_confirm()" label="Confirm"></p-button>
@@ -49,12 +53,10 @@
     <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newNode.connectedNode" (keydown.enter)="toolbar_new_node_confirm()"> 
     <label for="float-input">Connected Node</label>
   </span>
-  <!--<span class="p-float-label">
-    <mat-slide-toggle [(ngModel)]="dialogues.newNode.physical" (keydown.enter)="toolbar_new_node_confirm()">Physical Effect</mat-slide-toggle>
-  </span>
-  <span class="p-float-label">
-    <mat-slide-toggle [(ngModel)]="dialogues.newNode.hypothetical" (keydown.enter)="toolbar_new_node_confirm()">Hypothetical Possibility</mat-slide-toggle>
-  </span>-->
+  <h5>Abstract Concept</h5>
+  <p-inputSwitch [(ngModel)]="dialogues.newNode.physical"></p-inputSwitch>
+  <h5>Hypothical Event</h5>
+  <p-inputSwitch [(ngModel)]="dialogues.newNode.hypothetical"></p-inputSwitch>
   
   <ng-template pTemplate="footer">
     <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_new_node_confirm()" label="Confirm"></p-button>
@@ -72,6 +74,8 @@
     <input #edgeDialogInp2 id="float-input" type="text" pInputText [(ngModel)]="dialogues.newEdge.node2" (keydown.enter)="toolbar_new_edge_confirm($event, false)"> 
     <label for="float-input">Node 2 ID</label>
   </span>
+  <h5>Physical Effect</h5>
+  <p-inputSwitch [(ngModel)]="dialogues.newEdge.physical"></p-inputSwitch>
   
   <ng-template pTemplate="footer">
     <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="toolbar_new_edge_confirm()" label="Confirm"></p-button>
@@ -87,6 +91,9 @@
         <span class="helpText">Show Help Menu</span>
 
       <br>
+      <span class="boxedText">L</span>
+        <span class="helpText">Toggle Labels</span>
+      <br>
       <br>
       <span class="boxedText">C</span>
         <span class="helpText">Toggle Confusing Story</span>
@@ -99,7 +106,12 @@
       <br>
       <span class="boxedText">E</span>
         <span class="helpText">New edge</span>
-
+      <br>
+      <span class="boxedText">A</span>
+        <span class="helpText">Toggle Abstract/Physical Concept</span>
+      <br>
+      <span class="boxedText">H</span>
+        <span class="helpText">Toggle Hypothetical/Actual Event</span>
       <br>
       <br>
 
@@ -154,6 +166,8 @@
     </div>
 
     <div class="p-toolbar-group-right">
+      <p-button [icon]="!!graphStyle?.labels ? 'pi pi-eye' : 'pi pi-eye-slash'" [ngStyle]="{'margin-right':'8px'}" 
+            [disabled]="!selectedStory" (onClick)="toolbar_toggle_labels()"></p-button>
       <p-button icon="pi pi-question" [ngStyle]="{'margin-right':'8px'}"
           label="Confusing" [disabled]="!selectedStory" (onClick)="toolbar_flag_confusing()"></p-button>
       <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" 
@@ -182,8 +196,8 @@
     </div>
 
     <!-- GRAPH -->
-    <div [class]="!!graph?.confusing ? 'graphObscured noclick' : 'graph'">
-      <div #mermaid></div>
+    <div [class]="!!graph?.confusing ? 'graph obscured noclick' : 'graph'">
+      <div #mermaidmain></div>
     </div>
 
     <!-- CLOUD BACKGROUND :) -->

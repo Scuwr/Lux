@@ -6,6 +6,7 @@
     "start": "ng serve",
     "backend": "nodemon ./server.js --watch server.js",
     "build": "ng build",
+    "prod": "ng build --prod",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"

@@ -96,6 +96,14 @@
     min-height: 220px;
 }
 
+.obscured {
+    border: 10px solid #f00;
+    opacity: 0.5;
+}
+
+.noclick {
+    pointer-events: none;
+}
 
 
 

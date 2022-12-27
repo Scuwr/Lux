@@ -17,7 +17,7 @@ import { Subject } from 'rxjs';
   styleUrls: ['./main.component.scss'],
 })
 export class MainComponent implements AfterViewInit  {
-  @ViewChild('mermaid', { static: true }) mermaidDiv: ElementRef;
+  @ViewChild('mermaidmain', { static: true }) mermaidDiv: ElementRef;
   @ViewChildren('storyRow', { read: ElementRef }) rowElement: QueryList<ElementRef>;
   @ViewChild('edgeDialogInp2') edgeDialogInp2: ElementRef; // to change focus
 
@@ -38,6 +38,8 @@ export class MainComponent implements AfterViewInit  {
       display: false,
       input: null,
       node: null,
+      physical: true,
+      hypothetical: false,
     },
     newNode: {
       display: false,
@@ -73,7 +75,7 @@ export class MainComponent implements AfterViewInit  {
     //node_names: [],
     node_names: [{
       name: '',
-      phsyical: true,
+      physical: true,
       hypothetical: false,
     }],
     edges: [{
@@ -88,7 +90,9 @@ export class MainComponent implements AfterViewInit  {
 
   graphStyle = {
     clicked: null,
+    edgeClicked: null,
     LR: true,
+    labels: false,
   }
 
   constructor(
@@ -225,7 +229,7 @@ export class MainComponent implements AfterViewInit  {
 
     this.dialogues.newNode.input = ''
     this.dialogues.newNode.connectedNode = !!conn ? conn : ''
-    this.dialogues.newNode.physical = true
+    this.dialogues.newNode.physical = false
     this.dialogues.newNode.hypothetical = false
     this.dialogues.newNode.display = true
   }
@@ -259,6 +263,8 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.rename.input = current_node_name
     this.dialogues.rename.display = true
     this.dialogues.rename.node = conn
+    this.dialogues.rename.physical = false
+    this.dialogues.rename.hypothetical = false
 }
 
   private sanitize_input(node_name) {
@@ -278,18 +284,25 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.rename.display = false
     this.dialogues.rename.input = this.sanitize_input(this.dialogues.rename.input)
     this.graph.node_names[this.dialogues.rename.node].name = this.dialogues.rename.input
+    this.graph.node_names[this.dialogues.rename.node].physical = !this.dialogues.rename.physical
+    this.graph.node_names[this.dialogues.rename.node].hypothetical = this.dialogues.rename.hypothetical
     this.save_and_update()
   }
 
   toolbar_new_node_confirm() {
     this.dialogues.newNode.display = false
     this.dialogues.newNode.input = this.sanitize_input(this.dialogues.newNode.input)
-    const newNodeId = mermaid_utils.addNode(this.graph, this.dialogues.newNode.input)
+    const node = {
+      name: this.dialogues.newNode.input,
+      physical: !this.dialogues.newNode.physical,
+      hypothetical: this.dialogues.newNode.hypothetical,
+    }
+    const newNodeId = mermaid_utils.addNode(this.graph, node)
     const conn = Number(this.dialogues.newNode.connectedNode + '') - 1
     if (conn >= 0) {
-      this.addEdge(conn, newNodeId)
+      this.addEdge(conn, newNodeId, true)
     } else if (newNodeId >= 1) { // connect to last new node unless its the only node in the graph
-      this.addEdge(newNodeId-1, newNodeId)
+      this.addEdge(newNodeId-1, newNodeId, true)
     }
     this.save_and_update()
   }
@@ -302,7 +315,7 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.newEdge.display = false
     const node1 = Number(this.dialogues.newEdge.node1 + '') - 1
     const node2 = Number(this.dialogues.newEdge.node2 + '') - 1
-    const succ = this.addEdge(node1, node2)
+    const succ = this.addEdge(node1, node2, this.dialogues.newEdge.physical)
     if (succ) {
       this.save_and_update()
     }
@@ -339,6 +352,11 @@ export class MainComponent implements AfterViewInit  {
 
   toolbar_flip_graph_style() {
     this.graphStyle.LR = !this.graphStyle.LR
+    this.update()
+  }
+
+  toolbar_toggle_labels(){
+    this.graphStyle.labels = !this.graphStyle.labels
     this.update()
   }
 
@@ -396,6 +414,20 @@ export class MainComponent implements AfterViewInit  {
     } else if (key == 'r') { // RENAME
       if (!!this.graphStyle.clicked) {
         this.toolbar_rename()
+      }
+    } else if (key == 'l') { // LABELS
+      this.toolbar_toggle_labels()
+
+    } else if (key == 'a') { // LABELS
+      if (!!this.graphStyle.clicked) {
+        this.graph.node_names[Number(this.graphStyle.clicked)].physical = !this.graph.node_names[Number(this.graphStyle.clicked)].physical
+        this.save_and_update()
+      }
+
+    } else if (key == 'h') { // LABELS
+      if (!!this.graphStyle.clicked) {
+        this.graph.node_names[Number(this.graphStyle.clicked)].hypothetical = !this.graph.node_names[Number(this.graphStyle.clicked)].hypothetical
+        this.save_and_update()
       }
 
     } else if (keyCode >= '0'.charCodeAt(0) && keyCode <= '9'.charCodeAt(0)) { // 0-9 select char
@@ -464,16 +496,16 @@ export class MainComponent implements AfterViewInit  {
 
     // PARSE RESPONSE
     if(!!res['resp']){
-      var json = JSON.parse(res['resp']);
+      const json = JSON.parse(res['resp']);
 
       // FIX OLD GRAPH VERSION
       if(!json.node_names[0].hasOwnProperty('name')){
         this.graph.node_names.pop()
         
         for (let i in json.node_names){ 
-          var node_names = {
+          const node_names = {
             name: json.node_names[i],
-            phsyical: true,
+            physical: true,
             hypothetical: false,
           }
           
@@ -484,11 +516,11 @@ export class MainComponent implements AfterViewInit  {
       }
 
       // FIX OLD GRAPH VERSION
-      if(!json.edges[0].hasOwnProperty('edge')){
+      if(!!json.edges && !json.edges[0]?.hasOwnProperty('edge')){
         this.graph.edges.pop()
         
         for (let i in json.edges){
-          var edges = {
+          const edges = {
             edge: json.edges[i],
             physical: true,
           }
@@ -517,7 +549,11 @@ export class MainComponent implements AfterViewInit  {
     this.graphStyle.clicked = nodeClicked
   }
 
-  private addEdge(node1, node2) {
+  private setClickedEdge(edgeClicked){
+    this.graphStyle.edgeClicked = edgeClicked
+  }
+
+  private addEdge(node1, node2, physical) {
     node1 = Number(node1)
     node2 = Number(node2)
 
@@ -528,11 +564,20 @@ export class MainComponent implements AfterViewInit  {
       return false
     }
 
+    const edge = {
+      edge: [node1, node2],
+      physical: physical,
+    }
+
     // check new edge is a duplicate
-    const isDup = this.graph.edges.some(pair => Number(pair[0])==node1 && Number(pair[1])==node2)
-    if (isDup) {
-      this.messageService.add({severity:'error', summary:'Edge Error', detail:'Duplicate edge not allowed.'})
-      return false
+    let edgeDup = '';
+    for (let i in this.graph.edges){
+      if (this.graph.edges[i].edge[0] == node1 && this.graph.edges[i].edge[1] == node2) edgeDup = i;
+    }
+    if (!!edgeDup) {
+      //this.messageService.add({severity:'error', summary:'Edge Error', detail:'Duplicate edge not allowed.'})
+      mermaid_utils.editEdge(this.graph, edgeDup);
+      return true
     }
 
     // check new edge will cause cycle
@@ -540,11 +585,6 @@ export class MainComponent implements AfterViewInit  {
     if (willCycle) {
       this.messageService.add({severity:'error', summary:'Edge Cycle Error', detail:'Error adding edge. Cycle detected.'})
       return false
-    }
-    
-    var edge = {
-      edge: [node1, node2],
-      physical: true,
     }
 
     mermaid_utils.addEdge(this.graph, edge)
@@ -578,7 +618,7 @@ export class MainComponent implements AfterViewInit  {
     })
   }
 
-  private callback(nodeClicked) {
+  private nodeCallback(nodeClicked) {
     if (this.graphStyle.clicked == nodeClicked) {  // same node clicked twice
       // this.toolbar_rename()
       this.setClickedNode(null)
@@ -590,7 +630,7 @@ export class MainComponent implements AfterViewInit  {
       this.setClickedNode(nodeClicked)
       this.update()
     } else { // two nodes clicked, add edge
-      this.addEdge(this.graphStyle.clicked, nodeClicked)
+      this.addEdge(this.graphStyle.clicked, nodeClicked, true)
       this.setClickedNode(null)
       this.save_and_update()
     }
@@ -599,7 +639,7 @@ export class MainComponent implements AfterViewInit  {
   update() {
     const element: any = this.mermaidDiv.nativeElement
     const graph_str = mermaid_utils.obj_to_graph_str(this.graph, this.graphStyle)
-    mermaid_utils.render(element, graph_str, this.callback.bind(this))
+    mermaid_utils.render(element, graph_str, this.nodeCallback.bind(this))
   }
 
 

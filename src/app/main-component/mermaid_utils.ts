@@ -50,13 +50,17 @@ export class mermaid_utils {
     graph.edges.push(edge)
   }
 
+  static editEdge(graph, i){
+    graph.edges[i].physical = !graph.edges[i].physical
+  }
+
   private static sortEdges(graph) {
     const N = graph.node_names.length
     graph.edges.sort((a, b) => (a[0]-b[0])*N+(a[1]-b[1]))
   }
 
   static deleteNodeEdges(graph, i) {
-    graph.edges = graph.edges.filter(edge => edge[0]!=i && edge[1]!=i);
+    graph.edges = graph.edges.filter(edge => edge.edge[0]!=i && edge.edge[1]!=i);
   }
 
   static deleteNode(graph, i) {
@@ -64,8 +68,8 @@ export class mermaid_utils {
     graph.node_names.splice(i, 1) // remove i-th node
     // fix edge numbers after removing edge i
     graph.edges.forEach(edge => {
-      if(edge[0] >= i) edge[0] -= 1
-      if(edge[1] >= i) edge[1] -= 1
+      if(edge.edge[0] >= i) edge.edge[0] -= 1
+      if(edge.edge[1] >= i) edge.edge[1] -= 1
     });
   }
 
@@ -109,24 +113,53 @@ export class mermaid_utils {
     result += ' \n'
     graph.node_names.forEach((node, i) => {
       const nodename = i;
-      var name = this.sanatizeName(node.name)
-      name = (i+1) + ': ' + name
+      let name = this.sanatizeName(node.name)
+
+      let prefix = '';
+      if(graphStyle.labels){
+        if(node.hypothetical) prefix += '::HypotheticalEvent'
+        else prefix += '::ActualEvent';
+        if(node.physical) prefix += '/PhysicalConcept:: '
+        else prefix += '/AbstractConcept:: ';
+      }
+
+      name = (i+1) + ': ' + prefix + name;
       name = this.addNewLineToName(name)
-      const line = nodename + '([' + name + '])';
+      let line = nodename;
+
+      if (node?.hypothetical){
+        line += '{' + name + '}';
+      } else{
+        line += '([' + name + '])';
+      }
+      
       const callbackLine = 'click ' + nodename + ' callBackFnForMermaidJS';
       result += line + '\n'
       result += callbackLine + '\n'
+
+      if(!node.physical){
+        result += 'style ' + nodename + ' fill:#85f2e6,stroke:#2f5e59' + '\n'
+      }
     })
+
+    let edgelabel = [' ', ' ']
+    if(graphStyle.labels){
+      edgelabel = ['|physical| ', '|abstract| ']
+    }
     graph.edges.forEach((edge) => {
-      var line = edge.edge[0] + ' --> ' + edge.edge[1];
+      let line = edge.edge[0] + ' -->' + edgelabel[0] + edge.edge[1];
       if(!edge.physical){
-        line = edge.edge[0] + ' -.-> ' + edge.edge[1];
+        line = edge.edge[0] + ' -.->' + edgelabel[1] + edge.edge[1];
       }
         result += line + '\n'
     })
     if(!!graphStyle) {
       if (!!graphStyle.clicked) {
-        result += 'style ' + graphStyle.clicked + ' fill:#f9f,stroke:#333,stroke-width:2px' + '\n'
+        if (!graph.node_names[Number(graphStyle.clicked)].physical){
+          result += 'style ' + graphStyle.clicked + ' fill:#ff6800,stroke:#302c78,stroke-width:2px' + '\n'
+        } else{
+          result += 'style ' + graphStyle.clicked + ' fill:#f9f,stroke:#333,stroke-width:2px' + '\n'
+        }
       }
     }
     return result
@@ -152,8 +185,13 @@ export class mermaid_utils {
   }
 
   static willBeCyclic(graph, node1, node2) {
-    const adj: [number, number][] = [...graph.edges, [node1, node2]]
-    const V = graph.node_names.length
+    let edges = [];
+    graph.edges.forEach((edge) => {
+      edges.push(edge.edge);
+    });
+
+    const adj: [number, number][] = [...edges, [node1, node2]];
+    const V = graph.node_names.length;
   /**
    * Returns true if the graph contains a
    * cycle, else false.
@@ -190,6 +228,7 @@ export class mermaid_utils {
     let visitedDirty = Array(V).fill(false);
 
     // Call the recursive helper function to detect cycle in different DFS trees
+    console.log(adj);
     for (let i = 0; i < V; i++)
       if (isCyclicUtil(i, visited, visitedDirty))
         return true;
