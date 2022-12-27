@@ -228,7 +228,6 @@ export class mermaid_utils {
     let visitedDirty = Array(V).fill(false);
 
     // Call the recursive helper function to detect cycle in different DFS trees
-    console.log(adj);
     for (let i = 0; i < V; i++)
       if (isCyclicUtil(i, visited, visitedDirty))
         return true;

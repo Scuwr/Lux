@@ -529,7 +529,7 @@ export class MainComponent implements AfterViewInit  {
           this.graph.edges.push(edges)
         }
       }else{
-        this.graph.edges = !!json.edges ? json.node_names : [];
+        this.graph.edges = !!json.edges ? json.edges : [];
       }
 
       this.graph.comments = !!json.comments ? json.comments : [];
