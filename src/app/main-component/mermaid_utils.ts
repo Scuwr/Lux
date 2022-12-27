@@ -128,7 +128,7 @@ export class mermaid_utils {
       let line = nodename;
 
       if (node?.hypothetical){
-        line += '{' + name + '}';
+        line += '[' + name + ']';
       } else{
         line += '([' + name + '])';
       }
