@@ -264,7 +264,7 @@ export class ViewerComponent implements AfterViewInit  {
 
       let json = this.allGraphs.data[this.tabViewIndex];
 
-      if(!json.node_names[0].hasOwnProperty('name')){
+      if(!json.node_names[0]?.hasOwnProperty('name')){
         for (let i in json.node_names){ 
           const node_names = {
             name: json.node_names[i],
@@ -275,11 +275,11 @@ export class ViewerComponent implements AfterViewInit  {
           this.graph.node_names.push(node_names)
         }
       }else{
-        this.graph.node_names = json.node_names;
+        this.graph.node_names = !!json.node_names ? json.node_names : [];
       }
 
       // FIX OLD GRAPH VERSION
-      if(!!json.edges && !json.edges[0]?.hasOwnProperty('edge')){        
+      if(!json.edges[0]?.hasOwnProperty('edge')){        
         for (let i in json.edges){
           const edges = {
             edge: json.edges[i],
@@ -289,11 +289,11 @@ export class ViewerComponent implements AfterViewInit  {
           this.graph.edges.push(edges)
         }
       }else{
-        this.graph.edges = json.edges;
+        this.graph.edges = !!json.edges ? json.node_names : [];
       }
 
-      this.graph.comments = json.comments;
-      this.graph.confusing = json.confusing;
+      this.graph.comments = !!json.comments ? json.comments : [];
+      this.graph.confusing = !!json.confusing ? json.confusing : false;
     }else{
       this.graph.node_names = [];
       this.graph.edges = [];
