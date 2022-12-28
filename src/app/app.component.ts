@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import { selectLoaderTasks } from './ngrx/main.reducer';
+import { HttpClient } from "@angular/common/http";
 
 @Component({
   selector: 'app-root',

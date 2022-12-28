@@ -107,7 +107,7 @@ export class MainComponent implements AfterViewInit  {
 
     private mainService: MainService,
   ) {
-    // this.userName = 'TEMPUSER';
+
   }
 
   ngAfterViewInit(){
@@ -397,7 +397,7 @@ export class MainComponent implements AfterViewInit  {
       return
     }
 
-    if (key == 'c'){ //TOGGLE CONFUSING STORY
+    if (key == 'q'){ //TOGGLE CONFUSING STORY
       this.graph.confusing = !this.graph.confusing
     }
 
