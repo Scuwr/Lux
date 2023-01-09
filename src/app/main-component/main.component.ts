@@ -24,6 +24,7 @@ export class MainComponent implements AfterViewInit  {
   private readonly ngDestroyed$ = new Subject();
 
   username = null;
+  validPassword = null;
 
   selectedStory = null;
   sidenavVisible = true;
@@ -33,6 +34,10 @@ export class MainComponent implements AfterViewInit  {
     username: {
       display: true,
       input: null
+    },
+    credentials: {
+      display: false,
+      password: null
     },
     rename: {
       display: false,
@@ -263,8 +268,8 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.rename.input = current_node_name
     this.dialogues.rename.display = true
     this.dialogues.rename.node = conn
-    this.dialogues.rename.physical = false
-    this.dialogues.rename.hypothetical = false
+    this.dialogues.rename.physical = this.graph.node_names[conn].physical
+    this.dialogues.rename.hypothetical = this.graph.node_names[conn].hypothetical
 }
 
   private sanitize_input(node_name) {
