@@ -32,6 +32,7 @@ import { MainService } from './main-component/main.services';
 import { AutofocusDirective } from './utils/autofocus.directive';
 import { SidenavComponent } from './sidenav/sidenav.component';
 import { ViewerComponent } from './viewer-component/viewer.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { ViewerComponent } from './viewer-component/viewer.component';
     SidenavComponent,
     AutofocusDirective,
     ViewerComponent,
+    SettingsComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,23 @@
+<!-- Toolbar -->
+<div class="toolbar" role="banner">
+    <img width="110" alt="Logo" src="assets/dag.png"/>
+    <span>Lux</span>
+      <div class="spacer"></div>
+    <div [ngStyle]="{'padding-right':'16px'}">
+      Username: {{username}}
+    </div>
+    <p-button icon="fa-solid fa-binoculars" [ngStyle]="{'margin-right':'16px'}" (click)="onViewModeButton()"></p-button>
+    <p-button icon="pi pi-home" [ngStyle]="{'margin-right':'16px'}" (click)="onHomeModeButton()"></p-button>
+  </div>
+
+  <!-- LOGIN DIALOGUE -->
+<p-dialog header="Username" [(visible)]="dialogues.username.display" [modal]="true" [closeOnEscape]="false" [closable]="false" [style]="{width: '25vw'}" [baseZIndex]="10000">
+    <span class="p-float-label">
+      <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.username.input" (keydown.enter)="username_confirm()" autofocus> 
+      <label for="float-input">Username</label>
+    </span>
+    
+    <ng-template pTemplate="footer">
+      <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="username_confirm()" label="Login"></p-button>
+    </ng-template>
+  </p-dialog>

@@ -24,7 +24,6 @@ export class MainComponent implements AfterViewInit  {
   private readonly ngDestroyed$ = new Subject();
 
   username = null;
-  validPassword = null;
 
   selectedStory = null;
   sidenavVisible = true;
@@ -34,10 +33,6 @@ export class MainComponent implements AfterViewInit  {
     username: {
       display: true,
       input: null
-    },
-    credentials: {
-      display: false,
-      password: null
     },
     rename: {
       display: false,
@@ -159,6 +154,13 @@ export class MainComponent implements AfterViewInit  {
 
   onViewModeButton() {
     this.router.navigate(['/view'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
+  }
+
+  onSettingsModeButton(){
+    this.router.navigate(['/settings'], {
       relativeTo: this.activatedRoute,
       queryParamsHandling: 'preserve'
     })
