@@ -52,6 +52,14 @@ export class SettingsComponent implements AfterViewInit {
     })
   }
 
+  get_user_data(){
+
+  }
+
+  get_story_data(){
+
+  }
+
   check_params_username() {
     this.route.queryParams.pipe(
       first()

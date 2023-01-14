@@ -21,3 +21,13 @@
       <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="username_confirm()" label="Login"></p-button>
     </ng-template>
   </p-dialog>
+
+  <p-toolbar styleClass="graphToolbar">
+    <div class="p-toolbar-group-left">
+      <p-button icon="pi pi-users" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-warning ui-button" 
+      label="U&#818;sers" (onClick)="get_user_data()"></p-button>
+      <p-button icon="pi pi-database" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-warning ui-button" 
+      label="S&#818;tories" (onClick)="get_story_data()"></p-button>
+    </div>
+
+  </p-toolbar>
