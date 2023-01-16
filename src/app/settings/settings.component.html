@@ -30,6 +30,31 @@
       <p-button icon="pi pi-database" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-warning ui-button" 
       label="S&#818;tories" (onClick)="get_story_data()"></p-button>
     </div>
-
   </p-toolbar>
+
+  <p-table #dt [columns]="cols" [value]="users" [paginator]="true" [rows]="10">
+    <ng-template pTemplate="header" let-columns>
+        <tr>
+            <th *ngFor="let col of columns">
+                {{col.header}}
+            </th>
+            <th> Test </th>
+            <th> Test 2 </th>
+        </tr>
+        <tr>
+            <th *ngFor="let col of columns">
+                <p-columnFilter type="text" [field]="col.field" [matchModeOptions]="matchModeOptions" [matchMode]="'custom-equals'"></p-columnFilter>
+            </th>
+            <th> Test </th>
+            <th> Test 2 </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData let-columns="columns">
+        <tr [pSelectableRow]="rowData">
+            <td *ngFor="let col of columns">
+                {{rowData[col.field]}}
+            </td>
+        </tr>
+    </ng-template>
+  </p-table>
 </div>

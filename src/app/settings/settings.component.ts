@@ -2,7 +2,10 @@ import { AfterViewInit, Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { filter, first, takeUntil } from 'rxjs/operators';
 
-import {ConfirmationService, MessageService} from 'primeng/api';
+import { ConfirmationService, MessageService, SelectItem, FilterService, FilterMatchMode } from 'primeng/api';
+import { mainActions } from '../ngrx/main.reducer';
+import { MainService } from '../main-component/main.services';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-settings',
@@ -10,6 +13,10 @@ import {ConfirmationService, MessageService} from 'primeng/api';
   styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements AfterViewInit {
+
+  matchModeOptions: SelectItem[];
+  cols: any[];
+  users = [];
 
   username = null;
 
@@ -29,9 +36,38 @@ export class SettingsComponent implements AfterViewInit {
     private activatedRoute: ActivatedRoute,
 
     private messageService: MessageService,
+    private filterService: FilterService,
+
+    private store: Store,
+    private mainService: MainService
   ) { }
 
   ngAfterViewInit(): void {
+    const customFilterName = 'custom-equals';
+
+        this.filterService.register(customFilterName, (value, filter): boolean => {
+            if (filter === undefined || filter === null || filter.trim() === '') {
+                return true;
+            }
+
+            if (value === undefined || value === null) {
+                return false;
+            }
+
+            return value.toString() === filter.toString();
+        });
+
+
+    this.cols = [
+      { field: 'username', header: 'Username' },
+      { field: 'privileges', header: 'Privileges' },
+    ];      
+
+    this.matchModeOptions = [
+      { label: 'Custom Equals', value: customFilterName },
+      { label: 'Starts With', value: FilterMatchMode.STARTS_WITH },
+      { label: 'Contains', value: FilterMatchMode.CONTAINS },
+    ];
 
     setTimeout(() => {
       this.check_params_username()
@@ -53,7 +89,20 @@ export class SettingsComponent implements AfterViewInit {
   }
 
   get_user_data(){
+    this.getUsers();
+  }
 
+  async getUsers(){
+    if (!!this.users && this.getUsers.length > 0){
+      return
+    }
+    this.store.dispatch(mainActions.PushLoader())
+    let res = await this.mainService.usersGet().toPromise();
+    let arr = res['resp'];
+
+    console.log(arr);
+
+    this.store.dispatch(mainActions.PopLoader())
   }
 
   get_story_data(){
