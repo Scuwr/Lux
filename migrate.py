@@ -79,6 +79,12 @@ def migrate(database, execute):
                 pipe.hset(f'{database}:annotations:{userid}:{storyid}', 'update', 0)
             pipe.execute()
 
+        # FORMAT
+        # counters -> nextuserid(int) nextstoryid(int)
+        r.hset(f'{database}:counters', 'nextuserid', len(usernames))
+        r.hset(f'{database}:counters', 'nextstoryid', len(stories))
+
     print(f'Executed at: {dt_string}')
-#delete_all("v1:")
+
+# delete_all("v1:")
 migrate("v1", False)

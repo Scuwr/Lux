@@ -30,12 +30,13 @@ app.get('*', function (req, res) {
 
 
 
-const DB_VERSION = 'v0';
+const DB_VERSION = 'v1';
 const TABLES = {
-    users: 'users', // set (usernames)
-    story: 'story', // hash (storyNum -> storyText)
-    storyCounter: 'storyCounter', // int (storyNum counter)
-    userAnnotations: 'userAnnotations', // hash (user:story -> jsongraph)
+    users: 'users', // users:userid(int) -> username(str) password(str) privilege(int) update(bool)
+    assignments: 'assignement', // assignments:userid(int) -> storyids(set)
+    stories: 'stories', // stories:storyid(int) -> storytext(str) update(bool)
+    annotations: 'annotations', // annotations:userid:storyid -> dateassigned(date) datemodified(date) priority(int) annotations(jsongraph) update(bool)
+    counters: 'counters', // counters -> nextuserid(int) nextstoryid(int)
     telemetry: 'telemetry', // list (log user data)
 }
 Object.entries(TABLES).forEach(([k, v]) => {TABLES[k] = DB_VERSION + ':' + v})
@@ -59,13 +60,15 @@ console.log('TABLES:', TABLES);
 
 // USER ANNOTATIONS
 app.post(API.userAnnotationAdd, (req, res) => {
-    const key = req.body.user + ':' + req.body.storyNum;
-    const val = req.body.data
-    client.hset(TABLES.userAnnotations, key, val)
+    const key = req.body.userid + ':' + req.body.storyid;
+    const field = req.body.field
+    const data = req.body.data
+    client.hset(TABLES.annotations, key, field, data)
     res.send({ 
         resp: true 
     })
 })
+
 app.post(API.userAnnotationGet, (req, res) => {
     const key = req.body.user + ':' + req.body.storyNum;
     client.hget(TABLES.userAnnotations, key, (err, data) => {
@@ -74,6 +77,7 @@ app.post(API.userAnnotationGet, (req, res) => {
         })
     })
 })
+
 app.post(API.userAnnotationGetAllUsers, (req, res) => {
     const key = ':' + req.body.storyNum;
     client.hkeys(TABLES.userAnnotations, (err, allKeys) => {
@@ -94,7 +98,6 @@ app.post(API.userAnnotationGetAllUsers, (req, res) => {
     })
 })
 
-
 // USERS
 app.post(API.usersAdd, (req, res) => {
     client.sadd(TABLES.users, req.body.data)
@@ -104,6 +107,7 @@ app.post(API.usersAdd, (req, res) => {
         })
     })
 })
+
 app.post(API.usersGet, (req, res) => {
     client.smembers(TABLES.users, (err, users) => {
         res.send({ 
@@ -114,7 +118,6 @@ app.post(API.usersGet, (req, res) => {
 
 
 // STORIES
-// RESET STORY COUNTER: redis-cli -p 6397 set v1:storyCounter 10000
 app.post(API.storyAdd, (req, res) => {
     client.incr(TABLES.storyCounter, (err, storyNum) => {
         client.hset(TABLES.story, storyNum, req.body.data)
@@ -123,6 +126,7 @@ app.post(API.storyAdd, (req, res) => {
         })
     })
 })
+
 app.post(API.storyGet, (req, res) => {
     client.hget(TABLES.story, req.body.data, (err, story) => {
         res.send({ 
@@ -130,6 +134,7 @@ app.post(API.storyGet, (req, res) => {
         })
     })
 })
+
 app.post(API.storyGetAll, (req, res) => {
     client.hgetall(TABLES.story, (err, story) => {
         res.send({ 
