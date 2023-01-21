@@ -49,9 +49,9 @@ const API = {
     storyGet: '/api/storyGet',
     storyGetAll: '/api/storyGetAll',
 
-    userAnnotationAdd: '/api/userAnnotationAdd',
-    userAnnotationGet: '/api/userAnnotationGet',
-    userAnnotationGetAllUsers: '/api/userAnnotationGetAllUsers',
+    annotationsAdd: '/api/annotationsAdd',
+    annotationsGet: '/api/annotationsGet',
+    annotationsGetAllUsers: '/api/annotationsGetAllUsers',
 
     telemetryAdd: '/api/telemetryAdd'
 }
@@ -59,28 +59,29 @@ const API = {
 console.log('TABLES:', TABLES);
 
 // USER ANNOTATIONS
-app.post(API.userAnnotationAdd, (req, res) => {
+app.post(API.annotationsAdd, (req, res) => {
     const key = req.body.userid + ':' + req.body.storyid;
     const field = req.body.field
     const data = req.body.data
-    client.hset(TABLES.annotations, key, field, data)
+    client.hset(TABLES.annotations + ':' + key, field, data)
     res.send({ 
         resp: true 
     })
 })
 
-app.post(API.userAnnotationGet, (req, res) => {
-    const key = req.body.user + ':' + req.body.storyNum;
-    client.hget(TABLES.userAnnotations, key, (err, data) => {
+app.post(API.annotationsGet, (req, res) => {
+    const key = req.body.userid + ':' + req.body.storyid;
+    const field = req.body.field
+    client.hget(TABLES.userAnnotations + ':' + key, field, (err, data) => {
         res.send({ 
             resp: data 
         })
     })
 })
 
-app.post(API.userAnnotationGetAllUsers, (req, res) => {
-    const key = ':' + req.body.storyNum;
-    client.hkeys(TABLES.userAnnotations, (err, allKeys) => {
+app.post(API.annotationsGetAllUsers, (req, res) => {
+    const key = ':' + req.body.storyid;
+    client.keys(TABLES.annotations + '*', (err, allKeys) => {
         const keys = allKeys.filter(v => v.endsWith(key))
         if (keys.length == 0) {
             res.send({ 
@@ -89,25 +90,39 @@ app.post(API.userAnnotationGetAllUsers, (req, res) => {
             })
             return
         }
-        client.hmget(TABLES.userAnnotations, keys, (err, data) => {
-            res.send({ 
-                keys: keys,
-                data: data,
+        let users = []
+        for (key in keys){
+            const key_array = key.split(':')
+            const userid = key_array[2]
+            client.hget(DB_VERSION + ':' + users + ':' + userid, 'username', (err, data) => {
+                users.push(data)
             })
+        }
+
+        res.send({ 
+            keys: keys,
+            data: users,
         })
     })
 })
 
 // USERS
 app.post(API.usersAdd, (req, res) => {
-    client.sadd(TABLES.users, req.body.data)
-    client.smembers(TABLES.users, (err, users) => {
-        res.send({ 
-            resp: users 
-        })
+    client.hget(TABLES.counters, 'nextuserid', (err, userid) => {
+        const pipe = client.pipeline()
+        pipe.hset(TABLES.users, userid, TABLES.users + ':' + userid)
+        pipe.hset(TABLES.users + ':' + userid, 'username', req.body.username)
+        pipe.hset(TABLES.users + ':' + userid, 'password', 'asrs')
+        pipe.hset(TABLES.users + ':' + userid, 'privilege', 0)
+        pipe.hset(TABLES.users + ':' + userid, 'update', 0)
+        await pipe.exec()
     })
+
+    client.hincrby(TABLES.counters, 'nextuserid', 1)
 })
 
+
+// TODO
 app.post(API.usersGet, (req, res) => {
     client.smembers(TABLES.users, (err, users) => {
         res.send({ 
