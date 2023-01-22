@@ -63,7 +63,10 @@ app.post(API.annotationsAdd, (req, res) => {
     const key = req.body.userid + ':' + req.body.storyid;
     const field = req.body.field
     const data = req.body.data
-    client.hset(TABLES.annotations + ':' + key, field, data)
+    const pipe = client.pipeline()
+    pipe.hset(TABLES.annotations + ':' + key, field, data)
+    pipe.hset(TABLES.annotations + ':' + key, 'datemodified', Date.now())
+    await pipe.exec()
     res.send({ 
         resp: true 
     })
@@ -121,12 +124,18 @@ app.post(API.usersAdd, (req, res) => {
     client.hincrby(TABLES.counters, 'nextuserid', 1)
 })
 
-
-// TODO
 app.post(API.usersGet, (req, res) => {
-    client.smembers(TABLES.users, (err, users) => {
+    let userdata = []
+    client.hkey(TABELS.users, (err, keys) => {
+        for (key in keys){
+            client.hget(TABLES.user + ':' + key, req.body.field, (err, data) => {
+                userdata.push(data)
+            })
+        }
+
         res.send({ 
-            resp: users 
+            keys: keys,
+            data: users,
         })
     })
 })
@@ -134,16 +143,19 @@ app.post(API.usersGet, (req, res) => {
 
 // STORIES
 app.post(API.storyAdd, (req, res) => {
-    client.incr(TABLES.storyCounter, (err, storyNum) => {
-        client.hset(TABLES.story, storyNum, req.body.data)
-        res.send({ 
-            resp: storyNum 
-        })
+    client.hget(TABLES.counters, 'nextstoryid', (err, storyid) => {
+        const pipe = client.pipeline()
+        pipe.hset(TABLES.stories, storyid, TABLES.users + ':' + storyid)
+        pipe.hset(TABLES.stories + ':' + storyid, 'storytext', req.body.storytext)
+        pipe.hset(TABLES.stories + ':' + storyid, 'update', 0)
+        await pipe.exec()
     })
+
+    client.hincrby(TABLES.counters, 'nextstoryid', 1)
 })
 
 app.post(API.storyGet, (req, res) => {
-    client.hget(TABLES.story, req.body.data, (err, story) => {
+    client.hget(TABLES.story + ':' + req.body.storyid, 'storytext', (err, story) => {
         res.send({ 
             resp: story 
         })
@@ -151,9 +163,16 @@ app.post(API.storyGet, (req, res) => {
 })
 
 app.post(API.storyGetAll, (req, res) => {
-    client.hgetall(TABLES.story, (err, story) => {
+    let stories = []
+    client.hkey(TABELS.story, (err, keys) => {
+        for (key in keys){
+            client.hget(TABLES.story + ':' + key, 'storytext', (err, data) => {
+                stories.push(data)
+            })
+        }
+
         res.send({ 
-            resp: story 
+            resp: stories,
         })
     })
 })

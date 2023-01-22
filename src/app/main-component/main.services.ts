@@ -12,9 +12,9 @@ const API = {
     storyGet: '/api/storyGet',
     storyGetAll: '/api/storyGetAll',
 
-    userAnnotationAdd: '/api/userAnnotationAdd',
-    userAnnotationGet: '/api/userAnnotationGet',
-    userAnnotationGetAllUsers: '/api/userAnnotationGetAllUsers',
+    annotationsAdd: '/api/annotationsAdd',
+    annotationsGet: '/api/annotationsGet',
+    annotationsGetAllUsers: '/api/annotationsGetAllUsers',
 
     telemetryAdd: '/api/telemetryAdd'
 }
@@ -23,36 +23,37 @@ const API = {
 export class MainService {
     constructor(private http: HttpClient) { }
 
-    usersAdd(user) {
-        return this.http.post(API.usersAdd, {'data': user});
+    usersAdd(username) {
+        return this.http.post(API.usersAdd, {'username': username});
     }
 
-    usersGet() {
-        return this.http.post(API.usersGet, {});
+    usersGet(field) {
+        return this.http.post(API.usersGet, {'field': field});
     }
 
-    storyAdd(story) {
-        return this.http.post(API.storyAdd, {'data': story});
+    storyAdd(storytext) {
+        return this.http.post(API.storyAdd, {'storytext': storytext});
     }
 
-    storyGet(storyNum) {
-        return this.http.post(API.storyGet, {'data': storyNum});
+    storyGet(storyid) {
+        return this.http.post(API.storyGet, {'storyid': storyid});
     }
 
     storyGetAll() {
         return this.http.post(API.storyGetAll, {});
     }
 
-    userAnnotationAdd(user, storyNum, jsonGraph) {
-        return this.http.post(API.userAnnotationAdd, {'user': user, 'storyNum': storyNum, 'data': jsonGraph});
+    // TODO
+    userAnnotationAdd(userid, field='annotation', jsonGraph) {
+        return this.http.post(API.annotationsAdd, {'userid': userid, 'field': field, 'data': jsonGraph});
     }
 
-    userAnnotationGet(user, storyNum) {
-        return this.http.post(API.userAnnotationGet, {'user': user, 'storyNum': storyNum});
+    userAnnotationGet(userid, storyid, field='annotation') {
+        return this.http.post(API.annotationsGet, {'userid': userid, 'storyid': storyid, 'field': field});
     }
 
-    userAnnotationGetAllUsers(storyNum) {
-        return this.http.post(API.userAnnotationGetAllUsers, {'storyNum': storyNum});
+    userAnnotationGetAllUsers(storyid) {
+        return this.http.post(API.annotationsGetAllUsers, {'storyid': storyid});
     }
 
     telemetryAdd(user, data) {
