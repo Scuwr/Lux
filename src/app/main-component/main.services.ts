@@ -33,8 +33,7 @@ export class MainService {
     }
 
     usersLogin(username, password) {
-        //return this.http.post(API.usersLogin, {'username': username, 'password': password});
-        return this.http.post(API.telemetryAdd, {'user': username, 'data': password});
+        return this.http.post(API.usersLogin, {'username': username, 'password': password});
     }
 
     storyAdd(storytext) {

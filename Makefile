@@ -3,6 +3,9 @@ start-redis:
 # 6397
 	redis-6.2.7/src/redis-server redis.conf
 
+debug:
+	npm run build
+	node server.js
 
 start-server:
 	./node_modules/supervisor/lib/cli-wrapper.js --no-restart-on-err -i public server.js

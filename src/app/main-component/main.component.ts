@@ -188,8 +188,7 @@ export class MainComponent implements AfterViewInit  {
       this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
       return
     }
-    let res = await this.mainService.usersLogin(this.dialogues.username.input, 'asrs')
-    console.log(res)
+    let res = await this.mainService.usersLogin(this.dialogues.username.input, 'asrs').toPromise()
     let userkey = res['resp']
     if (!!userkey){
       this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})

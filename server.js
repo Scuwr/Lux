@@ -125,13 +125,12 @@ app.post(API.usersAdd, (req, res) => {
 })
 
 app.post(API.usersLogin, (req, res) => {
-    console.log(req)
     client.smembers(TABLES.usernames + ':' + req.body.username, (err, userkey) => {
         if (userkey.length != 0) {
-            client.hget(userkey, 'password', (err, password) => {
+            client.hget(userkey[0], 'password', (err, password) => {
                 if (req.body.password == password){
                     res.send({
-                        data: userkey
+                        resp: userkey[0]
                     })
                     return
                 }
@@ -139,7 +138,7 @@ app.post(API.usersLogin, (req, res) => {
         }
         else {
             res.send({
-                data: []
+                resp: []
             })
             return
         }
@@ -186,7 +185,7 @@ app.post(API.storyGet, (req, res) => {
 
 app.post(API.storyGetAll, (req, res) => {
     let stories = []
-    client.hkey(TABELS.story, (err, keys) => {
+    client.hkey(TABLES.story, (err, keys) => {
         for (key in keys){
             client.hget(TABLES.story + ':' + key, 'storytext', (err, data) => {
                 stories.push(data)
@@ -201,7 +200,6 @@ app.post(API.storyGetAll, (req, res) => {
 
 //TELEMETRY
 app.post(API.telemetryAdd, (req, res) => {
-    console.log(req)
     const val = {
         timestamp: Date.now(),
         user: req.body.user,
