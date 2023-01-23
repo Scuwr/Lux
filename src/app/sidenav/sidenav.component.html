@@ -22,10 +22,10 @@
             <th style="text-align: right" *ngIf="selectedStoryIndex >= 0">{{selectedStoryIndex+1}}/{{allStories.length}}</th>
           </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-story let-rowIndex="rowIndex">
+    <ng-template pTemplate="body" let-story>
         <tr #storyRow (click)="sidebarClickStory(story)">
             <td class="storyrow" [ngClass]="{'selected': story.key==selectedStory?.key, 'completed': !!story.completed}" >
-              {{rowIndex+1}}:{{story.text}}
+              {{story.key}}: {{story.text}}
             </td>
         </tr>
     </ng-template>

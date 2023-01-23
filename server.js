@@ -28,7 +28,7 @@ const DB_VERSION = 'v1';
 const TABLES = {
     users: 'users', // users:userid(int) -> username(str) password(str) privilege(int) update(bool)
     usernames: 'usernames', // set (usernames) -> users:userid(hash)
-    assignments: 'assignement', // assignments:userid(int) -> storyids(set)
+    assignments: 'assignments', // assignments:userid(int) -> storyids(set)
     stories: 'stories', // stories:storyid(int) -> storytext(str) update(bool)
     annotations: 'annotations', // annotations:userid:storyid -> dateassigned(date) datemodified(date) priority(int) annotations(jsongraph) update(bool)
     counters: 'counters', // counters -> nextuserid(int) nextstoryid(int)
@@ -43,6 +43,7 @@ const API = {
 
     storyAdd: '/api/storyAdd',
     storyGet: '/api/storyGet',
+    storyGetAssigned: '/api/storyGetAssigned',
     storyGetAll: '/api/storyGetAll',
 
     annotationsAdd: '/api/annotationsAdd',
@@ -59,10 +60,8 @@ app.post(API.annotationsAdd, (req, res) => {
     const key = req.body.userid + ':' + req.body.storyid;
     const field = req.body.field
     const data = req.body.data
-    const pipe = client.pipeline()
-    pipe.hset(TABLES.annotations + ':' + key, field, data)
-    pipe.hset(TABLES.annotations + ':' + key, 'datemodified', Date.now())
-    pipe.exec()
+    client.hset(TABLES.annotations + ':' + key, field, data)
+    client.hset(TABLES.annotations + ':' + key, 'datemodified', Date.now())
     res.send({ 
         resp: true 
     })
@@ -70,8 +69,8 @@ app.post(API.annotationsAdd, (req, res) => {
 
 app.post(API.annotationsGet, (req, res) => {
     const key = req.body.userid + ':' + req.body.storyid;
-    const field = req.body.field
-    client.hget(TABLES.userAnnotations + ':' + key, field, (err, data) => {
+    const field = req.body.field;
+    client.hget(TABLES.annotations + ':' + key, field, (err, data) => {
         res.send({ 
             resp: data 
         })
@@ -80,7 +79,7 @@ app.post(API.annotationsGet, (req, res) => {
 
 app.post(API.annotationsGetAllUsers, (req, res) => {
     const key = ':' + req.body.storyid;
-    client.keys(TABLES.annotations + '*', (err, allKeys) => {
+    client.keys(TABLES.annotations + '*', async (err, allKeys) => {
         const keys = allKeys.filter(v => v.endsWith(key))
         if (keys.length == 0) {
             res.send({ 
@@ -89,32 +88,44 @@ app.post(API.annotationsGetAllUsers, (req, res) => {
             })
             return
         }
-        let users = []
-        for (key in keys){
+
+        let users = await Promise.all(keys.map(async (key) => {
             const key_array = key.split(':')
             const userid = key_array[2]
-            client.hget(DB_VERSION + ':' + users + ':' + userid, 'username', (err, data) => {
-                users.push(data)
+            return new Promise((resolve, reject) => {
+                client.hget(TABLES.users + ':' + userid, 'username', (err, data) => {
+                    if (err) reject(err)
+                    else resolve(data)
+                })
             })
-        }
+            
+        }))
+
+        let graph = await Promise.all(keys.map(async (key) => {
+            return new Promise((resolve, reject) => {
+                client.hget(key, 'annotation', (err, data) => {
+                    if (err) reject(err)
+                    else resolve(data)
+                })
+            })
+        }))
 
         res.send({ 
-            keys: keys,
-            data: users,
+            keys: users,
+            data: graph,
         })
     })
 })
 
 // USERS
+//TODO
 app.post(API.usersAdd, (req, res) => {
     client.hget(TABLES.counters, 'nextuserid', (err, userid) => {
-        const pipe = client.pipeline()
-        pipe.hset(TABLES.users, userid, TABLES.users + ':' + userid)
-        pipe.hset(TABLES.users + ':' + userid, 'username', req.body.username)
-        pipe.hset(TABLES.users + ':' + userid, 'password', 'asrs')
-        pipe.hset(TABLES.users + ':' + userid, 'privilege', 0)
-        pipe.hset(TABLES.users + ':' + userid, 'update', 0)
-        pipe.exec()
+        client.hset(TABLES.users, userid, TABLES.users + ':' + userid)
+        client.hset(TABLES.users + ':' + userid, 'username', req.body.username)
+        client.hset(TABLES.users + ':' + userid, 'password', req.body.password)
+        client.hset(TABLES.users + ':' + userid, 'privilege', 0)
+        client.hset(TABLES.users + ':' + userid, 'update', 0)
     })
     client.sadd(TABLES.usernames + ':' + req.body.username, (err, userid) => {
         res.send({
@@ -148,8 +159,8 @@ app.post(API.usersLogin, (req, res) => {
 app.post(API.usersGet, (req, res) => {
     let userdata = []
     client.hkey(TABELS.users, (err, keys) => {
-        for (key in keys){
-            client.hget(TABLES.user + ':' + key, req.body.field, (err, data) => {
+        for (const key in keys){
+            client.hget(TABLES.user + ':' + keys[key], req.body.field, (err, data) => {
                 userdata.push(data)
             })
         }
@@ -165,35 +176,38 @@ app.post(API.usersGet, (req, res) => {
 // STORIES
 app.post(API.storyAdd, (req, res) => {
     client.hget(TABLES.counters, 'nextstoryid', (err, storyid) => {
-        const pipe = client.pipeline()
-        pipe.hset(TABLES.stories, storyid, TABLES.users + ':' + storyid)
-        pipe.hset(TABLES.stories + ':' + storyid, 'storytext', req.body.storytext)
-        pipe.hset(TABLES.stories + ':' + storyid, 'update', 0)
-        pipe.exec()
+        client.hset(TABLES.stories, storyid, TABLES.users + ':' + storyid)
+        client.hset(TABLES.stories + ':' + storyid, 'storytext', req.body.storytext)
+        client.hset(TABLES.stories + ':' + storyid, 'update', 0)
     })
 
     client.hincrby(TABLES.counters, 'nextstoryid', 1)
 })
 
 app.post(API.storyGet, (req, res) => {
-    client.hget(TABLES.story + ':' + req.body.storyid, 'storytext', (err, story) => {
+    client.hget(TABLES.stories + ':' + req.body.storyid, 'storytext', (err, story) => {
         res.send({ 
             resp: story 
         })
     })
 })
 
+app.post(API.storyGetAssigned, (req, res) => {
+    let stories = []
+    client.smembers(TABLES.assignments + ':' + req.body.userid, async (err, storyids) => {
+        res.send({
+            key: storyids,
+            data: await getStories(storyids),
+        })
+    })
+})
+
 app.post(API.storyGetAll, (req, res) => {
     let stories = []
-    client.hkey(TABLES.story, (err, keys) => {
-        for (key in keys){
-            client.hget(TABLES.story + ':' + key, 'storytext', (err, data) => {
-                stories.push(data)
-            })
-        }
-
+    client.hkeys(TABLES.stories, async (err, storyids) => {
         res.send({ 
-            resp: stories,
+            key: storyids,
+            data: await getStories(storyids),
         })
     })
 })
@@ -217,3 +231,16 @@ app.post(API.telemetryAdd, (req, res) => {
 app.listen(_port, function () {
     console.log("Node Express server for " + app.name + " listening on http://localhost:" + _port);
 });
+
+async function getStories(storyids){
+    let stories = await Promise.all(storyids.map(async (storyid) => {
+        return new Promise((resolve, reject) => {
+            client.hget(TABLES.stories + ':' + storyid, 'storytext', (err, data) => {
+                if (err) reject(err);
+                else resolve(data);
+            })
+        })
+    }))
+
+    return stories 
+}

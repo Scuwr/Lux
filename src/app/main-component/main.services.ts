@@ -11,6 +11,7 @@ const API = {
 
     storyAdd: '/api/storyAdd',
     storyGet: '/api/storyGet',
+    storyGetAssigned: '/api/storyGetAssigned',
     storyGetAll: '/api/storyGetAll',
 
     annotationsAdd: '/api/annotationsAdd',
@@ -24,8 +25,8 @@ const API = {
 export class MainService {
     constructor(private http: HttpClient) { }
 
-    usersAdd(username) {
-        return this.http.post(API.usersAdd, {'username': username});
+    usersAdd(username, password) {
+        return this.http.post(API.usersAdd, {'username': username, 'password': password});
     }
 
     usersGet(field) {
@@ -42,6 +43,10 @@ export class MainService {
 
     storyGet(storyid) {
         return this.http.post(API.storyGet, {'storyid': storyid});
+    }
+
+    storyGetAssigned(userid) {
+        return this.http.post(API.storyGetAssigned, {'userid': userid});
     }
 
     storyGetAll() {

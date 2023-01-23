@@ -42,14 +42,14 @@ export class MainComponent implements AfterViewInit  {
       display: false,
       input: null,
       node: null,
-      physical: true,
+      abstract: false,
       hypothetical: false,
     },
     newNode: {
       display: false,
       input: null,
       connectedNode: null,
-      physical: true,
+      abstract: false,
       hypothetical: false,
     },
     newEdge: {
@@ -79,7 +79,7 @@ export class MainComponent implements AfterViewInit  {
     //node_names: [],
     node_names: [{
       name: '',
-      physical: true,
+      abstract: false,
       hypothetical: false,
     }],
     edges: [{
@@ -190,8 +190,9 @@ export class MainComponent implements AfterViewInit  {
     }
     let res = await this.mainService.usersLogin(this.dialogues.username.input, 'asrs').toPromise()
     let userkey = res['resp']
-    if (!!userkey){
+    if (!userkey){
       this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
+      return
     }
 
     this.user.key = userkey
@@ -202,17 +203,25 @@ export class MainComponent implements AfterViewInit  {
     if (!this.allStories) {  // FETCH STORIES
       this.store.dispatch(mainActions.PushLoader())
       this.mainService.telemetryAdd(this.user.name, 'login').subscribe((resp) => {})
-      let res = await this.mainService.storyGetAll().toPromise();
-      let arr = res['resp'];
+      let res = await this.mainService.storyGetAssigned(this.user.id).toPromise();
       const result = []
-      Object.entries(arr).forEach(entry => {
-        let key = entry[0]
-        let story = entry[1]
+      for (const idx in res['key']){
         result.push({
-          text: story,
-          key: key
+          text: res['data'][idx],
+          key: res['key'][idx]
         })
+      }
+
+      result.sort((a, b) => {
+        if (parseInt(a.key) > parseInt(b.key)) {
+          return 1
+        }
+        if (parseInt(a.key) < parseInt(b.key)) {
+          return -1
+        }
+        return 0
       })
+
       this.store.dispatch(mainActions.setAllStories({allStories: result}))
       this.store.dispatch(mainActions.PopLoader())
     }
@@ -221,7 +230,7 @@ export class MainComponent implements AfterViewInit  {
     setTimeout(() => {
       this.router.navigate([], {
         relativeTo: this.activatedRoute,
-        queryParams: {userid: this.user.id}, 
+        queryParams: {username: this.user.name}, 
         queryParamsHandling: 'merge'
       })
     }, 0);
@@ -238,6 +247,17 @@ export class MainComponent implements AfterViewInit  {
       })
   }
 
+  async register_user(){
+    this.dialogues.username.input = this.dialogues.username.input.toLowerCase();
+    this.dialogues.username.input = this.dialogues.username.input.replaceAll(/[^a-z0-9]*/g, '')
+    if (this.dialogues.username.input.length == 0) {
+      this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
+      return
+    }
+    let res = await this.mainService.usersAdd(this.dialogues.username.input, 'asrs').toPromise
+    this.username_confirm()
+  }
+
   toolbar_new_node() {
     let conn = null
     if (!!this.graphStyle.clicked) {
@@ -248,7 +268,7 @@ export class MainComponent implements AfterViewInit  {
 
     this.dialogues.newNode.input = ''
     this.dialogues.newNode.connectedNode = !!conn ? conn : ''
-    this.dialogues.newNode.physical = false
+    this.dialogues.newNode.abstract = false
     this.dialogues.newNode.hypothetical = false
     this.dialogues.newNode.display = true
   }
@@ -282,7 +302,7 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.rename.input = current_node_name
     this.dialogues.rename.display = true
     this.dialogues.rename.node = conn
-    this.dialogues.rename.physical = this.graph.node_names[conn].physical
+    this.dialogues.rename.abstract = this.graph.node_names[conn].abstract
     this.dialogues.rename.hypothetical = this.graph.node_names[conn].hypothetical
 }
 
@@ -303,7 +323,7 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.rename.display = false
     this.dialogues.rename.input = this.sanitize_input(this.dialogues.rename.input)
     this.graph.node_names[this.dialogues.rename.node].name = this.dialogues.rename.input
-    this.graph.node_names[this.dialogues.rename.node].physical = !this.dialogues.rename.physical
+    this.graph.node_names[this.dialogues.rename.node].abstract = this.dialogues.rename.abstract
     this.graph.node_names[this.dialogues.rename.node].hypothetical = this.dialogues.rename.hypothetical
     this.save_and_update()
   }
@@ -313,7 +333,7 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.newNode.input = this.sanitize_input(this.dialogues.newNode.input)
     const node = {
       name: this.dialogues.newNode.input,
-      physical: !this.dialogues.newNode.physical,
+      abstract: this.dialogues.newNode.abstract,
       hypothetical: this.dialogues.newNode.hypothetical,
     }
     const newNodeId = mermaid_utils.addNode(this.graph, node)
@@ -439,7 +459,7 @@ export class MainComponent implements AfterViewInit  {
 
     } else if (key == 'a') { // LABELS
       if (!!this.graphStyle.clicked) {
-        this.graph.node_names[Number(this.graphStyle.clicked)].physical = !this.graph.node_names[Number(this.graphStyle.clicked)].physical
+        this.graph.node_names[Number(this.graphStyle.clicked)].abstract = !this.graph.node_names[Number(this.graphStyle.clicked)].abstract
         this.save_and_update()
       }
 
@@ -502,6 +522,7 @@ export class MainComponent implements AfterViewInit  {
     }
 
     this.mainService.telemetryAdd(this.user.name, 'get ' + story.key).subscribe((resp) => {})
+    console.log(story.key)
     let res = await this.mainService.userAnnotationGet(this.user.id, story.key, 'annotation').toPromise();
     await backendSave
 
@@ -522,12 +543,24 @@ export class MainComponent implements AfterViewInit  {
       this.graph.comments = ''
       this.graph.confusing = false
 
+      if(json.node_names[0]?.hasOwnProperty('physical')){
+        for (const i in json.node_names){ 
+          const node_names = {
+            name: json.node_names[i].name,
+            abstract: !json.node_names[i].physical,
+            hypothetical: json.node_names[i].hypothetical,
+          }
+          
+          this.graph.node_names.push(node_names)
+        }
+      }
+
       // FIX OLD GRAPH VERSION
       if(!json.node_names[0]?.hasOwnProperty('name')){        
-        for (let i in json.node_names){ 
+        for (const i in json.node_names){ 
           const node_names = {
             name: json.node_names[i],
-            physical: true,
+            abstract: false,
             hypothetical: false,
           }
           
@@ -539,7 +572,7 @@ export class MainComponent implements AfterViewInit  {
 
       // FIX OLD GRAPH VERSION
       if(!!json.edges && !json.edges[0]?.hasOwnProperty('edge')){     
-        for (let i in json.edges){
+        for (const i in json.edges){
           const edges = {
             edge: json.edges[i],
             physical: true,

@@ -18,7 +18,11 @@ export class SettingsComponent implements AfterViewInit {
   cols: any[];
   users = [];
 
-  username = null;
+  user = {
+    key: null,
+    id: null,
+    name: null
+  }
 
   dialogues = {
     username: {
@@ -89,7 +93,7 @@ export class SettingsComponent implements AfterViewInit {
   }
 
   get_user_data(){
-    this.getUsers();
+    //this.getUsers();
   }
 
   async getUsers(){
@@ -127,14 +131,23 @@ export class SettingsComponent implements AfterViewInit {
       this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
       return
     }
-    this.username = this.dialogues.username.input
+    let res = await this.mainService.usersLogin(this.dialogues.username.input, 'asrs').toPromise()
+    let userkey = res['resp']
+    if (!userkey){
+      this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
+      return
+    }
+
+    this.user.key = userkey
+    this.user.id = userkey.split(':')[2]
+    this.user.name = this.dialogues.username.input
     this.dialogues.username.display = false;
 
     // set username in url
     setTimeout(() => {
       this.router.navigate([], {
         relativeTo: this.activatedRoute,
-        queryParams: {username: this.username}, 
+        queryParams: {username: this.user.name}, 
         queryParamsHandling: 'merge'
       })
     }, 0);

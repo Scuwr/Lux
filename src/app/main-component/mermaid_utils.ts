@@ -31,7 +31,7 @@ export class mermaid_utils {
     if (graph1.comments !== graph2.comments) return false;
     for (let i in graph1.node_names){
       if (graph1.node_names[i].name !== graph2.node_names[i].name) return false;
-      if (graph1.node_names[i].physical !== graph2.node_names[i].physical) return false;
+      if (graph1.node_names[i].abstract !== graph2.node_names[i].abstract) return false;
       if (graph1.node_names[i].hypothetical !== graph2.node_names[i].hypothetical) return false;
     }
     for (let i in graph1.edges){
@@ -119,8 +119,8 @@ export class mermaid_utils {
       if(graphStyle.labels){
         if(node.hypothetical) prefix += '::HypotheticalEvent'
         else prefix += '::ActualEvent';
-        if(node.physical) prefix += '/PhysicalConcept:: '
-        else prefix += '/AbstractConcept:: ';
+        if(node.abstract) prefix += '/AbstractConcept:: '
+        else prefix += '/PhysicalConcept:: ';
       }
 
       name = (i+1) + ': ' + prefix + name;
@@ -137,7 +137,7 @@ export class mermaid_utils {
       result += line + '\n'
       result += callbackLine + '\n'
 
-      if(!node.physical){
+      if(node.abstract){
         result += 'style ' + nodename + ' fill:#85f2e6,stroke:#2f5e59' + '\n'
       }
     })
@@ -155,7 +155,7 @@ export class mermaid_utils {
     })
     if(!!graphStyle) {
       if (!!graphStyle.clicked) {
-        if (!graph.node_names[Number(graphStyle.clicked)].physical){
+        if (!graph.node_names[Number(graphStyle.clicked)].abstract){
           result += 'style ' + graphStyle.clicked + ' fill:#ff6800,stroke:#302c78,stroke-width:2px' + '\n'
         } else{
           result += 'style ' + graphStyle.clicked + ' fill:#f9f,stroke:#333,stroke-width:2px' + '\n'

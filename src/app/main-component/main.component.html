@@ -23,6 +23,7 @@
   </span>
   
   <ng-template pTemplate="footer">
+    <p-button icon="pi pi-user-plus" [ngStyle]="{'margin-right':'8px'}" (click)="register_user()" label="Register"></p-button>
     <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="username_confirm()" label="Login"></p-button>
   </ng-template>
 </p-dialog>
@@ -34,7 +35,7 @@
     <label for="float-input">New Name</label>
   </span>
   <h5>Abstract Concept</h5>
-  <p-inputSwitch [(ngModel)]="dialogues.rename.physical"></p-inputSwitch>
+  <p-inputSwitch [(ngModel)]="dialogues.rename.abstract"></p-inputSwitch>
   <h5>Hypothical Event</h5>
   <p-inputSwitch [(ngModel)]="dialogues.rename.hypothetical"></p-inputSwitch>
     
@@ -55,7 +56,7 @@
     <label for="float-input">Connected Node</label>
   </span>
   <h5>Abstract Concept</h5>
-  <p-inputSwitch [(ngModel)]="dialogues.newNode.physical"></p-inputSwitch>
+  <p-inputSwitch [(ngModel)]="dialogues.newNode.abstract"></p-inputSwitch>
   <h5>Hypothical Event</h5>
   <p-inputSwitch [(ngModel)]="dialogues.newNode.hypothetical"></p-inputSwitch>
   

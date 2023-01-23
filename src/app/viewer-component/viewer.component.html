@@ -11,9 +11,17 @@
   <p-button icon="fa-solid fa-pencil" [ngStyle]="{'margin-right':'16px'}" (click)="onEditModeButton()"></p-button>
 </div>
 
-
-
-
+<!-- LOGIN DIALOGUE -->
+<p-dialog header="Username" [(visible)]="dialogues.username.display" [modal]="true" [closeOnEscape]="false" [closable]="false" [style]="{width: '25vw'}" [baseZIndex]="10000">
+  <span class="p-float-label">
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.username.input" (keydown.enter)="username_confirm()" autofocus> 
+    <label for="float-input">Username</label>
+  </span>
+  
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="username_confirm()" label="Login"></p-button>
+  </ng-template>
+</p-dialog>
 
 <div>
 

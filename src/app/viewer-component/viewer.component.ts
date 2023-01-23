@@ -22,7 +22,21 @@ export class ViewerComponent implements AfterViewInit  {
 
   private readonly ngDestroyed$ = new Subject();
 
-  username = null;
+  user = {
+    key: null,
+    id: null,
+    name: null
+  }
+
+  dialogues = {
+    username: {
+      display: true,
+      input: null
+    },
+    help: {
+      display: false,
+    }
+  }
 
   selectedStory = null;
   sidenavVisible = true;
@@ -138,14 +152,23 @@ export class ViewerComponent implements AfterViewInit  {
     let res = await this.mainService.storyGetAll().toPromise();
     let arr = res['resp'];
     const result = []
-    Object.entries(arr).forEach(entry => {
-      let key = entry[0]
-      let story = entry[1]
+    for (const idx in res['key']){
       result.push({
-        text: story,
-        key: key
+        text: res['data'][idx],
+        key: res['key'][idx]
       })
+    }
+
+    result.sort((a, b) => {
+      if (parseInt(a.key) > parseInt(b.key)) {
+        return 1
+      }
+      if (parseInt(a.key) < parseInt(b.key)) {
+        return -1
+      }
+      return 0
     })
+
     this.store.dispatch(mainActions.setAllStories({allStories: result}))
     this.store.dispatch(mainActions.PopLoader())
   }
@@ -160,9 +183,39 @@ export class ViewerComponent implements AfterViewInit  {
         if (match.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
       }
       if (!!params.username) { // username found in url parameters, login
-        this.username = params.username
+        this.dialogues.username.input = params.username
+        this.username_confirm()
       }
     })
+  }
+
+  async username_confirm() {
+    this.dialogues.username.input = this.dialogues.username.input.toLowerCase();
+    this.dialogues.username.input = this.dialogues.username.input.replaceAll(/[^a-z0-9]*/g, '')
+    if (this.dialogues.username.input.length == 0) {
+      this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
+      return
+    }
+    let res = await this.mainService.usersLogin(this.dialogues.username.input, 'asrs').toPromise()
+    let userkey = res['resp']
+    if (!userkey){
+      this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
+      return
+    }
+
+    this.user.key = userkey
+    this.user.id = userkey.split(':')[2]
+    this.user.name = this.dialogues.username.input
+    this.dialogues.username.display = false;
+
+    // set username in url
+    setTimeout(() => {
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams: {username: this.user.name}, 
+        queryParamsHandling: 'merge'
+      })
+    }, 0);
   }
 
   toolbar_flip_graph_style() {
@@ -177,9 +230,11 @@ export class ViewerComponent implements AfterViewInit  {
 
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
     // EXIT IF DIALOGUE OPEN OR TYPING IN A SELECTED ELEMENT
-    if (!!this.keyboardCaptureElement) {
+    if (!!this.keyboardCaptureElement
+       || !!this.dialogues.username.display) {
         return
     }
+
     const key = event.key.toLowerCase()
     if (key == '[' || key == ']') { // previous/next story
       const dx = key == '[' ? -1 : 1
@@ -222,7 +277,7 @@ export class ViewerComponent implements AfterViewInit  {
     const indicesToRemove = data.map((v, i) => mermaid_utils.isEmpty(v) ? i : -1) // remove empty stories
     const suffixLen = (':' + story.key).length // remove suffix :#id
 
-    keys = keys.filter((v, i) => !indicesToRemove.includes(i)).map(v => v.substring(0, v.length - suffixLen))
+    keys = keys.filter((v, i) => !indicesToRemove.includes(i))
     data = data.filter((v, i) => !indicesToRemove.includes(i))
 
     // sort in pairs
@@ -240,7 +295,7 @@ export class ViewerComponent implements AfterViewInit  {
         queryParamsHandling: 'merge',
       })
 
-    const curUserKey = this.allGraphs.keys.findIndex((v) => this.username == v)
+    const curUserKey = this.allGraphs.keys.findIndex((v) => this.user.id == v)
     this.tabViewIndex = curUserKey >= 0 ? curUserKey : 0
     this.updateTabView(this.tabViewIndex)
     this.store.dispatch(mainActions.PopLoader())

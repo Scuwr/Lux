@@ -35,11 +35,11 @@ def migrate(database, execute):
             usernames.append(name)
 
     # Get Story text
-    enum_stories = ""
+    enum_stories = []
     for story_id in story_keys:
         story = r.hget("v0:story", story_id)
         stories.append(story)
-        enum_stories += f'{story_id} '
+        enum_stories.append(story_id)
 
     while(execute):
         delete_all(f'{database}:')
@@ -57,7 +57,8 @@ def migrate(database, execute):
                 pipe.hset(f'{database}:users:{i}', 'update', 0)
 
                 pipe.hset(f'{database}:assignments', i, f'{database}:assignments:{i}')
-                pipe.sadd(f'{database}:assignments:{i}', enum_stories)
+                for storyid in enum_stories:
+                    pipe.sadd(f'{database}:assignments:{i}', storyid)
 
                 pipe.sadd(f'{database}:usernames:{usernames[i]}', f'{database}:users:{i}')
             pipe.execute()
@@ -93,4 +94,4 @@ def migrate(database, execute):
 
     print(f'Executed at: {dt_string}')
 
-migrate("v1", False)
+migrate("v1", True)
