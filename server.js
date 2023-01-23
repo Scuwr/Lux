@@ -24,15 +24,10 @@ app.get('*', function (req, res) {
     res.status(200).sendFile(`/`, {root: _app_folder});
 });
 
-
-
-
-
-
-
 const DB_VERSION = 'v1';
 const TABLES = {
     users: 'users', // users:userid(int) -> username(str) password(str) privilege(int) update(bool)
+    usernames: 'usernames', // set (usernames) -> users:userid(hash)
     assignments: 'assignement', // assignments:userid(int) -> storyids(set)
     stories: 'stories', // stories:storyid(int) -> storytext(str) update(bool)
     annotations: 'annotations', // annotations:userid:storyid -> dateassigned(date) datemodified(date) priority(int) annotations(jsongraph) update(bool)
@@ -42,8 +37,9 @@ const TABLES = {
 Object.entries(TABLES).forEach(([k, v]) => {TABLES[k] = DB_VERSION + ':' + v})
 
 const API = {
-    usersAdd: '/api/usersAdd/',
-    usersGet: '/api/usersGet/',
+    usersAdd: '/api/usersAdd',
+    usersGet: '/api/usersGet',
+    usersLogin: '/api/usersLogin',
 
     storyAdd: '/api/storyAdd',
     storyGet: '/api/storyGet',
@@ -66,7 +62,7 @@ app.post(API.annotationsAdd, (req, res) => {
     const pipe = client.pipeline()
     pipe.hset(TABLES.annotations + ':' + key, field, data)
     pipe.hset(TABLES.annotations + ':' + key, 'datemodified', Date.now())
-    await pipe.exec()
+    pipe.exec()
     res.send({ 
         resp: true 
     })
@@ -118,10 +114,36 @@ app.post(API.usersAdd, (req, res) => {
         pipe.hset(TABLES.users + ':' + userid, 'password', 'asrs')
         pipe.hset(TABLES.users + ':' + userid, 'privilege', 0)
         pipe.hset(TABLES.users + ':' + userid, 'update', 0)
-        await pipe.exec()
+        pipe.exec()
     })
-
+    client.sadd(TABLES.usernames + ':' + req.body.username, (err, userid) => {
+        res.send({
+            data: userid
+        })
+    })
     client.hincrby(TABLES.counters, 'nextuserid', 1)
+})
+
+app.post(API.usersLogin, (req, res) => {
+    console.log(req)
+    client.smembers(TABLES.usernames + ':' + req.body.username, (err, userkey) => {
+        if (userkey.length != 0) {
+            client.hget(userkey, 'password', (err, password) => {
+                if (req.body.password == password){
+                    res.send({
+                        data: userkey
+                    })
+                    return
+                }
+            })
+        }
+        else {
+            res.send({
+                data: []
+            })
+            return
+        }
+    })
 })
 
 app.post(API.usersGet, (req, res) => {
@@ -148,7 +170,7 @@ app.post(API.storyAdd, (req, res) => {
         pipe.hset(TABLES.stories, storyid, TABLES.users + ':' + storyid)
         pipe.hset(TABLES.stories + ':' + storyid, 'storytext', req.body.storytext)
         pipe.hset(TABLES.stories + ':' + storyid, 'update', 0)
-        await pipe.exec()
+        pipe.exec()
     })
 
     client.hincrby(TABLES.counters, 'nextstoryid', 1)
@@ -179,6 +201,7 @@ app.post(API.storyGetAll, (req, res) => {
 
 //TELEMETRY
 app.post(API.telemetryAdd, (req, res) => {
+    console.log(req)
     const val = {
         timestamp: Date.now(),
         user: req.body.user,

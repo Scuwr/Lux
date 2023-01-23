@@ -42,19 +42,24 @@ def migrate(database, execute):
         enum_stories += f'{story_id} '
 
     while(execute):
+        delete_all(f'{database}:')
+
         # FORMAT
         # users:userid(int) -> username(str) password(str) privilege(int) update(bool)
         # assignments:userid(int) -> storyids(set)
+        # usernames -> users:userid(hash)
         with r.pipeline() as pipe:
             for i in range(len(usernames)):
                 pipe.hset(f'{database}:users', i, f'{database}:users:{i}')
                 pipe.hset(f'{database}:users:{i}', 'username', usernames[i])
-                pipe.hset(f'{database}:users:{i}', 'password', "")
+                pipe.hset(f'{database}:users:{i}', 'password', 'asrs')
                 pipe.hset(f'{database}:users:{i}', 'privilege', 0)
                 pipe.hset(f'{database}:users:{i}', 'update', 0)
 
                 pipe.hset(f'{database}:assignments', i, f'{database}:assignments:{i}')
                 pipe.sadd(f'{database}:assignments:{i}', enum_stories)
+
+                pipe.sadd(f'{database}:usernames:{usernames[i]}', f'{database}:users:{i}')
             pipe.execute()
 
         # FORMAT
@@ -84,7 +89,8 @@ def migrate(database, execute):
         r.hset(f'{database}:counters', 'nextuserid', len(usernames))
         r.hset(f'{database}:counters', 'nextstoryid', len(stories))
 
+        
+
     print(f'Executed at: {dt_string}')
 
-# delete_all("v1:")
 migrate("v1", False)

@@ -23,7 +23,11 @@ export class MainComponent implements AfterViewInit  {
 
   private readonly ngDestroyed$ = new Subject();
 
-  username = null;
+  user = {
+    key: null,
+    id: null,
+    name: null
+  }
 
   selectedStory = null;
   sidenavVisible = true;
@@ -136,7 +140,7 @@ export class MainComponent implements AfterViewInit  {
           break;
 
         case mainActions.setSelectedStory.type:
-          if (!this.username || (!!state.selectedStory && state.selectedStory.key == this.selectedStory?.key)) {
+          if (!this.user.name || (!!state.selectedStory && state.selectedStory.key == this.selectedStory?.key)) {
             break
           }
           this.setSelectedStory(state.selectedStory)
@@ -184,12 +188,21 @@ export class MainComponent implements AfterViewInit  {
       this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
       return
     }
-    this.username = this.dialogues.username.input
+    let res = await this.mainService.usersLogin(this.dialogues.username.input, 'asrs')
+    console.log(res)
+    let userkey = res['resp']
+    if (!!userkey){
+      this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
+    }
+
+    this.user.key = userkey
+    this.user.id = userkey.split(':')[2]
+    this.user.name = this.dialogues.username.input
     this.dialogues.username.display = false;
 
     if (!this.allStories) {  // FETCH STORIES
       this.store.dispatch(mainActions.PushLoader())
-      this.mainService.telemetryAdd(this.username, 'login').subscribe((resp) => {})
+      this.mainService.telemetryAdd(this.user.name, 'login').subscribe((resp) => {})
       let res = await this.mainService.storyGetAll().toPromise();
       let arr = res['resp'];
       const result = []
@@ -209,7 +222,7 @@ export class MainComponent implements AfterViewInit  {
     setTimeout(() => {
       this.router.navigate([], {
         relativeTo: this.activatedRoute,
-        queryParams: {username: this.username}, 
+        queryParams: {userid: this.user.id}, 
         queryParamsHandling: 'merge'
       })
     }, 0);
@@ -489,8 +502,8 @@ export class MainComponent implements AfterViewInit  {
       return
     }
 
-    this.mainService.telemetryAdd(this.username, 'get ' + story.key).subscribe((resp) => {})
-    let res = await this.mainService.userAnnotationGet(this.username, story.key).toPromise();
+    this.mainService.telemetryAdd(this.user.name, 'get ' + story.key).subscribe((resp) => {})
+    let res = await this.mainService.userAnnotationGet(this.user.id, story.key, 'annotation').toPromise();
     await backendSave
 
     this.selectedStory = story
@@ -614,8 +627,8 @@ export class MainComponent implements AfterViewInit  {
     }
     console.log('saving...')
     graph = JSON.stringify(graph)
-    let res = await this.mainService.userAnnotationAdd(this.username, storyKey, graph).toPromise();
-    this.mainService.telemetryAdd(this.username, 'edit ' + storyKey).subscribe((resp) => {})
+    let res = await this.mainService.userAnnotationAdd(this.user.id, storyKey, 'annotation', graph).toPromise();
+    this.mainService.telemetryAdd(this.user.name, 'edit ' + storyKey).subscribe((resp) => {})
     return res
   }
 

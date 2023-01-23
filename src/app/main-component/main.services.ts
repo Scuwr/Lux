@@ -5,8 +5,9 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, retry } from 'rxjs/operators';
 
 const API = {
-    usersAdd: '/api/usersAdd/',
-    usersGet: '/api/usersGet/',
+    usersAdd: '/api/usersAdd',
+    usersGet: '/api/usersGet',
+    usersLogin: '/api/usersLogin',
 
     storyAdd: '/api/storyAdd',
     storyGet: '/api/storyGet',
@@ -31,6 +32,11 @@ export class MainService {
         return this.http.post(API.usersGet, {'field': field});
     }
 
+    usersLogin(username, password) {
+        //return this.http.post(API.usersLogin, {'username': username, 'password': password});
+        return this.http.post(API.telemetryAdd, {'user': username, 'data': password});
+    }
+
     storyAdd(storytext) {
         return this.http.post(API.storyAdd, {'storytext': storytext});
     }
@@ -43,9 +49,8 @@ export class MainService {
         return this.http.post(API.storyGetAll, {});
     }
 
-    // TODO
-    userAnnotationAdd(userid, field='annotation', jsonGraph) {
-        return this.http.post(API.annotationsAdd, {'userid': userid, 'field': field, 'data': jsonGraph});
+    userAnnotationAdd(userid, storyid, field='annotation', jsonGraph) {
+        return this.http.post(API.annotationsAdd, {'userid': userid, 'storyid': storyid, 'field': field, 'data': jsonGraph});
     }
 
     userAnnotationGet(userid, storyid, field='annotation') {

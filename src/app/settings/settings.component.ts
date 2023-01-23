@@ -97,7 +97,7 @@ export class SettingsComponent implements AfterViewInit {
       return
     }
     this.store.dispatch(mainActions.PushLoader())
-    let res = await this.mainService.usersGet().toPromise();
+    let res = await this.mainService.usersGet('username').toPromise();
     let arr = res['resp'];
 
     console.log(arr);
