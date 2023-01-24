@@ -556,6 +556,7 @@ export class MainComponent implements AfterViewInit  {
       this.graph.comments = ''
       this.graph.confusing = false
 
+      // FIX OLD GRAPH VERSION
       if(json.node_names[0]?.hasOwnProperty('physical')){
         for (const i in json.node_names){ 
           const node_names = {

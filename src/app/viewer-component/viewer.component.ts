@@ -54,7 +54,7 @@ export class ViewerComponent implements AfterViewInit  {
     //node_names: [],
     node_names: [{
       name: '',
-      physical: true,
+      abstract: true,
       hypothetical: false,
     }],
     edges: [{
@@ -312,18 +312,36 @@ export class ViewerComponent implements AfterViewInit  {
     }
 
     if(!!this.allGraphs.data[this.tabViewIndex]){
-      this.graph.node_names = []
+      this.graph.node_names = [{
+        name: '',
+        abstract: false,
+        hypothetical: false,
+      }]
       this.graph.edges = []
       this.graph.comments = ''
       this.graph.confusing = false
 
       let json = this.allGraphs.data[this.tabViewIndex];
 
+      // FIX OLD GRAPH VERSION
+      if(json.node_names[0]?.hasOwnProperty('physical')){
+        for (const i in json.node_names){ 
+          const node_names = {
+            name: json.node_names[i].name,
+            abstract: !json.node_names[i].physical,
+            hypothetical: json.node_names[i].hypothetical,
+          }
+          
+          this.graph.node_names.push(node_names)
+        }
+      }
+
+      // FIX OLD GRAPH VERSION
       if(!json.node_names[0]?.hasOwnProperty('name')){
         for (let i in json.node_names){ 
           const node_names = {
             name: json.node_names[i],
-            physical: true,
+            abstract: true,
             hypothetical: false,
           }
           
