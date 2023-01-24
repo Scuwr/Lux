@@ -42,7 +42,7 @@ export class mermaid_utils {
   }
 
   static addNode(graph, node) {
-    if(!graph.node_names[0].name){
+    if(!graph.node_names[0]?.name || !graph.node_names[0].name){
       graph.node_names = []
       graph.edges = []
       graph.comments = ''
