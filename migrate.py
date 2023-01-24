@@ -57,8 +57,8 @@ def migrate(database, execute):
                 pipe.hset(f'{database}:users:{i}', 'update', 0)
 
                 pipe.hset(f'{database}:assignments', i, f'{database}:assignments:{i}')
-                for storyid in enum_stories:
-                    pipe.sadd(f'{database}:assignments:{i}', storyid)
+                #for storyid in enum_stories:
+                pipe.sadd(f'{database}:assignments:{i}', 1)
 
                 pipe.sadd(f'{database}:usernames:{usernames[i]}', f'{database}:users:{i}')
             pipe.execute()
@@ -88,7 +88,7 @@ def migrate(database, execute):
         # FORMAT
         # counters -> nextuserid(int) nextstoryid(int)
         r.hset(f'{database}:counters', 'nextuserid', len(usernames))
-        r.hset(f'{database}:counters', 'nextstoryid', len(stories))
+        r.hset(f'{database}:counters', 'nextstoryid', len(stories) + 1)
 
         
 
