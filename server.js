@@ -46,6 +46,8 @@ const API = {
     storyGetAssigned: '/api/storyGetAssigned',
     storyGetAll: '/api/storyGetAll',
 
+    assignmentAdd: '/api/assignmentAdd',
+
     annotationsAdd: '/api/annotationsAdd',
     annotationsGet: '/api/annotationsGet',
     annotationsGetAllUsers: '/api/annotationsGetAllUsers',
@@ -117,8 +119,19 @@ app.post(API.annotationsGetAllUsers, (req, res) => {
     })
 })
 
+// ASSIGNMENTS
+app.post(API.assignmentAdd, (req, res) => {
+    console.log(TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid)
+    client.sadd(TABLES.assignments + ':' + req.body.userid, req.body.storyid, (err, data) => {
+        if(data){
+            res.send({
+                resp: true
+            })
+        }
+    })
+})
+
 // USERS
-//TODO
 app.post(API.usersAdd, (req, res) => {
     client.hget(TABLES.counters, 'nextuserid', (err, userid) => {
         client.hset(TABLES.users, userid, TABLES.users + ':' + userid)
@@ -126,13 +139,16 @@ app.post(API.usersAdd, (req, res) => {
         client.hset(TABLES.users + ':' + userid, 'password', req.body.password)
         client.hset(TABLES.users + ':' + userid, 'privilege', 0)
         client.hset(TABLES.users + ':' + userid, 'update', 0)
-    })
-    client.sadd(TABLES.usernames + ':' + req.body.username, (err, userid) => {
-        res.send({
-            data: userid
+        client.sadd(TABLES.usernames + ':' + req.body.username, TABLES.users + ':' + userid)
+
+        client.hincrby(TABLES.counters, 'nextuserid', 1)
+
+        client.sadd(TABLES.usernames + ':' + req.body.username, (err, userid) => {
+            res.send({
+                data: userid
+            })
         })
     })
-    client.hincrby(TABLES.counters, 'nextuserid', 1)
 })
 
 app.post(API.usersLogin, (req, res) => {
@@ -179,9 +195,13 @@ app.post(API.storyAdd, (req, res) => {
         client.hset(TABLES.stories, storyid, TABLES.users + ':' + storyid)
         client.hset(TABLES.stories + ':' + storyid, 'storytext', req.body.storytext)
         client.hset(TABLES.stories + ':' + storyid, 'update', 0)
-    })
 
-    client.hincrby(TABLES.counters, 'nextstoryid', 1)
+        client.hincrby(TABLES.counters, 'nextstoryid', 1)
+
+        res.send({
+            resp: storyid
+        })
+    })
 })
 
 app.post(API.storyGet, (req, res) => {

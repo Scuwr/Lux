@@ -63,20 +63,9 @@ export class MainComponent implements AfterViewInit  {
     }
   }
 
-
   allStories = null
-  // [
-  //   {
-  //     key: 1,
-  //     text: 'hello2hello2hello2hello2hello2hello2hello2hello2',
-  //     completed: true,
-  //   },
-  // ];
 
   graph = {
-    // node_names: ['Start', 'Is it', 'End'],
-    // edges: [[0, 1], [1, 2]],
-    //node_names: [],
     node_names: [{
       name: '',
       abstract: false,
@@ -190,7 +179,7 @@ export class MainComponent implements AfterViewInit  {
     }
     let res = await this.mainService.usersLogin(this.dialogues.username.input, 'asrs').toPromise()
     let userkey = res['resp']
-    if (!userkey){
+    if (userkey.length == 0){
       this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
       return
     }
@@ -201,29 +190,7 @@ export class MainComponent implements AfterViewInit  {
     this.dialogues.username.display = false;
 
     if (!this.allStories) {  // FETCH STORIES
-      this.store.dispatch(mainActions.PushLoader())
-      this.mainService.telemetryAdd(this.user.name, 'login').subscribe((resp) => {})
-      let res = await this.mainService.storyGetAssigned(this.user.id).toPromise();
-      const result = []
-      for (const idx in res['key']){
-        result.push({
-          text: res['data'][idx],
-          key: res['key'][idx]
-        })
-      }
-
-      result.sort((a, b) => {
-        if (parseInt(a.key) > parseInt(b.key)) {
-          return 1
-        }
-        if (parseInt(a.key) < parseInt(b.key)) {
-          return -1
-        }
-        return 0
-      })
-
-      this.store.dispatch(mainActions.setAllStories({allStories: result}))
-      this.store.dispatch(mainActions.PopLoader())
+      await this.fetch_stories()
     }
 
     // set username in url
@@ -247,6 +214,32 @@ export class MainComponent implements AfterViewInit  {
       })
   }
 
+  async fetch_stories(){
+    this.store.dispatch(mainActions.PushLoader())
+      this.mainService.telemetryAdd(this.user.name, 'login').subscribe((resp) => {})
+      let res = await this.mainService.storyGetAssigned(this.user.id).toPromise()
+      const result = []
+      for (const idx in res['key']){
+        result.push({
+          text: res['data'][idx],
+          key: res['key'][idx]
+        })
+      }
+
+      result.sort((a, b) => {
+        if (parseInt(a.key) > parseInt(b.key)) {
+          return 1
+        }
+        if (parseInt(a.key) < parseInt(b.key)) {
+          return -1
+        }
+        return 0
+      })
+
+      this.store.dispatch(mainActions.setAllStories({allStories: result}))
+      this.store.dispatch(mainActions.PopLoader())
+  }
+
   async register_user(){
     this.dialogues.username.input = this.dialogues.username.input.toLowerCase();
     this.dialogues.username.input = this.dialogues.username.input.replaceAll(/[^a-z0-9]*/g, '')
@@ -254,8 +247,17 @@ export class MainComponent implements AfterViewInit  {
       this.messageService.add({severity:'error', summary:'Error', detail:'Username invalid.'})
       return
     }
-    let res = await this.mainService.usersAdd(this.dialogues.username.input, 'asrs').toPromise
-    this.username_confirm()
+    
+    let res = await this.mainService.usersLogin(this.dialogues.username.input, 'asrs').toPromise()
+    if (res['resp'].length != 0){
+      this.messageService.add({severity:'error', summary:'Error', detail:'Username already exists!'})
+      return
+    }
+
+    await this.mainService.usersAdd(this.dialogues.username.input, 'asrs').toPromise()
+    await this.username_confirm()
+    await this.mainService.storyAddAssignment(this.user.id, '1').toPromise()
+    await this.fetch_stories()
   }
 
   toolbar_new_node() {
@@ -319,9 +321,13 @@ export class MainComponent implements AfterViewInit  {
     return node_name
   }
 
-  toolbar_raneme_confirm() {
+  toolbar_rename_confirm() {
     this.dialogues.rename.display = false
     this.dialogues.rename.input = this.sanitize_input(this.dialogues.rename.input)
+    if (this.dialogues.newNode.input.length < 1){
+      this.messageService.add({severity:'error', summary:'Invalid Node Name', detail:'Name must contain at least one valid character'})
+      return
+    }
     this.graph.node_names[this.dialogues.rename.node].name = this.dialogues.rename.input
     this.graph.node_names[this.dialogues.rename.node].abstract = this.dialogues.rename.abstract
     this.graph.node_names[this.dialogues.rename.node].hypothetical = this.dialogues.rename.hypothetical
@@ -331,6 +337,10 @@ export class MainComponent implements AfterViewInit  {
   toolbar_new_node_confirm() {
     this.dialogues.newNode.display = false
     this.dialogues.newNode.input = this.sanitize_input(this.dialogues.newNode.input)
+    if (this.dialogues.newNode.input.length < 1){
+      this.messageService.add({severity:'error', summary:'Invalid Node Name', detail:'Name must contain at least one valid character'})
+      return
+    }
     const node = {
       name: this.dialogues.newNode.input,
       abstract: this.dialogues.newNode.abstract,
@@ -522,7 +532,6 @@ export class MainComponent implements AfterViewInit  {
     }
 
     this.mainService.telemetryAdd(this.user.name, 'get ' + story.key).subscribe((resp) => {})
-    console.log(story.key)
     let res = await this.mainService.userAnnotationGet(this.user.id, story.key, 'annotation').toPromise();
     await backendSave
 
@@ -538,7 +547,11 @@ export class MainComponent implements AfterViewInit  {
     if(!!res['resp']){
       const json = JSON.parse(res['resp']);
 
-      this.graph.node_names = []
+      this.graph.node_names = [{
+        name: '',
+        abstract: false,
+        hypothetical: false,
+      }]
       this.graph.edges = []
       this.graph.comments = ''
       this.graph.confusing = false
@@ -556,7 +569,7 @@ export class MainComponent implements AfterViewInit  {
       }
 
       // FIX OLD GRAPH VERSION
-      if(!json.node_names[0]?.hasOwnProperty('name')){        
+      if(!json.node_names[0]?.hasOwnProperty('name')){       
         for (const i in json.node_names){ 
           const node_names = {
             name: json.node_names[i],
@@ -567,11 +580,16 @@ export class MainComponent implements AfterViewInit  {
           this.graph.node_names.push(node_names)
         }
       }else{
-        this.graph.node_names = !!json.node_names ? json.node_names : [];
+        this.graph.node_names = !!json.node_names ? json.node_names : [{
+          name: '',
+          abstract: false,
+          hypothetical: false,
+        }];
       }
 
       // FIX OLD GRAPH VERSION
       if(!!json.edges && !json.edges[0]?.hasOwnProperty('edge')){     
+        
         for (const i in json.edges){
           const edges = {
             edge: json.edges[i],
@@ -587,10 +605,14 @@ export class MainComponent implements AfterViewInit  {
       this.graph.comments = !!json.comments ? json.comments : [];
       this.graph.confusing = !!json.confusing ? json.confusing : false;
     }else{
-      this.graph.node_names = [];
-      this.graph.edges = [];
-      this.graph.comments = '';
-      this.graph.confusing = false;
+      this.graph.node_names = [{
+        name: '',
+        abstract: false,
+        hypothetical: false,
+      }]
+      this.graph.edges = []
+      this.graph.comments = ''
+      this.graph.confusing = false
     }
 
     this.graphSinceLastSave = JSON.parse(JSON.stringify(this.graph)) // duplicate graph
@@ -645,7 +667,11 @@ export class MainComponent implements AfterViewInit  {
   }
 
   private clearGraph() {
-    this.graph.node_names = []
+    this.graph.node_names = [{
+        name: '',
+        abstract: false,
+        hypothetical: false,
+      }]
     this.graph.edges = []
     this.graph.comments = ''
     this.graph.confusing = false

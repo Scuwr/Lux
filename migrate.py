@@ -41,7 +41,7 @@ def migrate(database, execute):
         stories.append(story)
         enum_stories.append(story_id)
 
-    while(execute):
+    if(execute):
         delete_all(f'{database}:')
 
         # FORMAT

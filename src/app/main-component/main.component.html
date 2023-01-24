@@ -31,7 +31,7 @@
 <!-- RENAME DIALOGUE -->
 <p-dialog header="Node Name" [(visible)]="dialogues.rename.display" [style]="{width: '25vw'}" [baseZIndex]="10000">
   <span class="p-float-label">
-    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.rename.input" (keydown.enter)="toolbar_raneme_confirm()" autofocus> 
+    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.rename.input" (keydown.enter)="toolbar_rename_confirm()" autofocus> 
     <label for="float-input">New Name</label>
   </span>
   <h5>Abstract Concept</h5>
@@ -50,10 +50,6 @@
   <span class="p-float-label">
     <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newNode.input" (keydown.enter)="toolbar_new_node_confirm()" autofocus> 
     <label for="float-input">New Name</label>
-  </span>
-  <span class="p-float-label">
-    <input id="float-input" type="text" pInputText [(ngModel)]="dialogues.newNode.connectedNode" (keydown.enter)="toolbar_new_node_confirm()"> 
-    <label for="float-input">Connected Node</label>
   </span>
   <h5>Abstract Concept</h5>
   <p-inputSwitch [(ngModel)]="dialogues.newNode.abstract"></p-inputSwitch>

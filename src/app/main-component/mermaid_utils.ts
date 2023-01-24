@@ -42,6 +42,12 @@ export class mermaid_utils {
   }
 
   static addNode(graph, node) {
+    if(!graph.node_names[0].name){
+      graph.node_names = []
+      graph.edges = []
+      graph.comments = ''
+      graph.confusing = false
+    }
     graph.node_names.push(node)
     return graph.node_names.length - 1
   }
@@ -104,6 +110,10 @@ export class mermaid_utils {
   }
 
   static obj_to_graph_str(graph, graphStyle?) {
+    if(!graph.node_names[0].name){
+      return 'graph'
+    }
+
     let result = 'graph '
     if (graphStyle?.LR == false) {
       result += 'TD'
@@ -123,12 +133,12 @@ export class mermaid_utils {
         else prefix += '/PhysicalConcept:: ';
       }
 
-      name = (i+1) + ': ' + prefix + name;
+      name = prefix + name;
       name = this.addNewLineToName(name)
       let line = nodename;
 
       if (node?.hypothetical){
-        line += '[' + name + ']';
+        line += '{{' + name + '}}';
       } else{
         line += '([' + name + '])';
       }
@@ -144,7 +154,7 @@ export class mermaid_utils {
 
     let edgelabel = [' ', ' ']
     if(graphStyle.labels){
-      edgelabel = ['|physical| ', '|abstract| ']
+      edgelabel = ['|physical| ', '|temporal| ']
     }
     graph.edges.forEach((edge) => {
       let line = edge.edge[0] + ' -->' + edgelabel[0] + edge.edge[1];
