@@ -105,9 +105,9 @@ export class ViewerComponent implements AfterViewInit  {
       this.cdr.detectChanges()
     })
 
-    this.store.select(selectAllStories)
-      .pipe(takeUntil(this.ngDestroyed$))
-      .subscribe(v => this.allStories = v)
+    //this.store.select(selectAllStories)
+      //.pipe(takeUntil(this.ngDestroyed$))
+      //.subscribe(v => this.allStories = v)
 
     this.store.select(selectSelectedStory)
       .pipe(takeUntil(this.ngDestroyed$))

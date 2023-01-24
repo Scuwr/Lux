@@ -116,9 +116,9 @@ export class MainComponent implements AfterViewInit  {
       this.cdr.detectChanges()
     })
 
-    this.store.select(selectAllStories)
-      .pipe(takeUntil(this.ngDestroyed$))
-      .subscribe(v => this.allStories = v)
+    //this.store.select(selectAllStories)
+      //.pipe(takeUntil(this.ngDestroyed$))
+      //.subscribe(v => this.allStories = v)
 
     this.store.select(selectMainState)
       .pipe(takeUntil(this.ngDestroyed$))
