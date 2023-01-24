@@ -368,10 +368,14 @@ export class ViewerComponent implements AfterViewInit  {
       this.graph.comments = !!json.comments ? json.comments : [];
       this.graph.confusing = !!json.confusing ? json.confusing : false;
     }else{
-      this.graph.node_names = [];
-      this.graph.edges = [];
-      this.graph.comments = '';
-      this.graph.confusing = false;
+      this.graph.node_names = [{
+        name: '',
+        abstract: false,
+        hypothetical: false,
+      }]
+      this.graph.edges = []
+      this.graph.comments = ''
+      this.graph.confusing = false
     }
 
     setTimeout(() => {
