@@ -547,11 +547,7 @@ export class MainComponent implements AfterViewInit  {
     if(!!res['resp']){
       const json = JSON.parse(res['resp']);
 
-      this.graph.node_names = [{
-        name: '',
-        abstract: false,
-        hypothetical: false,
-      }]
+      this.graph.node_names = []
       this.graph.edges = []
       this.graph.comments = ''
       this.graph.confusing = false
@@ -606,11 +602,7 @@ export class MainComponent implements AfterViewInit  {
       this.graph.comments = !!json.comments ? json.comments : [];
       this.graph.confusing = !!json.confusing ? json.confusing : false;
     }else{
-      this.graph.node_names = [{
-        name: '',
-        abstract: false,
-        hypothetical: false,
-      }]
+      this.graph.node_names = []
       this.graph.edges = []
       this.graph.comments = ''
       this.graph.confusing = false
@@ -668,11 +660,7 @@ export class MainComponent implements AfterViewInit  {
   }
 
   private clearGraph() {
-    this.graph.node_names = [{
-        name: '',
-        abstract: false,
-        hypothetical: false,
-      }]
+    this.graph.node_names = []
     this.graph.edges = []
     this.graph.comments = ''
     this.graph.confusing = false

@@ -49,9 +49,6 @@ export class ViewerComponent implements AfterViewInit  {
   tabViewIndex = 0;
 
   graph = {
-    // node_names: ['Start', 'Is it', 'End'],
-    // edges: [[0, 1], [1, 2]],
-    //node_names: [],
     node_names: [{
       name: '',
       abstract: true,
@@ -312,11 +309,7 @@ export class ViewerComponent implements AfterViewInit  {
     }
 
     if(!!this.allGraphs.data[this.tabViewIndex]){
-      this.graph.node_names = [{
-        name: '',
-        abstract: false,
-        hypothetical: false,
-      }]
+      this.graph.node_names = []
       this.graph.edges = []
       this.graph.comments = ''
       this.graph.confusing = false
@@ -341,7 +334,7 @@ export class ViewerComponent implements AfterViewInit  {
         for (let i in json.node_names){ 
           const node_names = {
             name: json.node_names[i],
-            abstract: true,
+            abstract: false,
             hypothetical: false,
           }
           
@@ -368,11 +361,7 @@ export class ViewerComponent implements AfterViewInit  {
       this.graph.comments = !!json.comments ? json.comments : [];
       this.graph.confusing = !!json.confusing ? json.confusing : false;
     }else{
-      this.graph.node_names = [{
-        name: '',
-        abstract: false,
-        hypothetical: false,
-      }]
+      this.graph.node_names = []
       this.graph.edges = []
       this.graph.comments = ''
       this.graph.confusing = false

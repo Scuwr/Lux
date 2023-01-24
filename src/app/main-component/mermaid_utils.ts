@@ -110,7 +110,7 @@ export class mermaid_utils {
   }
 
   static obj_to_graph_str(graph, graphStyle?) {
-    if(!graph.node_names[0].name){
+    if(!graph.node_names[0]?.name || !graph.node_names[0].name){
       return 'graph'
     }
 
