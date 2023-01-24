@@ -1,0 +1,4 @@
+[ZoneTransfer]
+ZoneId=3
+ReferrerUrl=https://akama.arc.nasa.gov/ASRSDBOnline/QueryWizard_Results.aspx
+HostUrl=https://akama.arc.nasa.gov/ASRSDBOnline/QueryWizard_ExportExcel.aspx?ExportType=CSV
