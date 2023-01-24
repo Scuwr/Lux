@@ -208,8 +208,8 @@ export class MainComponent implements AfterViewInit  {
       ).subscribe((params) => {
         if (!!params.storyId) {
           const id = params.storyId
-          const match = this.allStories.filter(s => s.key == id)
-          if (match.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
+          const match = this.allStories?.filter(s => s.key == id)
+          if (match?.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
         }
       })
   }

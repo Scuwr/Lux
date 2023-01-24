@@ -179,8 +179,8 @@ export class ViewerComponent implements AfterViewInit  {
     ).subscribe((params) => {
       if (!!params.storyId && params.storyId != this.selectedStory?.key) {
         const id = params.storyId
-        const match = this.allStories.filter(s => s.key == id)
-        if (match.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
+        const match = this.allStories?.filter(s => s.key == id)
+        if (match?.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
       }
       if (!!params.username) { // username found in url parameters, login
         this.dialogues.username.input = params.username
