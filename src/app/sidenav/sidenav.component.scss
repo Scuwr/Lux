@@ -12,6 +12,7 @@
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
 
     width: 0px;
+    z-index: 1;
     &.sidenav-visible {
         width: 250px;
     }
