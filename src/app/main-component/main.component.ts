@@ -21,7 +21,7 @@ export class MainComponent implements AfterViewInit  {
   @ViewChildren('storyRow', { read: ElementRef }) rowElement: QueryList<ElementRef>;
   @ViewChild('edgeDialogInp2') edgeDialogInp2: ElementRef; // to change focus
 
-  private readonly ngDestroyed$ = new Subject();
+  private readonly ngDestroyed$ = new Subject<void>();
 
   user = {
     key: null,
@@ -103,7 +103,7 @@ export class MainComponent implements AfterViewInit  {
 
   }
 
-  ngAfterViewInit(){
+  async ngAfterViewInit(){
     window['app'] = this
     window['mermaid_utils'] = mermaid_utils
     mermaid_utils.init()

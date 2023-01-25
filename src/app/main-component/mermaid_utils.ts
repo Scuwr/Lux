@@ -11,7 +11,6 @@ export class mermaid_utils {
         curve: 'cardinal',
       },
       securityLevel: 'loose',
-      // theme: 'forest',
     };
     mermaid.initialize(config);
   }

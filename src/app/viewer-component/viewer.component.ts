@@ -20,7 +20,7 @@ export class ViewerComponent implements AfterViewInit  {
   @ViewChild('mermaidmain', { static: true }) mermaidDiv: ElementRef;
   @ViewChildren('storyRow', { read: ElementRef }) rowElement: QueryList<ElementRef>;
 
-  private readonly ngDestroyed$ = new Subject();
+  private readonly ngDestroyed$ = new Subject<void>();
 
   user = {
     key: null,
