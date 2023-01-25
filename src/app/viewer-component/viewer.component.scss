@@ -53,9 +53,26 @@
 :host ::ng-deep .graphTabView {
     background: #1e1e1e;
     height: 50px;
+
+    .p-tabview-panels {
+        padding: 0;
+    }
 }
 :host ::ng-deep .userStory.userStory.userStory > a {
     background-color: #142e33
+}
+
+.scrollableContent {
+    overflow:auto;
+    height: calc(100vh - 170px); // 60px for header and 70px for graphtoolbar
+
+    .background {
+        height: inherit;
+        width: 100%;
+        position: fixed;
+        background-color: #9dbcd5;
+        z-index: -1;
+    }
 }
 
 .storyarea {

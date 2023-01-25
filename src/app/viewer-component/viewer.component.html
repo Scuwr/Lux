@@ -42,7 +42,7 @@
   </p-toolbar>
 
   <p-tabView styleClass="graphTabView" *ngIf="!!allGraphs && !!allGraphs.keys" [activeIndex]="tabViewIndex" (onChange)="updateTabView($event.index)">
-      <p-tabPanel [header]="key" *ngFor="let key of allGraphs.keys; let i = index" [headerStyleClass]="key == username ? 'userStory' : 'not'">
+      <p-tabPanel [header]="key" *ngFor="let key of allGraphs.keys; let i = index">
       </p-tabPanel>
   </p-tabView>
 

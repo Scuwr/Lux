@@ -50,6 +50,19 @@
     height: 60px;
 }
 
+.scrollableContent {
+    overflow:auto;
+    height: calc(100vh - 120px); // 60px for header and 70px for graphtoolbar
+
+    .background {
+        height: inherit;
+        width: 100%;
+        position: fixed;
+        background-color: #9dbcd5;
+        z-index: -1;
+    }
+}
+
 .storyarea {
     .p-inputtext {
         opacity: 1;
