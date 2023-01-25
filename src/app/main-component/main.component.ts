@@ -324,7 +324,7 @@ export class MainComponent implements AfterViewInit  {
   toolbar_rename_confirm() {
     this.dialogues.rename.display = false
     this.dialogues.rename.input = this.sanitize_input(this.dialogues.rename.input)
-    if (this.dialogues.newNode.input.length < 1){
+    if (this.dialogues.rename.input.length < 1){
       this.messageService.add({severity:'error', summary:'Invalid Node Name', detail:'Name must contain at least one valid character'})
       return
     }
