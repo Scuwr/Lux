@@ -2,11 +2,18 @@
 <div class="toolbar" role="banner">
     <img width="110" alt="Logo" src="assets/dag.png"/>
     <span>Lux</span>
-      <div class="spacer"></div>
-    <div [ngStyle]="{'padding-right':'16px'}">
+    <div class="centerSpacer"></div>
+    <div class="DocsMenu">
+      <p-tabMenu #doc styleClass="docsToolbar" [model]="docs" [activeItem]="activeDoc" (click)="updateDoc(doc)">
+        <!-- <ng-template pTemplate="docs"></ng-template> -->
+      </p-tabMenu>
     </div>
-    <p-button icon="fa-solid fa-binoculars" [ngStyle]="{'margin-right':'16px'}"></p-button>
-    <p-button icon="pi pi-home" [ngStyle]="{'margin-right':'16px'}"></p-button>
+    <div class="rightSpacer"></div>
+    <div [ngStyle]="{'padding-right':'16px'}"></div>
+    <p-button icon="pi pi-info-circle" [ngStyle]="{'margin-right':'16px'}"></p-button>
+    <p-button icon="pi pi-home" [ngStyle]="{'margin-right':'16px'}" (click)="onHomeModeButton()"></p-button>
+    <p-button icon="fa-solid fa-binoculars" [ngStyle]="{'margin-right':'16px'}" (click)="onViewModeButton()"></p-button>
+    <p-button icon="pi pi-cog" [ngStyle]="{'margin-right':'16px'}" (click)="onSettingsModeButton()"></p-button>
   </div>
 
   <div class="scrollableContent">
@@ -17,7 +24,6 @@
       <div style="padding:100px" markdown [src]="post"></div>
     </div>
     
-
     <!-- CLOUD BACKGROUND :) -->
     <svg id="clouds" xmlns="http://www.w3.org/2000/svg" width="2611.084" height="485.677" viewBox="0 0 2611.084 485.677">
       <title>Gray Clouds Background</title>

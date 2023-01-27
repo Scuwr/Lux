@@ -145,6 +145,13 @@ export class MainComponent implements AfterViewInit  {
     }, 0);
   }
 
+  onDocsModeButton() {
+    this.router.navigate(['/docs/GettingStarted'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
+  }
+
   onViewModeButton() {
     this.router.navigate(['/view'], {
       relativeTo: this.activatedRoute,

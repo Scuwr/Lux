@@ -112,13 +112,46 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.spacer {
+.centerSpacer {
+   flex: auto;
+   max-width: 20%; 
+}
+
+.rightSpacer {
 flex: 1;
 }
 
 .toolbar span {
     font-size: 24px;
 }
+
+:host ::ng-deep .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link {
+    border: solid #1976d2;
+    border-color: transparent transparent #1976d2 transparent;
+    background: #1976d2;
+    color: white;
+
+    border-width: 0 0 2px 0;
+    padding: 1rem;
+    font-weight: 600;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    transition: box-shadow 0.2s;
+    margin: 0 0 -2px 0;
+}
+
+:host ::ng-deep .p-tabmenu .p-tabmenu-nav .p-tabmenuitem:not(.p-highlight):not(.p-disabled):hover .p-menuitem-link {
+    background: #1976d2;
+    border-color: white;
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+:host ::ng-deep .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link {
+    background: #1976d2;
+    border-color: white;
+    color: white;
+}
+
 
 .toolbar {
 position: absolute;

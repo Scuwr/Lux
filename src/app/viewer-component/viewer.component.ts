@@ -134,8 +134,22 @@ export class ViewerComponent implements AfterViewInit  {
     })
   }
 
-  onEditModeButton() {
+  onDocsModeButton() {
+    this.router.navigate(['/docs/GettingStarted'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
+  }
+
+  onHomeModeButton() {
     this.router.navigate(['/home'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
+  }
+
+  onSettingsModeButton(){
+    this.router.navigate(['/settings'], {
       relativeTo: this.activatedRoute,
       queryParamsHandling: 'preserve'
     })

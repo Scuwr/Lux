@@ -21,6 +21,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { PanelModule } from 'primeng/panel';
 import { TabViewModule } from 'primeng/tabview';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { TabMenuModule } from 'primeng/tabmenu';
 
 import { StoreModule } from '@ngrx/store';
 import { mainFeatureKey, mainReducer } from './ngrx/main.reducer';
@@ -71,6 +72,7 @@ import { DocsComponent } from './docs-component/docs.component';
     PanelModule,
     TabViewModule,
     InputSwitchModule,
+    TabMenuModule,
     AppRoutingModule,
   ],
   providers: [
