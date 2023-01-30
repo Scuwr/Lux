@@ -151,7 +151,7 @@ export class mermaid_utils {
       }
     })
 
-    let edgelabel = [' ', ' ']
+    let edgelabel = [' ', '|temporal| ']
     if(graphStyle.labels){
       edgelabel = ['|physical| ', '|temporal| ']
     }
