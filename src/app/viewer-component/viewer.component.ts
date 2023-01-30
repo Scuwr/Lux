@@ -180,6 +180,7 @@ export class ViewerComponent implements AfterViewInit  {
       return 0
     })
 
+    this.allStories = result
     this.store.dispatch(mainActions.setAllStories({allStories: result}))
     this.store.dispatch(mainActions.PopLoader())
   }

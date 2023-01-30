@@ -212,39 +212,63 @@ export class MainComponent implements AfterViewInit  {
     // fetch storyid from url
     this.route.queryParams.pipe(
         first()
-      ).subscribe((params) => {
+      ).subscribe(async (params) => {
         if (!!params.storyId) {
           const id = params.storyId
-          const match = this.allStories?.filter(s => s.key == id)
-          if (match?.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
+          let match = this.allStories?.filter(s => s.key == id)
+          // if no match, show story is it exists
+          if (match?.length < 1){
+            await this.add_story_to_sidenav(id)
+            match = this.allStories?.filter(s => s.key == id)
+          }
+          this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
         }
       })
   }
 
+  async add_story_to_sidenav(id){
+    let data = await this.mainService.storyGet(id).toPromise()
+    
+    const story = {
+      text: data['resp'],
+      key: id
+    }
+    if (data['resp']){
+      console.log(data['resp'])
+      let stories = [...this.allStories]
+      stories.push(story)
+      this.allStories = stories
+      this.store.dispatch(mainActions.setAllStories({allStories: stories}))
+      this.store.dispatch(mainActions.PopLoader())
+    }     
+  }
+
   async fetch_stories(){
     this.store.dispatch(mainActions.PushLoader())
-      this.mainService.telemetryAdd(this.user.name, 'login').subscribe((resp) => {})
-      let res = await this.mainService.storyGetAssigned(this.user.id).toPromise()
-      const result = []
-      for (const idx in res['key']){
-        result.push({
-          text: res['data'][idx],
-          key: res['key'][idx]
-        })
-      }
-
-      result.sort((a, b) => {
-        if (parseInt(a.key) > parseInt(b.key)) {
-          return 1
-        }
-        if (parseInt(a.key) < parseInt(b.key)) {
-          return -1
-        }
-        return 0
+    this.mainService.telemetryAdd(this.user.name, 'login').subscribe((resp) => {})
+    let res = await this.mainService.storyGetAssigned(this.user.id).toPromise()
+    
+    const result = []
+    for (const idx in res['key']){
+      result.push({
+        text: res['data'][idx],
+        key: res['key'][idx]
       })
+    }
 
-      this.store.dispatch(mainActions.setAllStories({allStories: result}))
-      this.store.dispatch(mainActions.PopLoader())
+    result.sort((a, b) => {
+      if (parseInt(a.key) > parseInt(b.key)) {
+        return 1
+      }
+      if (parseInt(a.key) < parseInt(b.key)) {
+        return -1
+      }
+      return 0
+    })
+
+    this.allStories = result
+    this.store.dispatch(mainActions.setAllStories({allStories: result}))
+    this.store.dispatch(mainActions.PopLoader())
   }
 
   async register_user(){
