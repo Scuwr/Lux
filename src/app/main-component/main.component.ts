@@ -288,7 +288,11 @@ export class MainComponent implements AfterViewInit  {
     await this.mainService.usersAdd(this.dialogues.username.input, 'asrs').toPromise()
     await this.username_confirm()
     await this.mainService.storyAddAssignment(this.user.id, '1').toPromise()
-    await this.fetch_stories()
+    
+    this.router.navigate(['/docs/Welcome'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
   }
 
   toolbar_new_node() {
