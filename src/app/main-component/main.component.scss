@@ -33,16 +33,33 @@
     height: 60px;
 }
 
+.mainview{
+    display: flex;
+    flex-flow: column;
+    height: calc(100vh - 120px);
+}
+
 .scrollableContent {
     overflow:auto;
-    height: calc(100vh - 120px); // 60px for header and 70px for graphtoolbar
+    height: 100%; // 60px for header and 70px for graphtoolbar
 
     .background {
-        height: inherit;
+        height: 100%;
         width: 100%;
         position: fixed;
         background-color: #9dbcd5;
         z-index: -1;
+    }
+}
+
+.storybox {
+    transition: 0.5s;
+    max-height: 0;
+    opacity: 0;
+
+    &.div-visible {
+        max-height: 100%;
+        opacity: 1;
     }
 }
 
@@ -76,6 +93,7 @@
 }
 
 .graph {
+    padding-top: 20px;
     min-height: 220px;
 }
 

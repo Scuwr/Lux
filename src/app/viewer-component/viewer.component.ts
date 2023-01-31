@@ -40,6 +40,7 @@ export class ViewerComponent implements AfterViewInit  {
 
   selectedStory = null;
   sidenavVisible = true;
+  storyVisible = true;
   keyboardCaptureElement = null; // prevent KB shortcuts if selected element
 
 
@@ -240,15 +241,22 @@ export class ViewerComponent implements AfterViewInit  {
     this.update()
   }
 
+  toolbar_show_story(){
+    this.storyVisible = !this.storyVisible
+  }
+
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
     // EXIT IF DIALOGUE OPEN OR TYPING IN A SELECTED ELEMENT
     if (!!this.keyboardCaptureElement
-       || !!this.dialogues.username.display) {
+       || !!this.dialogues.username.display
+       || !!this.dialogues.help.display) {
         return
     }
 
     const key = event.key.toLowerCase()
-    if (key == '[' || key == ']') { // previous/next story
+    if (key == '?') { // HELP MENU
+      this.dialogues.help.display = true
+    } else if (key == '[' || key == ']') { // previous/next story
       const dx = key == '[' ? -1 : 1
       const curIndex = this.allStories.findIndex(v => v.key == this.selectedStory?.key)
       let newIndex = curIndex + dx
@@ -261,6 +269,10 @@ export class ViewerComponent implements AfterViewInit  {
 
     } else if (key == 'l') { // LABELS
       this.toolbar_toggle_labels()
+
+    } else if (key == 's') {
+      this.toolbar_show_story()
+      
     }
   }
 

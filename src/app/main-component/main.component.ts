@@ -31,6 +31,7 @@ export class MainComponent implements AfterViewInit  {
 
   selectedStory = null;
   sidenavVisible = true;
+  storyVisible = true;
   keyboardCaptureElement = null; // prevent KB shortcuts if selected element
 
   dialogues = {
@@ -234,7 +235,6 @@ export class MainComponent implements AfterViewInit  {
       key: id
     }
     if (data['resp']){
-      console.log(data['resp'])
       let stories = [...this.allStories]
       stories.push(story)
       this.allStories = stories
@@ -450,6 +450,10 @@ export class MainComponent implements AfterViewInit  {
     this.save_and_update()
   }
 
+  toolbar_show_story(){
+    this.storyVisible = !this.storyVisible
+  }
+
   keyboardMem = {inp: '', time: Date.now()};
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
     // EXIT IF DIALOGUE OPEN OR TYPING IN A SELECTED ELEMENT
@@ -457,7 +461,8 @@ export class MainComponent implements AfterViewInit  {
                   || !!this.dialogues.newNode.display
                   || !!this.dialogues.newEdge.display
                   || !!this.dialogues.rename.display
-                  || !!this.dialogues.username.display) {
+                  || !!this.dialogues.username.display
+                  || !!this.dialogues.help.display) {
         return
     }
     const key = event.key.toLowerCase()
@@ -501,6 +506,9 @@ export class MainComponent implements AfterViewInit  {
       }
     } else if (key == 'l') { // LABELS
       this.toolbar_toggle_labels()
+
+    } else if (key == 's') {
+      this.toolbar_show_story()
 
     } else if (key == 'a') { // LABELS
       if (!!this.graphStyle.clicked) {
