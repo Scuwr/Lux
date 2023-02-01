@@ -64,6 +64,12 @@
 }
 
 .storyarea {
+    pointer-events:none;
+
+    &.div-visible {
+        pointer-events:inherit;
+    }
+
     .p-inputtext {
         opacity: 1;
         width: 100%;
@@ -71,6 +77,12 @@
 }
 
 .commentarea {
+    pointer-events:none;
+
+    &.div-visible {
+        pointer-events:inherit;
+    }
+
     .p-inputtext {
         opacity: 1;
         width: 100%;

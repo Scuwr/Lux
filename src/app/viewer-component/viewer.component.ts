@@ -243,6 +243,7 @@ export class ViewerComponent implements AfterViewInit  {
 
   toolbar_show_story(){
     this.storyVisible = !this.storyVisible
+    this.update()
   }
 
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {

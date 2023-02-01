@@ -183,12 +183,12 @@
   <div class="mainview">
     <div class="storybox" [ngClass]="{'div-visible': storyVisible}">
       <!-- STORY -->
-      <div class="storyarea">
+      <div class="storyarea" [ngClass]="{'div-visible': storyVisible}">
         <textarea [rows]="5" pInputTextarea [ngModel]="!!selectedStory ? selectedStory?.text : 'No story selected.'" autoResize="autoResize" disabled="true"></textarea>
       </div>
 
       <!-- COMMENTS -->
-      <div class="commentarea">
+      <div class="commentarea" [ngClass]="{'div-visible': storyVisible}">
         <!-- <span>&nbsp;</span> -->
         <span class="p-float-label">
           <textarea [rows]="3" pInputTextarea id="float-input" [(ngModel)]="graph.comments" 

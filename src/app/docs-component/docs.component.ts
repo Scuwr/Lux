@@ -30,6 +30,7 @@ export class DocsComponent implements OnInit {
     this.docs = [
       {label: 'Welcome', id: 'Welcome'},
       {label: 'Getting Started', id: 'GettingStarted'},
+      {label: 'Making Good Annotations', id: 'MakingGoodAnnotations'},
     ]
 
     for (const [i, doc] of this.docs.entries()){

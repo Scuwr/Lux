@@ -82,7 +82,7 @@
 }
 
 .storybox {
-    transition: 0.5s ease-in-out;
+    transition: 0.5s;
     max-height: 0;
     opacity: 0;
 
@@ -93,6 +93,12 @@
 }
 
 .storyarea {
+    pointer-events:none;
+
+    &.div-visible {
+        pointer-events:inherit;
+    }
+
     .p-inputtext {
         opacity: 1;
         width: 100%;
@@ -100,6 +106,12 @@
 }
 
 .commentarea {
+    pointer-events:none;
+
+    &.div-visible {
+        pointer-events:inherit;
+    }
+
     .p-inputtext {
         opacity: 1;
         width: 100%;

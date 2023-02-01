@@ -15,10 +15,10 @@ General navigation outside of the Docs page on Lux can be accomplished by the ba
 ![](./assets/images/toolbar.png#large)
 
 
-* The button with the info ![](./assets/images/infoicon.png#inline) icon navigates to the Docs page of Lux, which is the page you are reading currently. By default, this button directs you to the [Getting Started](./docs/GettingStarted) document. To view the [Welcome](./docs/Welcome) page or other pages, you will need to use the toolbar in the center to navigate to it.
-* The button with the info ![](./assets/images/homeicon.png#inline) icon navigates to the Home page. This the page where you will annotate stories, and it is the default landing page for [Lux](./). 
-* The button with the info ![](./assets/images/viewericon.png#inline) icon navigates to the Viewer page, where you can view all stories that have annotations from all users.
-* The button with the info ![](./assets/images/settingsicon.png#inline) icon navigates to the Settings page. Only users with admin access will be able to view user and story data.
+* ![](./assets/images/infoicon.png#inline) The info icon navigates to the Docs page of Lux, which is the page you are reading currently. By default, this button directs you to the [Getting Started](./docs/GettingStarted) document. To view the [Welcome](./docs/Welcome) page or other pages, you will need to use the toolbar in the center to navigate to it.
+* ![](./assets/images/homeicon.png#inline) The home icon navigates to the Home page. This the page where you will annotate stories, and it is the default landing page for [Lux](./). 
+* ![](./assets/images/viewericon.png#inline) The binoculars icon navigates to the Viewer page, where you can view all stories that have annotations from all users.
+* ![](./assets/images/settingsicon.png#inline) The gear icon navigates to the Settings page. Only users with admin access will be able to view user and story data.
 
 ---
 ## Find any bugs?
