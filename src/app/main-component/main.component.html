@@ -191,7 +191,7 @@
       <div class="commentarea" [ngClass]="{'div-visible': storyVisible}">
         <!-- <span>&nbsp;</span> -->
         <span class="p-float-label">
-          <textarea [rows]="3" pInputTextarea id="float-input" [(ngModel)]="graph.comments" 
+          <textarea [rows]="1" pInputTextarea id="float-input" [(ngModel)]="graph.comments" 
               autoResize="autoResize" [disabled]="!selectedStory"
               (focus)="onFocusKeyboardElement($event)" (blur)="onFocusKeyboardElement()"
           ></textarea>
