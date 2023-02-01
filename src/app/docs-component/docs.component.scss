@@ -1,3 +1,15 @@
+:host ::ng-deep img[src*="inline"] {
+    height: 30px;
+}
+
+:host ::ng-deep img[src*="large"] {
+    height: 100px;
+}
+
+:host ::ng-deep img[src*="medium"] {
+    height: 50px;
+}
+
 .boxedText {
     // margin-left: 2px;
     padding-top: 1px;
@@ -35,7 +47,8 @@
 
 .scrollableContent {
     overflow:auto;
-    height: 100vh; // 60px for header and 70px for graphtoolbar
+    margin-top: 60px;
+    height: calc(100vh - 60px);
 
     .background {
         height: inherit;

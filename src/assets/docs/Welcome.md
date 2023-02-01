@@ -1,13 +1,26 @@
+![](./assets/images/infolab.png "Info Lab") 
 # Welcome to Lux
 
-This page will give you a quick walkthrough of all the features in Lux. Click 'Getting Started' at the top of the banner to learn more about the tool.
+The Lux Annotation Graph Tool is designed to allow you to easily annotate written short stories by breaking them down into fundamental components of causal and temporal relationships. This page will give you a quick walkthrough of all the features in Lux. 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec cursus pulvinar ornare. Quisque at justo velit. Curabitur in lorem eget arcu feugiat dignissim in et enim. Nullam ut neque blandit nibh mattis fermentum nec eget dolor. Ut mattis, orci id semper molestie, erat sapien hendrerit turpis, sed hendrerit leo augue sed nisi. Maecenas ornare mi non odio tincidunt, vitae sollicitudin nisi scelerisque. Curabitur lacinia ante et imperdiet blandit.
+---
+## Navigation
 
-Morbi iaculis finibus ligula, ut dignissim neque viverra vel. Sed et erat vel ante accumsan scelerisque. Duis ultricies at mi id vestibulum. Integer aliquet est ac orci semper blandit. Nam in ornare nunc. Fusce in quam eu ex facilisis fermentum. Donec faucibus pellentesque posuere. Sed lacinia nibh volutpat tellus sodales malesuada. Vestibulum posuere rhoncus orci a pharetra. Fusce nec sem at ex sagittis laoreet. Sed egestas dictum erat. Etiam pharetra eu erat in pharetra. Ut eu finibus ante, at efficitur leo. Curabitur auctor massa arcu, ut tristique eros sollicitudin eu.
+Within the Docs group, there are additional navigation tabs available in the top-center of this page. These are the various Docs available for reading to familiarize yourself with the tool. If you want to skip this walkthrough, click 'Getting Started' to start learning how to annotate stories.
 
-Quisque varius rutrum interdum. Nulla ut turpis ac odio tincidunt rhoncus quis eget nisi. Mauris sit amet lorem laoreet, accumsan felis sed, luctus est. Nam id vehicula purus, sit amet mattis quam. In hac habitasse platea dictumst. Sed id dolor non ex congue fermentum ac lacinia diam. Nam felis erat, viverra facilisis ultrices tempus, rhoncus eu ante. Suspendisse consectetur libero id massa lobortis viverra. Sed ipsum augue, varius et interdum mollis, suscipit in ipsum. Fusce lacinia augue ac venenatis pharetra. Sed feugiat, mauris id placerat egestas, dolor ante vestibulum augue, vitae pulvinar magna ipsum et erat.
+![](./assets/images/docstoolbar.png#medium)
 
-Duis fermentum porttitor eros, vel scelerisque velit congue nec. Nunc sed ligula laoreet, aliquet sapien nec, iaculis diam. Sed vitae pretium quam, ut pretium ex. In in elit vel leo consequat iaculis. Aenean fermentum, felis non pulvinar cursus, ipsum metus porttitor sapien, ac rhoncus enim arcu sit amet eros. Donec auctor ultrices metus, et consectetur nisi finibus eu. In scelerisque mollis sem, eu vestibulum dui maximus in.
+General navigation outside of the Docs page on Lux can be accomplished by the banner toolbar at the top-right of each page.
 
-Vestibulum dignissim lacus ex, in ultricies elit tempor rhoncus. Ut eu dui viverra, mattis nisl non, vulputate est. Sed dapibus congue cursus. In gravida a dolor vel cursus. Vivamus auctor vulputate nunc sit amet fermentum. Aenean sapien tortor, tincidunt vitae diam non, vehicula dapibus diam. Phasellus arcu nunc, dapibus vitae eros eget, maximus efficitur tortor. Curabitur nec orci porttitor, vestibulum metus quis, consectetur sapien. Quisque felis nunc, facilisis id mattis in, eleifend et sapien. Vivamus eu arcu eros. Duis porta mi vitae consequat pellentesque.
+![](./assets/images/toolbar.png#large)
+
+
+* The button with the info ![](./assets/images/infoicon.png#inline) icon navigates to the Docs page of Lux, which is the page you are reading currently. By default, this button directs you to the [Getting Started](./docs/GettingStarted) document. To view the [Welcome](./docs/Welcome) page or other pages, you will need to use the toolbar in the center to navigate to it.
+* The button with the info ![](./assets/images/homeicon.png#inline) icon navigates to the Home page. This the page where you will annotate stories, and it is the default landing page for [Lux](./). 
+* The button with the info ![](./assets/images/viewericon.png#inline) icon navigates to the Viewer page, where you can view all stories that have annotations from all users.
+* The button with the info ![](./assets/images/settingsicon.png#inline) icon navigates to the Settings page. Only users with admin access will be able to view user and story data.
+
+---
+## Find any bugs?
+
+If you have any suggestions or notice any bugs, please create an issue on our [Github page](https://github.com/Scuwr/Lux/issues) and tag it with the **suggestion** or **bug** label.

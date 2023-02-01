@@ -1,7 +1,7 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 /dist
-/redis-6.2.7
+/redis-7.0.8
 dump*.rdb
 redis_*.pid
 redis-6.2.7.tar.gz
@@ -16,6 +16,7 @@ package-lock.json
 # /dist
 /tmp
 /out-tsc
+/.angular
 # Only exists if Bazel was run
 /bazel-out
 
@@ -52,6 +53,7 @@ npm-debug.log
 yarn-error.log
 testem.log
 /typings
+*.Identifier
 
 # System Files
 .DS_Store
