@@ -5,3 +5,12 @@ body{ // disable scroll
     overflow-x:hidden;
     margin: 0px;
 }
+
+svg#clouds {
+    position: fixed;
+    bottom: -160px;
+    left: -230px;
+    width: 1920px;
+    z-index: -1;
+}
+

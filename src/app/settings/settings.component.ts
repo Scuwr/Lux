@@ -78,8 +78,8 @@ export class SettingsComponent implements AfterViewInit {
     }, 0);
   }
 
-  onViewModeButton() {
-    this.router.navigate(['/view'], {
+  onDocsModeButton() {
+    this.router.navigate(['/docs/GettingStarted'], {
       relativeTo: this.activatedRoute,
       queryParamsHandling: 'preserve'
     })
@@ -87,6 +87,13 @@ export class SettingsComponent implements AfterViewInit {
 
   onHomeModeButton() {
     this.router.navigate(['/home'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
+  }
+
+  onViewModeButton() {
+    this.router.navigate(['/view'], {
       relativeTo: this.activatedRoute,
       queryParamsHandling: 'preserve'
     })

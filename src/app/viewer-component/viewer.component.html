@@ -2,13 +2,17 @@
 <!-- Toolbar -->
 <div class="toolbar" role="banner">
   <p-button [icon]="!!sidenavVisible ? 'pi pi-arrow-left' : 'pi pi-arrow-right'" (onClick)="toggleSidenav()" pTooltip="Open/Close sidebar" [ngStyle]="{'margin-left':'8px'}"></p-button>
-  <img width="110" alt="Logo" src="assets/dag.png"/>
+  <img width="110" alt="Logo" src="assets/images/dag.png"/>
   <span>Lux</span>
     <div class="spacer"></div>
   <div [ngStyle]="{'padding-right':'16px'}">
     View Mode
   </div>
-  <p-button icon="fa-solid fa-pencil" [ngStyle]="{'margin-right':'16px'}" (click)="onEditModeButton()"></p-button>
+  <p-button icon="pi pi-question-circle" [ngStyle]="{'margin-right':'16px'}" (click)="dialogues.help.display = true"></p-button>
+  <p-button icon="pi pi-info-circle" [ngStyle]="{'margin-right':'16px'}" (click)="onDocsModeButton()"></p-button>
+  <p-button icon="pi pi-home" [ngStyle]="{'margin-right':'16px'}" (click)="onHomeModeButton()"></p-button>
+  <p-button icon="fa-solid fa-binoculars" [ngStyle]="{'margin-right':'16px'}"></p-button>
+  <p-button icon="pi pi-cog" [ngStyle]="{'margin-right':'16px'}" (click)="onSettingsModeButton()"></p-button>
 </div>
 
 <!-- LOGIN DIALOGUE -->
@@ -20,6 +24,29 @@
   
   <ng-template pTemplate="footer">
     <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="username_confirm()" label="Login"></p-button>
+  </ng-template>
+</p-dialog>
+
+
+<!-- HELP DIALOGUE -->
+<p-dialog header="Help Menu" [(visible)]="dialogues.help.display" [modal]="true" [style]="{width: '35vw'}" [baseZIndex]="10000">
+  <div>
+    <p-panel header="Keyboard Shortcuts" class="helpDialogue">
+      <span class="boxedText">?</span>
+        <span class="helpText">Show Help Menu</span>
+
+      <br>
+      <span class="boxedText">L</span>
+        <span class="helpText">Toggle Labels</span>
+      <br>
+      <span class="boxedText">S</span>
+        <span class="helpText">Toggle Story Text</span>
+      <br>
+    </p-panel>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <p-button icon="pi pi-check" [ngStyle]="{'margin-right':'8px'}" (click)="dialogues.help.display = false" label="Close"></p-button>
   </ng-template>
 </p-dialog>
 
@@ -35,48 +62,58 @@
     <div class="p-toolbar-group-left">
         <p-button [icon]="!!graphStyle?.LR ? 'pi pi-arrows-h' : 'pi pi-arrows-v'" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-help ui-button" 
             [disabled]="!selectedStory" (onClick)="toolbar_flip_graph_style()"></p-button>
-        <p-button [icon]="!!graphStyle?.labels ? 'pi pi-eye' : 'pi pi-eye-slash'" [ngStyle]="{'margin-right':'8px'}" 
+    </div>
+    <div class="p-toolbar-group-right">
+      <p-button [icon]="!!storyVisible ? 'pi pi-arrow-down' : 'pi pi-arrow-up'" [ngStyle]="{'margin-right':'8px'}"
+            [disabled]="!selectedStory" (onClick)="toolbar_show_story()"></p-button>
+      <p-button [icon]="!!graphStyle?.labels ? 'pi pi-eye' : 'pi pi-eye-slash'" [ngStyle]="{'margin-right':'8px'}" 
             [disabled]="!selectedStory" (onClick)="toolbar_toggle_labels()"></p-button>
     </div>
 
   </p-toolbar>
 
   <p-tabView styleClass="graphTabView" *ngIf="!!allGraphs && !!allGraphs.keys" [activeIndex]="tabViewIndex" (onChange)="updateTabView($event.index)">
-      <p-tabPanel [header]="key" *ngFor="let key of allGraphs.keys; let i = index" [headerStyleClass]="key == username ? 'userStory' : 'not'">
+      <p-tabPanel [header]="key" *ngFor="let key of allGraphs.keys; let i = index">
       </p-tabPanel>
   </p-tabView>
 
+  <div class="mainview">
+    <div class="storybox" [ngClass]="{'div-visible': storyVisible}">
+      <!-- STORY -->
+      <div class="storyarea" [ngClass]="{'div-visible': storyVisible}">
+        <textarea [rows]="5" pInputTextarea [ngModel]="!!selectedStory ? selectedStory?.text : 'No story selected.'" autoResize="autoResize" disabled="true"></textarea>
+      </div>
 
-  <div class="scrollableContent">
-
-    <!-- STORY -->
-    <div class="storyarea">
-      <textarea [rows]="5" pInputTextarea [ngModel]="!!selectedStory ? selectedStory?.text : 'No story selected.'" autoResize="autoResize" disabled="true"></textarea>
+      <!-- COMMENTS -->
+      <div class="commentarea" [ngClass]="{'div-visible': storyVisible}">
+        <!-- <span>&nbsp;</span> -->
+        <span class="p-float-label">
+          <textarea [rows]="1" pInputTextarea id="float-input" [(ngModel)]="graph.comments" 
+              autoResize="autoResize" [disabled]="true"
+              (focus)="onFocusKeyboardElement($event)" (blur)="onFocusKeyboardElement()"
+          ></textarea>
+          <label for="float-input">Comments</label>
+        </span>
+      </div>
     </div>
 
-    <!-- COMMENTS -->
-    <div class="commentarea">
-      <!-- <span>&nbsp;</span> -->
-      <span class="p-float-label">
-        <textarea [rows]="3" pInputTextarea id="float-input" [ngModel]="graph.comments"
-            autoResize="autoResize" disabled="true"
-        ></textarea>
-        <label for="float-input">Comments</label>
-      </span>
+    <div class="scrollableContent">
+
+      <div class="background"></div>
+
+      <!-- GRAPH -->
+      <div [class]="!!graph?.confusing ? 'graphObscured noclick' : 'graph'">
+        <div #mermaidmain style="text-align: center;"></div>
+      </div>
+
+      <!-- CLOUD BACKGROUND :) -->
+      <svg id="clouds" xmlns="http://www.w3.org/2000/svg" width="2611.084" height="485.677" viewBox="0 0 2611.084 485.677">
+        <title>Gray Clouds Background</title>
+        <path id="Path_39" data-name="Path 39" d="M2379.709,863.793c10-93-77-171-168-149-52-114-225-105-264,15-75,3-140,59-152,133-30,2.83-66.725,9.829-93.5,26.25-26.771-16.421-63.5-23.42-93.5-26.25-12-74-77-130-152-133-39-120-212-129-264-15-54.084-13.075-106.753,9.173-138.488,48.9-31.734-39.726-84.4-61.974-138.487-48.9-52-114-225-105-264,15a162.027,162.027,0,0,0-103.147,43.044c-30.633-45.365-87.1-72.091-145.206-58.044-52-114-225-105-264,15-75,3-140,59-152,133-53,5-127,23-130,83-2,42,35,72,70,86,49,20,106,18,157,5a165.625,165.625,0,0,0,120,0c47,94,178,113,251,33,61.112,8.015,113.854-5.72,150.492-29.764a165.62,165.62,0,0,0,110.861-3.236c47,94,178,113,251,33,31.385,4.116,60.563,2.495,86.487-3.311,25.924,5.806,55.1,7.427,86.488,3.311,73,80,204,61,251-33a165.625,165.625,0,0,0,120,0c51,13,108,15,157-5a147.188,147.188,0,0,0,33.5-18.694,147.217,147.217,0,0,0,33.5,18.694c49,20,106,18,157,5a165.625,165.625,0,0,0,120,0c47,94,178,113,251,33C2446.709,1093.793,2554.709,922.793,2379.709,863.793Z" transform="translate(142.69 -634.312)" fill="#eee"/>
+      </svg>
+
     </div>
-
-    <!-- GRAPH -->
-    <div [class]="!!graph?.confusing ? 'graphObscured noclick' : 'graph'">
-      <div #mermaidmain></div>
-    </div>
-
-    <!-- CLOUD BACKGROUND :) -->
-    <svg id="clouds" xmlns="http://www.w3.org/2000/svg" width="2611.084" height="485.677" viewBox="0 0 2611.084 485.677">
-      <title>Gray Clouds Background</title>
-      <path id="Path_39" data-name="Path 39" d="M2379.709,863.793c10-93-77-171-168-149-52-114-225-105-264,15-75,3-140,59-152,133-30,2.83-66.725,9.829-93.5,26.25-26.771-16.421-63.5-23.42-93.5-26.25-12-74-77-130-152-133-39-120-212-129-264-15-54.084-13.075-106.753,9.173-138.488,48.9-31.734-39.726-84.4-61.974-138.487-48.9-52-114-225-105-264,15a162.027,162.027,0,0,0-103.147,43.044c-30.633-45.365-87.1-72.091-145.206-58.044-52-114-225-105-264,15-75,3-140,59-152,133-53,5-127,23-130,83-2,42,35,72,70,86,49,20,106,18,157,5a165.625,165.625,0,0,0,120,0c47,94,178,113,251,33,61.112,8.015,113.854-5.72,150.492-29.764a165.62,165.62,0,0,0,110.861-3.236c47,94,178,113,251,33,31.385,4.116,60.563,2.495,86.487-3.311,25.924,5.806,55.1,7.427,86.488,3.311,73,80,204,61,251-33a165.625,165.625,0,0,0,120,0c51,13,108,15,157-5a147.188,147.188,0,0,0,33.5-18.694,147.217,147.217,0,0,0,33.5,18.694c49,20,106,18,157,5a165.625,165.625,0,0,0,120,0c47,94,178,113,251,33C2446.709,1093.793,2554.709,922.793,2379.709,863.793Z" transform="translate(142.69 -634.312)" fill="#eee"/>
-    </svg>
-
-  </div>
+  </div>  
 
 </div>
 

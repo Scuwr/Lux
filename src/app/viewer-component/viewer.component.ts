@@ -20,7 +20,7 @@ export class ViewerComponent implements AfterViewInit  {
   @ViewChild('mermaidmain', { static: true }) mermaidDiv: ElementRef;
   @ViewChildren('storyRow', { read: ElementRef }) rowElement: QueryList<ElementRef>;
 
-  private readonly ngDestroyed$ = new Subject();
+  private readonly ngDestroyed$ = new Subject<void>();
 
   user = {
     key: null,
@@ -40,6 +40,7 @@ export class ViewerComponent implements AfterViewInit  {
 
   selectedStory = null;
   sidenavVisible = true;
+  storyVisible = true;
   keyboardCaptureElement = null; // prevent KB shortcuts if selected element
 
 
@@ -134,8 +135,22 @@ export class ViewerComponent implements AfterViewInit  {
     })
   }
 
-  onEditModeButton() {
+  onDocsModeButton() {
+    this.router.navigate(['/docs/GettingStarted'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
+  }
+
+  onHomeModeButton() {
     this.router.navigate(['/home'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
+  }
+
+  onSettingsModeButton(){
+    this.router.navigate(['/settings'], {
       relativeTo: this.activatedRoute,
       queryParamsHandling: 'preserve'
     })
@@ -166,6 +181,7 @@ export class ViewerComponent implements AfterViewInit  {
       return 0
     })
 
+    this.allStories = result
     this.store.dispatch(mainActions.setAllStories({allStories: result}))
     this.store.dispatch(mainActions.PopLoader())
   }
@@ -225,15 +241,23 @@ export class ViewerComponent implements AfterViewInit  {
     this.update()
   }
 
+  toolbar_show_story(){
+    this.storyVisible = !this.storyVisible
+    this.update()
+  }
+
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
     // EXIT IF DIALOGUE OPEN OR TYPING IN A SELECTED ELEMENT
     if (!!this.keyboardCaptureElement
-       || !!this.dialogues.username.display) {
+       || !!this.dialogues.username.display
+       || !!this.dialogues.help.display) {
         return
     }
 
     const key = event.key.toLowerCase()
-    if (key == '[' || key == ']') { // previous/next story
+    if (key == '?') { // HELP MENU
+      this.dialogues.help.display = true
+    } else if (key == '[' || key == ']') { // previous/next story
       const dx = key == '[' ? -1 : 1
       const curIndex = this.allStories.findIndex(v => v.key == this.selectedStory?.key)
       let newIndex = curIndex + dx
@@ -246,6 +270,10 @@ export class ViewerComponent implements AfterViewInit  {
 
     } else if (key == 'l') { // LABELS
       this.toolbar_toggle_labels()
+
+    } else if (key == 's') {
+      this.toolbar_show_story()
+      
     }
   }
 

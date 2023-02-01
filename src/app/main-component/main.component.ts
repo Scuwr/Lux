@@ -21,7 +21,7 @@ export class MainComponent implements AfterViewInit  {
   @ViewChildren('storyRow', { read: ElementRef }) rowElement: QueryList<ElementRef>;
   @ViewChild('edgeDialogInp2') edgeDialogInp2: ElementRef; // to change focus
 
-  private readonly ngDestroyed$ = new Subject();
+  private readonly ngDestroyed$ = new Subject<void>();
 
   user = {
     key: null,
@@ -31,6 +31,7 @@ export class MainComponent implements AfterViewInit  {
 
   selectedStory = null;
   sidenavVisible = true;
+  storyVisible = true;
   keyboardCaptureElement = null; // prevent KB shortcuts if selected element
 
   dialogues = {
@@ -103,7 +104,7 @@ export class MainComponent implements AfterViewInit  {
 
   }
 
-  ngAfterViewInit(){
+  async ngAfterViewInit(){
     window['app'] = this
     window['mermaid_utils'] = mermaid_utils
     mermaid_utils.init()
@@ -143,6 +144,13 @@ export class MainComponent implements AfterViewInit  {
     setTimeout(() => {
       this.check_params_username()
     }, 0);
+  }
+
+  onDocsModeButton() {
+    this.router.navigate(['/docs/GettingStarted'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
   }
 
   onViewModeButton() {
@@ -205,39 +213,62 @@ export class MainComponent implements AfterViewInit  {
     // fetch storyid from url
     this.route.queryParams.pipe(
         first()
-      ).subscribe((params) => {
+      ).subscribe(async (params) => {
         if (!!params.storyId) {
           const id = params.storyId
-          const match = this.allStories?.filter(s => s.key == id)
-          if (match?.length > 0) this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
+          let match = this.allStories?.filter(s => s.key == id)
+          // if no match, show story is it exists
+          if (match?.length < 1){
+            await this.add_story_to_sidenav(id)
+            match = this.allStories?.filter(s => s.key == id)
+          }
+          this.store.dispatch(mainActions.setSelectedStory({ selectedStory: match[0] }))
         }
       })
   }
 
+  async add_story_to_sidenav(id){
+    let data = await this.mainService.storyGet(id).toPromise()
+    
+    const story = {
+      text: data['resp'],
+      key: id
+    }
+    if (data['resp']){
+      let stories = [...this.allStories]
+      stories.push(story)
+      this.allStories = stories
+      this.store.dispatch(mainActions.setAllStories({allStories: stories}))
+      this.store.dispatch(mainActions.PopLoader())
+    }     
+  }
+
   async fetch_stories(){
     this.store.dispatch(mainActions.PushLoader())
-      this.mainService.telemetryAdd(this.user.name, 'login').subscribe((resp) => {})
-      let res = await this.mainService.storyGetAssigned(this.user.id).toPromise()
-      const result = []
-      for (const idx in res['key']){
-        result.push({
-          text: res['data'][idx],
-          key: res['key'][idx]
-        })
-      }
-
-      result.sort((a, b) => {
-        if (parseInt(a.key) > parseInt(b.key)) {
-          return 1
-        }
-        if (parseInt(a.key) < parseInt(b.key)) {
-          return -1
-        }
-        return 0
+    this.mainService.telemetryAdd(this.user.name, 'login').subscribe((resp) => {})
+    let res = await this.mainService.storyGetAssigned(this.user.id).toPromise()
+    
+    const result = []
+    for (const idx in res['key']){
+      result.push({
+        text: res['data'][idx],
+        key: res['key'][idx]
       })
+    }
 
-      this.store.dispatch(mainActions.setAllStories({allStories: result}))
-      this.store.dispatch(mainActions.PopLoader())
+    result.sort((a, b) => {
+      if (parseInt(a.key) > parseInt(b.key)) {
+        return 1
+      }
+      if (parseInt(a.key) < parseInt(b.key)) {
+        return -1
+      }
+      return 0
+    })
+
+    this.allStories = result
+    this.store.dispatch(mainActions.setAllStories({allStories: result}))
+    this.store.dispatch(mainActions.PopLoader())
   }
 
   async register_user(){
@@ -257,7 +288,11 @@ export class MainComponent implements AfterViewInit  {
     await this.mainService.usersAdd(this.dialogues.username.input, 'asrs').toPromise()
     await this.username_confirm()
     await this.mainService.storyAddAssignment(this.user.id, '1').toPromise()
-    await this.fetch_stories()
+    
+    this.router.navigate(['/docs/Welcome'], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'preserve'
+    })
   }
 
   toolbar_new_node() {
@@ -415,6 +450,11 @@ export class MainComponent implements AfterViewInit  {
     this.save_and_update()
   }
 
+  toolbar_show_story(){
+    this.storyVisible = !this.storyVisible
+    this.update()
+  }
+
   keyboardMem = {inp: '', time: Date.now()};
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
     // EXIT IF DIALOGUE OPEN OR TYPING IN A SELECTED ELEMENT
@@ -422,7 +462,8 @@ export class MainComponent implements AfterViewInit  {
                   || !!this.dialogues.newNode.display
                   || !!this.dialogues.newEdge.display
                   || !!this.dialogues.rename.display
-                  || !!this.dialogues.username.display) {
+                  || !!this.dialogues.username.display
+                  || !!this.dialogues.help.display) {
         return
     }
     const key = event.key.toLowerCase()
@@ -466,6 +507,9 @@ export class MainComponent implements AfterViewInit  {
       }
     } else if (key == 'l') { // LABELS
       this.toolbar_toggle_labels()
+
+    } else if (key == 's') {
+      this.toolbar_show_story()
 
     } else if (key == 'a') { // LABELS
       if (!!this.graphStyle.clicked) {

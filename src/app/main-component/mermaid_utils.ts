@@ -11,7 +11,6 @@ export class mermaid_utils {
         curve: 'cardinal',
       },
       securityLevel: 'loose',
-      // theme: 'forest',
     };
     mermaid.initialize(config);
   }
@@ -152,9 +151,9 @@ export class mermaid_utils {
       }
     })
 
-    let edgelabel = [' ', ' ']
+    let edgelabel = [' ', '|temporal| ']
     if(graphStyle.labels){
-      edgelabel = ['|physical| ', '|temporal| ']
+      edgelabel = ['|causal| ', '|temporal| ']
     }
     graph.edges.forEach((edge) => {
       let line = edge.edge[0] + ' -->' + edgelabel[0] + edge.edge[1];

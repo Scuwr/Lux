@@ -1,3 +1,20 @@
+:host ::ng-deep img[src*="inline"] {
+    height: 50px;
+}
+
+:host ::ng-deep img[src*="margin"] {
+    width: 100%;
+    padding-left: 50px;
+}
+
+:host ::ng-deep img[src*="large"] {
+    height: 100px;
+}
+
+:host ::ng-deep img[src*="medium"] {
+    height: 60px;
+}
+
 .boxedText {
     // margin-left: 2px;
     padding-top: 1px;
@@ -28,52 +45,18 @@
     }
 }
 
-
-// .boxedText {
-//     padding-top: 1px;
-//     padding-bottom: 1px;
-//     padding-left: 4px;
-//     padding-right: 4px;
-//     margin-right: 8px;
-//     border-radius: 3px;
-//     border-bottom-color: #bbb;
-//     font-family: monospace;
-//     font-size: 12px;
-//     background-color: #1d1d1f;
-//     border: solid 1px black;
-//     box-shadow: none;
-//     color: white;
-// }
-
 :host ::ng-deep .graphToolbar {
-    padding: 10px;
+    margin: 10px;
     height: 60px;
-}
-
-:host ::ng-deep .graphTabView {
-    background: #1e1e1e;
-    height: 50px;
-
-    .p-tabview-panels {
-        padding: 0;
-    }
-}
-:host ::ng-deep .userStory.userStory.userStory > a {
-    background-color: #142e33
-}
-
-.mainview{
-    display: flex;
-    flex-flow: column;
-    height: calc(100vh - 170px);
 }
 
 .scrollableContent {
     overflow:auto;
-    height: 100%; // 60px for header and 70px for graphtoolbar
+    margin-top: 60px;
+    height: calc(100vh - 60px);
 
     .background {
-        height: 100%;
+        height: inherit;
         width: 100%;
         position: fixed;
         background-color: #9dbcd5;
@@ -81,24 +64,21 @@
     }
 }
 
-.storybox {
-    transition: 0.5s;
-    max-height: 0;
-    opacity: 0;
-
-    &.div-visible {
-        max-height: 100%;
-        opacity: 1;
-    }
+.doc {
+    margin: 10vh 20vw;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 14pt;
+    color: rgba(255, 255, 255, 0.87);
+    background: #121212;
+    padding: 0.5rem 0.5rem;
+    border: 1px solid #383838;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 3px;
 }
 
 .storyarea {
-    pointer-events:none;
-
-    &.div-visible {
-        pointer-events:inherit;
-    }
-
     .p-inputtext {
         opacity: 1;
         width: 100%;
@@ -106,12 +86,6 @@
 }
 
 .commentarea {
-    pointer-events:none;
-
-    &.div-visible {
-        pointer-events:inherit;
-    }
-
     .p-inputtext {
         opacity: 1;
         width: 100%;
@@ -134,7 +108,6 @@
 }
 
 .graph {
-    padding-top: 20px;
     min-height: 220px;
 }
 
@@ -157,13 +130,46 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-.spacer {
+.centerSpacer {
+   flex: auto;
+   max-width: 20%; 
+}
+
+.rightSpacer {
 flex: 1;
 }
 
 .toolbar span {
     font-size: 24px;
 }
+
+:host ::ng-deep .p-tabmenu .p-tabmenu-nav .p-tabmenuitem .p-menuitem-link {
+    border: solid #1976d2;
+    border-color: transparent transparent #1976d2 transparent;
+    background: #1976d2;
+    color: white;
+
+    border-width: 0 0 2px 0;
+    padding: 1rem;
+    font-weight: 600;
+    border-top-right-radius: 3px;
+    border-top-left-radius: 3px;
+    transition: box-shadow 0.2s;
+    margin: 0 0 -2px 0;
+}
+
+:host ::ng-deep .p-tabmenu .p-tabmenu-nav .p-tabmenuitem:not(.p-highlight):not(.p-disabled):hover .p-menuitem-link {
+    background: #1976d2;
+    border-color: white;
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+:host ::ng-deep .p-tabmenu .p-tabmenu-nav .p-tabmenuitem.p-highlight .p-menuitem-link {
+    background: #1976d2;
+    border-color: white;
+    color: white;
+}
+
 
 .toolbar {
 position: absolute;

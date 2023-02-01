@@ -28,34 +28,48 @@
     }
 }
 
-
-// .boxedText {
-//     padding-top: 1px;
-//     padding-bottom: 1px;
-//     padding-left: 4px;
-//     padding-right: 4px;
-//     margin-right: 8px;
-//     border-radius: 3px;
-//     border-bottom-color: #bbb;
-//     font-family: monospace;
-//     font-size: 12px;
-//     background-color: #1d1d1f;
-//     border: solid 1px black;
-//     box-shadow: none;
-//     color: white;
-// }
-
 :host ::ng-deep .graphToolbar {
     padding: 10px;
     height: 60px;
 }
 
+.mainview{
+    display: flex;
+    flex-flow: column;
+    height: calc(100vh - 120px);
+}
+
 .scrollableContent {
     overflow:auto;
-    height: calc(100vh - 120px); // 60px for header and 70px for graphtoolbar
+    height: 100%; // 60px for header and 70px for graphtoolbar
+
+    .background {
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        background-color: #9dbcd5;
+        z-index: -1;
+    }
+}
+
+.storybox {
+    transition: 0.5s;
+    max-height: 0;
+    opacity: 0;
+
+    &.div-visible {
+        max-height: 100%;
+        opacity: 1;
+    }
 }
 
 .storyarea {
+    pointer-events:none;
+
+    &.div-visible {
+        pointer-events:inherit;
+    }
+
     .p-inputtext {
         opacity: 1;
         width: 100%;
@@ -63,6 +77,12 @@
 }
 
 .commentarea {
+    pointer-events:none;
+
+    &.div-visible {
+        pointer-events:inherit;
+    }
+
     .p-inputtext {
         opacity: 1;
         width: 100%;
@@ -85,6 +105,7 @@
 }
 
 .graph {
+    padding-top: 20px;
     min-height: 220px;
 }
 
@@ -335,15 +356,6 @@ height: 16px;
 width: 16px;
 margin-right: 4px;
 }
-
-svg#clouds {
-position: fixed;
-bottom: -160px;
-left: -230px;
-z-index: -10;
-width: 1920px;
-}
-
 
 /* Responsive Styles */
 @media screen and (max-width: 767px) {
