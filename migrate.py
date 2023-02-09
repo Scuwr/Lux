@@ -94,4 +94,4 @@ def migrate(database, execute):
 
     print(f'Executed at: {dt_string}')
 
-migrate("v1", True)
+migrate("v1", False)
