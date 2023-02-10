@@ -44,7 +44,7 @@ selected = pd.DataFrame({
 
 r = 0
 acn = ''
-for x in range(10):
+for x in range(20):
     while True:
         r = random.randrange(1, report.shape[0])
         acn = report.iloc[r]['ACN']
