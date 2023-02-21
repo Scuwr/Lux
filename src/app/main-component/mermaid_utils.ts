@@ -139,6 +139,10 @@ export class mermaid_utils {
       if (node?.hypothetical){
         line += '{{' + name + '}}';
       } else{
+        // sanatize for Mermaid
+        while (name.endsWith('/')){
+          name = name.substring(0, name.length - 1)
+        }
         line += '([' + name + '])';
       }
       
@@ -171,6 +175,7 @@ export class mermaid_utils {
         }
       }
     }
+
     return result
   }
 

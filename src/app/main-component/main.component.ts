@@ -346,7 +346,7 @@ export class MainComponent implements AfterViewInit  {
   private sanitize_input(node_name) {
     const reg = '0-9 a-z A-Z' + // alphanumeric
       '\-' + // dashes (must not have space after dash)
-      '\/ \& \' . ,' // other characters
+      '\& \' . ,' // other characters
     const matchReg = new RegExp('^[' + reg + ']+$')
     const replaceReg = new RegExp('[^' + reg + ']', 'g')
     if (!node_name.match(matchReg)) {
