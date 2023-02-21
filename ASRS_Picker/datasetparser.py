@@ -39,9 +39,6 @@ selected = pd.DataFrame({
 })
 '''
 
-#selected.sort_values(by=['ACN'])
-#selected.to_csv('ACN_Picked.csv', index=False)
-
 r = 0
 acn = ''
 for x in range(20):
@@ -54,4 +51,4 @@ for x in range(20):
     selected = pd.concat([selected, pd.DataFrame({'ACN': [int(acn)], 'Report': [report.iloc[r]['Report']]})], ignore_index=True)
 
 print(selected)
-#selected.to_csv('ACN_Picked.csv', index=False)
+selected.to_csv('ACN_Picked.csv', index=False)
