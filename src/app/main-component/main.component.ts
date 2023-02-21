@@ -82,6 +82,11 @@ export class MainComponent implements AfterViewInit  {
 
   graphSinceLastSave = {}
 
+  graphHistory = {
+    undo: [],
+    redo: []
+  }
+
   graphStyle = {
     clicked: null,
     edgeClicked: null,
@@ -467,6 +472,17 @@ export class MainComponent implements AfterViewInit  {
         return
     }
     const key = event.key.toLowerCase()
+    const ctrl = event.getModifierState('Control')
+
+    if (ctrl){
+      if (key == 'z') {
+        this.undo()
+      }
+      if (key == 'y') {
+        this.redo()
+      }
+    }
+
     const keyCode = key.charCodeAt(0)
     if (key == '?') { // HELP MENU
       this.dialogues.help.display = true
@@ -654,6 +670,7 @@ export class MainComponent implements AfterViewInit  {
 
     this.graphSinceLastSave = JSON.parse(JSON.stringify(this.graph)) // duplicate graph
     this.update()
+    this.clear_history()
     this.store.dispatch(mainActions.PopLoader())
   }
 
@@ -724,6 +741,43 @@ export class MainComponent implements AfterViewInit  {
   }
 
   private save_and_update() {
+    this.save_current_story_backend(this.selectedStory.key, this.graph, this.graphSinceLastSave).then((resp) => {
+      this.graphHistory.redo = []
+      this.graphHistory.undo.push(this.graphSinceLastSave)
+      this.graphSinceLastSave = JSON.parse(JSON.stringify(this.graph)) // duplicate graph
+      this.update();
+    })
+  }
+
+  private clear_history() {
+    this.graphHistory.undo = []
+    this.graphHistory.redo = []
+  }
+
+  undo() {
+    if (this.graphHistory.undo.length < 1){
+      this.messageService.add({severity:'warn', summary:'Not Available', detail:'There is nothing left on the clipboard to undo.'})
+      return
+    }
+
+    this.graphHistory.redo.push(this.graph)
+    this.graph = this.graphHistory.undo.pop()
+
+    this.save_current_story_backend(this.selectedStory.key, this.graph, this.graphSinceLastSave).then((resp) => {
+      this.graphSinceLastSave = JSON.parse(JSON.stringify(this.graph)) // duplicate graph
+      this.update();
+    })
+  }
+
+  redo() {
+    if (this.graphHistory.redo.length < 1){
+      this.messageService.add({severity:'warn', summary:'Not Available', detail:'There is nothing left on the clipboard to redo.'})
+      return
+    }
+
+    this.graphHistory.undo.push(this.graph)
+    this.graph = this.graphHistory.redo.pop()
+    
     this.save_current_story_backend(this.selectedStory.key, this.graph, this.graphSinceLastSave).then((resp) => {
       this.graphSinceLastSave = JSON.parse(JSON.stringify(this.graph)) // duplicate graph
       this.update();

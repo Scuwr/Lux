@@ -127,9 +127,10 @@
         <br>
         <br>
   
-        <span class="boxedText">0-9</span>
-          <span class="helpText">Highlight Nodes</span>
-
+        <span class="boxedText">Ctrl + Z</span>
+          <span class="helpText">Undo edit</span>
+        <span class="boxedText">Ctrl + Y</span>
+          <span class="helpText">Redo edit</span>
 
     </p-panel>
   </div>
@@ -177,6 +178,10 @@
           label="Confusing" [disabled]="!selectedStory" (onClick)="toolbar_flag_confusing()"></p-button>
       <p-button icon="pi pi-times" [ngStyle]="{'margin-right':'8px'}" styleClass="p-button-danger ui-button" 
           label="Clear Graph" [disabled]="!selectedStory" (onClick)="toolbar_clear_graph()"></p-button>
+      <p-button icon="pi pi-undo" [ngStyle]="{'margin-right':'8px'}"
+          [disabled]="!selectedStory" (onClick)="undo()"></p-button>
+      <p-button icon="pi pi-refresh" [ngStyle]="{'margin-right':'8px'}"
+          [disabled]="!selectedStory" (onClick)="redo()"></p-button>
     </div>
   </p-toolbar>
 
