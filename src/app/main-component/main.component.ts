@@ -457,7 +457,6 @@ export class MainComponent implements AfterViewInit  {
 
   toolbar_show_story(){
     this.storyVisible = !this.storyVisible
-    this.update()
   }
 
   keyboardMem = {inp: '', time: Date.now()};
