@@ -677,10 +677,6 @@ export class MainComponent implements AfterViewInit  {
     this.graphStyle.clicked = nodeClicked
   }
 
-  private setClickedEdge(edgeClicked){
-    this.graphStyle.edgeClicked = edgeClicked
-  }
-
   private addEdge(node1, node2, physical) {
     node1 = Number(node1)
     node2 = Number(node2)
