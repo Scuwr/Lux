@@ -7,7 +7,7 @@ selected = pd.read_csv('ACN_Picked.csv')
 
 txt = 'let arr = []\n'
 
-for i in range(340,360):
+for i in range(380,400):
     txt += 'arr = arr.concat(`'
     txt += '\nID: ' + str(selected.iloc[i]['ACN']) + '\n\n';
     txt += str(selected.iloc[i]['Report']) + '\n`)\n\n'
