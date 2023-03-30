@@ -8,7 +8,8 @@ const express = require("express");
 const compression = require("compression");
 const bodyParser = require('body-parser');
 
-const redis = require('redis')
+const redis = require('redis');
+const { reset } = require("nodemon");
 var client = redis.createClient(_redis_port)
 
 
@@ -122,26 +123,30 @@ app.post(API.annotationsGetAllUsers, (req, res) => {
 
 // ASSIGNMENTS
 app.post(API.assignmentAdd, (req, res) => {
-    console.log('Adding...')
-    console.log(TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid)
-    client.sadd(TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid, (err, data) => {
+    console.log('SADD' + TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid)
+    client.sadd(TABLES.assignments + ':' + req.body.userid, req.body.storyid, (err, data) => {
         if(data){
             res.send({
                 resp: true
             })
         }
+        else res.send({
+            resp: err
+        })
     })
 })
 
 app.post(API.assignmentRem, (req, res) => {
-    console.log('Removing...')
-    console.log(TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid)
-    client.srem(TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid, (err, data) => {
+    console.log('SREM' + TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid)
+    client.srem(TABLES.assignments + ':' + req.body.userid, req.body.storyid, (err, data) => {
         if(data){
             res.send({
                 resp: true
             })
         }
+        else res.send({
+            resp: err
+        })
     })
 })
 
