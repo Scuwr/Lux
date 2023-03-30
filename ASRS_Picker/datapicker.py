@@ -29,7 +29,7 @@ txt += '\tconsole.log(k)\n'
 txt += '}\n\n'
 
 txt += 'for (let i = ' + str(idx-amt) + '; i < ' + str(idx) + '; i++){\n'
-txt += '\tlet k = await app.mainService.storyRemAssignment(userid, i).toPromise()\n'
+txt += '\tlet k = await app.mainService.storyRemAssignment(userid, i+1).toPromise()\n'
 txt += '\tconsole.log(k)\n'
 txt += '}'
 

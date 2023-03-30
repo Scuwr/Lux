@@ -125,12 +125,12 @@ for (s of arr){
 }
 
 userid = 6
-for (let i = 400; i < 420; i++){
+for (let i = 380; i < 420; i++){
 	let k = await app.mainService.storyAddAssignment(userid, i+1).toPromise()
 	console.log(k)
 }
 
-for (let i = 380; i < 400; i++){
+for (let i = 360; i < 380; i++){
 	let k = await app.mainService.storyRemAssignment(userid, i+1).toPromise()
 	console.log(k)
 }

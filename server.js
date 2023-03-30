@@ -123,7 +123,7 @@ app.post(API.annotationsGetAllUsers, (req, res) => {
 
 // ASSIGNMENTS
 app.post(API.assignmentAdd, (req, res) => {
-    console.log('SADD' + TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid)
+    console.log('SADD ' + TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid)
     client.sadd(TABLES.assignments + ':' + req.body.userid, req.body.storyid, (err, data) => {
         if(data){
             res.send({
@@ -137,7 +137,7 @@ app.post(API.assignmentAdd, (req, res) => {
 })
 
 app.post(API.assignmentRem, (req, res) => {
-    console.log('SREM' + TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid)
+    console.log('SREM ' + TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid)
     client.srem(TABLES.assignments + ':' + req.body.userid, req.body.storyid, (err, data) => {
         if(data){
             res.send({
