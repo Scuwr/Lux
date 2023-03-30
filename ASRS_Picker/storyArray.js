@@ -123,3 +123,9 @@ for (s of arr){
 	let k = await app.mainService.storyAdd(s).toPromise()
 	console.log(k)
 }
+
+userid = 6
+for (let i = 380; i < 400; i++){
+	let k = await app.mainService.storyAddAssignment(userid, i).toPromise()
+	console.log(k)
+}

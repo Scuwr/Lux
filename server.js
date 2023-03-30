@@ -47,6 +47,7 @@ const API = {
     storyGetAll: '/api/storyGetAll',
 
     assignmentAdd: '/api/assignmentAdd',
+    assignmentRem: '/api/assignmentRem',
 
     annotationsAdd: '/api/annotationsAdd',
     annotationsGet: '/api/annotationsGet',
@@ -121,8 +122,21 @@ app.post(API.annotationsGetAllUsers, (req, res) => {
 
 // ASSIGNMENTS
 app.post(API.assignmentAdd, (req, res) => {
+    console.log('Adding...')
     console.log(TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid)
-    client.sadd(TABLES.assignments + ':' + req.body.userid, req.body.storyid, (err, data) => {
+    client.sadd(TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid, (err, data) => {
+        if(data){
+            res.send({
+                resp: true
+            })
+        }
+    })
+})
+
+app.post(API.assignmentRem, (req, res) => {
+    console.log('Removing...')
+    console.log(TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid)
+    client.srem(TABLES.assignments + ':' + req.body.userid + ' ' + req.body.storyid, (err, data) => {
         if(data){
             res.send({
                 resp: true

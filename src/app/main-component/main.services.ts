@@ -15,6 +15,7 @@ const API = {
     storyGetAll: '/api/storyGetAll',
 
     assignmentAdd: '/api/assignmentAdd',
+    assignmentRem: '/api/assignmentRem',
 
     annotationsAdd: '/api/annotationsAdd',
     annotationsGet: '/api/annotationsGet',
@@ -53,6 +54,10 @@ export class MainService {
 
     storyAddAssignment(userid, storyid){
         return this.http.post(API.assignmentAdd, {'userid': userid, 'storyid': storyid})
+    }
+
+    storyRemAssignment(userid, storyid){
+        return this.http.post(API.assignmentRem, {'userid': userid, 'storyid': storyid})
     }
 
     storyGetAll() {
