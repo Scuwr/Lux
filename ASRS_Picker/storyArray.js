@@ -605,7 +605,7 @@ for (s of arr){
 }
 
 userid = 6
-for (let i = 540; i < 640; i++){
+for (let i = 540; i < 580; i++){
 	let k = await app.mainService.storyAddAssignment(userid, i+1).toPromise()
 	console.log(k)
 }
