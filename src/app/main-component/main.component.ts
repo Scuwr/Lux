@@ -88,6 +88,7 @@ export class MainComponent implements AfterViewInit  {
   }
 
   graphStyle = {
+    zoom: 200.0,
     clicked: null,
     edgeClicked: null,
     LR: true,
@@ -459,6 +460,16 @@ export class MainComponent implements AfterViewInit  {
     this.storyVisible = !this.storyVisible
   }
 
+  toolbar_zoomin(){
+    this.graphStyle.zoom *= 2.0
+    this.update()
+  }
+
+  toolbar_zoomout(){
+    this.graphStyle.zoom *= 0.5
+    this.update()
+  }
+
   keyboardMem = {inp: '', time: Date.now()};
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
     // EXIT IF DIALOGUE OPEN OR TYPING IN A SELECTED ELEMENT
@@ -798,7 +809,8 @@ export class MainComponent implements AfterViewInit  {
   }
 
   update() {
-    const element: any = this.mermaidDiv.nativeElement
+    let element: any = this.mermaidDiv.nativeElement
+    element.style.width = this.graphStyle.zoom.toString()+'%'
     const graph_str = mermaid_utils.obj_to_graph_str(this.graph, this.graphStyle)
     mermaid_utils.render(element, graph_str, this.nodeCallback.bind(this))
   }

@@ -1,3 +1,4 @@
+//import { log } from 'console';
 import mermaid from 'mermaid';
 
 export class mermaid_utils {
@@ -183,6 +184,7 @@ export class mermaid_utils {
    * Renders the graph on screen given the HTML element and the string representation of the graph
    * callback is called whenever a node is clicked
    */
+
   static render(element, graph_str, callback?) {
     mermaid.render("graphDiv", graph_str, (svgCode, bindFunctions) => {
       element.innerHTML = svgCode;

@@ -64,6 +64,7 @@ export class ViewerComponent implements AfterViewInit  {
   }
 
   graphStyle = {
+    zoom: 100.0,
     clicked: null,
     edgeClicked: null,
     LR: true,
@@ -246,6 +247,16 @@ export class ViewerComponent implements AfterViewInit  {
     this.update()
   }
 
+  toolbar_zoomin(){
+    this.graphStyle.zoom *= 2.0
+    this.update()
+  }
+
+  toolbar_zoomout(){
+    this.graphStyle.zoom *= 0.5
+    this.update()
+  }
+
   @HostListener('document:keydown', ['$event']) keydown(event: KeyboardEvent) {
     // EXIT IF DIALOGUE OPEN OR TYPING IN A SELECTED ELEMENT
     if (!!this.keyboardCaptureElement
@@ -407,6 +418,7 @@ export class ViewerComponent implements AfterViewInit  {
 
   update() {
     const element: any = this.mermaidDiv.nativeElement
+    element.style.width = this.graphStyle.zoom.toString()+'%'
     const graph_str = mermaid_utils.obj_to_graph_str(this.graph, this.graphStyle)
     // console.log(graph_str)
     mermaid_utils.render(element, graph_str, this.callback.bind(this))

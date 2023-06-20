@@ -41,12 +41,12 @@ selected = pd.DataFrame({
 
 r = 0
 acn = ''
-for x in range(100):
+for x in range(60):
     selected = pd.read_csv('ACN_Picked.csv')
     while True:
         r = random.randrange(1, report.shape[0])
         acn = report.iloc[r]['ACN']
-        if(acn not in selected['ACN'].values.tolist()):
+        if(int(acn) not in selected['ACN'].tolist()):
             break
     
     selected = pd.concat([selected, pd.DataFrame({'ACN': [int(acn)], 'Report': [report.iloc[r]['Report']]})], ignore_index=True)

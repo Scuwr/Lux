@@ -6,8 +6,8 @@ os.chdir('./ASRS_Picker')
 selected = pd.read_csv('ACN_Picked.csv')
 
 userid = 6
-idx = 540
-amt = 100
+idx = 740
+amt = 60
 
 txt = 'let arr = []\n'
 

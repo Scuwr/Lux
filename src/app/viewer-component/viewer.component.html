@@ -62,6 +62,10 @@
     <div class="p-toolbar-group-left">
         <p-button [icon]="!!graphStyle?.LR ? 'pi pi-arrows-h' : 'pi pi-arrows-v'" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-help ui-button" 
             [disabled]="!selectedStory" (onClick)="toolbar_flip_graph_style()"></p-button>
+        <p-button icon="pi pi-search-plus" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-help ui-button" 
+            label="Zoom In" [disabled]="!selectedStory" (onClick)="toolbar_zoomin()"></p-button>
+        <p-button icon="pi pi-search-minus" [ngStyle]="{'margin-right':'5px'}" styleClass="p-button-help ui-button" 
+            label="Zoom Out" [disabled]="!selectedStory" (onClick)="toolbar_zoomout()"></p-button>
     </div>
     <div class="p-toolbar-group-right">
       <p-button [icon]="!!storyVisible ? 'pi pi-arrow-down' : 'pi pi-arrow-up'" [ngStyle]="{'margin-right':'8px'}"

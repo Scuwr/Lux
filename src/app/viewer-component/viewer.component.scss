@@ -144,6 +144,10 @@
     opacity: 0.5;
 }
 
+svg[id^="graphDiv"]{
+    width: 200%
+}
+
 .noclick {
     pointer-events: none;
 }
